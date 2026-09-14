@@ -3,505 +3,195 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>PhotoByArno Photography Suite Pro</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css" />
-  <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Great+Vibes&family=Pacifico&display=swap" rel="stylesheet">
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/suncalc/1.9.0/suncalc.min.js"></script>
+  <title>Photo Suite</title>
   <style>
-    :root { --pba-primary: #1a252f; --pba-accent: #e67e22; --pba-bg: #f4f6f9; --pba-card: #ffffff; --pba-border: #dcdfe6; }
-    body { margin: 0; padding: 10px; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #fafafa; }
-    .pba-app { width: 100%; max-width: 1100px; margin: 0 auto; background: var(--pba-card); border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); overflow: hidden; border: 1px solid var(--pba-border); color: #2c3e50; box-sizing: border-box; }
-    .pba-header { background: linear-gradient(135deg, #1a252f 0%, #2c3e50 100%); color: white; padding: 18px 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
-    .pba-header h2 { margin: 0; font-size: 1.4rem; color: white !important; }
-    .pba-lang-select { padding: 5px 8px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.4); background: rgba(255,255,255,0.15); color: white; font-weight: 600; font-size: 0.85rem; cursor: pointer; }
-    .pba-lang-select option { background: #1a252f; color: white; }
-    .pba-tabs { display: flex; background: #111a22; overflow-x: auto; border-bottom: 3px solid var(--pba-accent); }
-    .pba-tab { padding: 14px 18px; background: transparent; border: none; color: #a0b2c6; font-weight: 600; font-size: 0.95rem; cursor: pointer; white-space: nowrap; transition: all 0.2s; }
-    .pba-tab:hover { color: #ffffff; background: rgba(255,255,255,0.08); }
-    .pba-tab.active { color: #ffffff; background: var(--pba-accent); }
-    .pba-body { padding: 20px; }
-    .pba-content { display: none; }
-    .pba-content.active { display: block; }
-    .pba-grid { display: grid; grid-template-columns: 340px 1fr; gap: 20px; }
-    @media (max-width: 800px) { .pba-grid { grid-template-columns: 1fr; } }
-    .pba-controls { background: var(--pba-bg); padding: 16px; border-radius: 8px; border: 1px solid var(--pba-border); }
-    .pba-group { margin-bottom: 14px; }
-    .pba-group label { display: block; font-weight: 600; font-size: 0.9rem; margin-bottom: 6px; color: #34495e; }
-    .pba-input, .pba-select { width: 100%; padding: 8px 10px; border: 1px solid var(--pba-border); border-radius: 6px; font-size: 0.9rem; box-sizing: border-box; background: white; }
-    .pba-range { width: 100%; accent-color: var(--pba-accent); cursor: pointer; }
-    .pba-btn { background: var(--pba-accent); color: white; padding: 10px 14px; border: none; border-radius: 6px; font-weight: 600; font-size: 0.9rem; cursor: pointer; width: 100%; margin-top: 6px; }
-    .pba-btn:hover { opacity: 0.9; }
-    .pba-btn-sec { background: #7f8c8d; }
-    .pba-btn-reset { background: #c0392b; color: white; margin-top: 6px; }
-    .pba-btn-ai { background: linear-gradient(135deg, #27ae60, #2980b9); color: white; }
-    .pba-viewport { background: #0e141b; border-radius: 8px; min-height: 400px; display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden; border: 1px solid #2c3e50; padding: 10px; }
-    .pba-viewport canvas { max-width: 100%; max-height: 500px; box-shadow: 0 4px 15px rgba(0,0,0,0.5); border-radius: 4px; object-fit: contain; }
-    .scan-overlay { position: absolute; top: 0; left: 0; right: 0; bottom: 0; pointer-events: none; display: none; z-index: 10; }
-    .scan-line { width: 100%; height: 4px; background: #2ecc71; box-shadow: 0 0 15px #2ecc71; position: absolute; animation: scanMove 1.6s ease-in-out infinite alternate; }
-    @keyframes scanMove { 0% { top: 5%; } 100% { top: 95%; } }
-    .info-box { background: #eef7fe; border-left: 4px solid #3498db; padding: 12px; border-radius: 0 6px 6px 0; margin-bottom: 18px; font-size: 0.9rem; }
-    #pba-map { height: 320px; width: 100%; border-radius: 8px; margin-top: 10px; border: 1px solid var(--pba-border); z-index: 1; }
-    .weather-card { background: var(--pba-bg); border-radius: 8px; padding: 14px; margin-top: 12px; border: 1px solid var(--pba-border); }
-    .pba-table { width: 100%; border-collapse: collapse; font-size: 0.88rem; }
-    .pba-table th, .pba-table td { padding: 8px 10px; border-bottom: 1px solid var(--pba-border); text-align: left; }
-    .pba-table th { background: #f1f2f6; width: 45%; }
-    .species-list { max-height: 180px; overflow-y: auto; font-size: 0.88rem; background: #ffffff; border: 1px solid var(--pba-border); border-radius: 6px; padding: 8px; margin-top: 6px; }
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+      background-color: #f4f4f9;
+      color: #333;
+    }
+    h1, h2 {
+      color: #2c3e50;
+    }
+    .section {
+      background: #fff;
+      padding: 15px;
+      margin-bottom: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    label {
+      font-weight: bold;
+      display: block;
+      margin-top: 10px;
+    }
+    input, select, button {
+      margin-top: 5px;
+      padding: 8px;
+      border-radius: 4px;
+      border: 1px solid #ccc;
+    }
+    button {
+      background-color: #3498db;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #2980b9;
+    }
+    canvas {
+      border: 1px solid #ccc;
+      margin-top: 10px;
+      max-width: 100%;
+    }
+    ul {
+      padding-left: 20px;
+    }
   </style>
 </head>
 <body>
-<div class="pba-app">
-  <div class="pba-header">
-    <h2>PhotoByArno Photography Suite Pro</h2>
-    <div style="display:flex; align-items:center; gap:8px;">
-      <span style="font-size:0.8rem; background:rgba(255,255,255,0.15); padding:4px 10px; border-radius:12px;" data-i18n="badge_privacy">🔒 100% Lokaal & Privacy Veilig</span>
-      <select class="pba-lang-select" id="pba-lang" onchange="changeLanguage(this.value)">
-        <option value="nl" selected>Nederlands</option>
-        <option value="en">English</option>
-      </select>
-    </div>
+
+  <h1>Photo Suite</h1>
+
+  <!-- TAAL SELECTIE -->
+  <div class="section">
+    <label for="lang-select">Taal / Language:</label>
+    <select id="lang-select" onchange="changeLanguage()">
+      <option value="nl" selected>Nederlands</option>
+      <option value="en">English</option>
+    </select>
   </div>
 
-  <nav class="pba-tabs">
-    <button class="pba-tab active" onclick="pbaTab(event, 'tab-sign')" data-i18n="tab_sign">✍️ Handtekening & Logo</button>
-    <button class="pba-tab" onclick="pbaTab(event, 'tab-ai')" data-i18n="tab_ai">✨ AI Verbetering & Blur</button>
-    <button class="pba-tab" onclick="pbaTab(event, 'tab-exif')" data-i18n="tab_exif">🔍 EXIF & Converter</button>
-    <button class="pba-tab" onclick="pbaTab(event, 'tab-sun')" data-i18n="tab_sun">☀️ Planner & Waarnemingen Kaart</button>
-    <button class="pba-tab" onclick="pbaTab(event, 'tab-stack')" data-i18n="tab_stack">📚 Focus Stacking Pro</button>
-  </nav>
-
-  <div class="pba-body">
-    <!-- 1. HANDTEKENING -->
-    <div id="tab-sign" class="pba-content active">
-      <div class="pba-grid">
-        <div class="pba-controls">
-          <div class="pba-group"><label data-i18n="lbl_select_photo">1. Selecteer Foto:</label><input type="file" id="sign-file" class="pba-input" accept="image/*"></div>
-          <div class="pba-group"><label data-i18n="lbl_text">2. Tekst / Naam:</label><input type="text" id="sign-text" class="pba-input" value="PhotoByArno Photography" oninput="renderSignature()"></div>
-          <div class="pba-group"><label data-i18n="lbl_font_style">3. Lettertype Stijl:</label>
-            <select id="sign-font-style" class="pba-select" onchange="renderSignature()">
-              <option value="'Great Vibes', cursive">Great Vibes (Calligraphy)</option>
-              <option value="'Dancing Script', cursive">Dancing Script (Modern)</option>
-              <option value="'Pacifico', cursive">Pacifico (Casual)</option>
-            </select>
-          </div>
-          <div class="pba-group"><label data-i18n="lbl_color">Kleur:</label><input type="color" id="sign-color" value="#ffffff" style="width:100%; height:36px; cursor:pointer;" onchange="renderSignature()"></div>
-          <div class="pba-group"><label data-i18n="lbl_position">Positie:</label>
-            <select id="sign-pos" class="pba-select" onchange="renderSignature()">
-              <option value="br" data-i18n="pos_br">Rechtsonder</option>
-              <option value="bl" data-i18n="pos_bl">Linksonder</option>
-              <option value="tr" data-i18n="pos_tr">Rechtsboven</option>
-              <option value="c" data-i18n="pos_c">Midden</option>
-            </select>
-          </div>
-          <button class="pba-btn pba-btn-sec" id="sign-dl" style="display:none;" onclick="pbaDownload('sign-canvas', 'photobyarno-handtekening.jpg')" data-i18n="btn_dl_photo">Download Foto</button>
-        </div>
-        <div class="pba-viewport"><canvas id="sign-canvas"></canvas></div>
-      </div>
-    </div>
-
-    <!-- 2. AI ENHANCE -->
-    <div id="tab-ai" class="pba-content">
-      <div class="info-box" data-i18n="ai_info_box">🎯 <b>Lightroom-style Onderwerp Isolatie:</b> Klik op <b>"Automatisch Onderwerp Scan"</b> om het hoofdonderwerp te detecteren en de achtergrond aan te passen.</div>
-      <div class="pba-grid">
-        <div class="pba-controls">
-          <div class="pba-group"><label data-i18n="lbl_select_photo">1. Selecteer Foto:</label><input type="file" id="ai-file" class="pba-input" accept="image/*"></div>
-          <button class="pba-btn pba-btn-ai" onclick="runAutoEnhance()" data-i18n="btn_auto_ai">✨ Auto AI Optimaliseren</button>
-          <hr style="margin:12px 0; border:0; border-top:1px solid #ddd;">
-          <button class="pba-btn" style="background:#8e44ad;" onclick="triggerAIScanAndDetect()" data-i18n="btn_scan_subject">🪄 Automatisch Onderwerp Scan</button>
-          <div class="pba-group" style="margin-top:12px;"><label data-i18n="lbl_bg_blur">Achtergrond Vervagen:</label><input type="range" id="ai-blur-range" class="pba-range" min="0" max="25" value="0" oninput="renderAIAccurateBlur()"></div>
-          <div class="pba-group"><label data-i18n="lbl_brightness">Helderheid:</label><input type="range" id="ai-bright" class="pba-range" min="50" max="150" value="100" oninput="renderAIAccurateBlur()"></div>
-          <div class="pba-group"><label data-i18n="lbl_contrast">Contrast:</label><input type="range" id="ai-contrast" class="pba-range" min="50" max="150" value="100" oninput="renderAIAccurateBlur()"></div>
-          <div class="pba-group"><label data-i18n="lbl_saturation">Saturatie:</label><input type="range" id="ai-sat" class="pba-range" min="0" max="200" value="100" oninput="renderAIAccurateBlur()"></div>
-          <button class="pba-btn pba-btn-reset" onclick="resetAIToOriginal()" data-i18n="btn_reset_orig">↺ Herstel naar Origineel</button>
-          <button class="pba-btn pba-btn-sec" id="ai-dl" style="display:none; margin-top:8px;" onclick="pbaDownload('ai-canvas', 'photobyarno-ai-enhanced.jpg')" data-i18n="btn_dl_result">Download Resultaat</button>
-        </div>
-        <div class="pba-viewport">
-          <div id="scan-overlay" class="scan-overlay"><div class="scan-line"></div></div>
-          <canvas id="ai-canvas"></canvas>
-        </div>
-      </div>
-    </div>
-
-    <!-- 3. EXIF & CONVERTER -->
-    <div id="tab-exif" class="pba-content">
-      <div class="pba-grid">
-        <div class="pba-controls">
-          <div class="pba-group"><label data-i18n="lbl_select_photo">Selecteer Foto:</label><input type="file" id="exif-file" class="pba-input" accept="image/*"></div>
-          <div class="pba-group"><label data-i18n="lbl_new_filename">Nieuwe Bestandsnaam:</label><input type="text" id="exif-rename" class="pba-input" placeholder="bv. foto-by-arno-01"></div>
-          <div class="pba-group"><label data-i18n="lbl_export_format">Exporteer als Formaat:</label>
-            <select id="exif-format" class="pba-select">
-              <option value="image/jpeg">JPG / JPEG</option>
-              <option value="image/png">PNG (Transparant)</option>
-              <option value="image/webp">WebP (Web)</option>
-            </select>
-          </div>
-          <button class="pba-btn" id="exif-save-btn" style="display:none;" onclick="exportExifFile()" data-i18n="btn_dl_custom">Download Aangepast Bestand</button>
-        </div>
-        <div>
-          <h4 data-i18n="lbl_exif_title">Foto Metadata Overzicht:</h4>
-          <table class="pba-table"><tbody id="exif-table-body"><tr><td colspan="2" style="text-align:center;" data-i18n="exif_empty">Upload een foto om EXIF te bekijken</td></tr></tbody></table>
-        </div>
-      </div>
-    </div>
-
-    <!-- 4. PLANNER & KAART -->
-    <div id="tab-sun" class="pba-content">
-      <div class="pba-grid">
-        <div class="pba-controls">
-          <div class="pba-group"><label data-i18n="lbl_date">Datum:</label><input type="date" id="sun-date" class="pba-input" onchange="fetchWeatherAndSun()"></div>
-          <div class="pba-group"><label data-i18n="lbl_coords">Coördinaten (Lat, Lng):</label>
-            <div style="display:flex; gap:5px;"><input type="text" id="sun-lat" class="pba-input" value="51.3833" readonly><input type="text" id="sun-lng" class="pba-input" value="5.7167" readonly></div>
-          </div>
-          <button class="pba-btn pba-btn-sec" onclick="getGPSLocation()" data-i18n="btn_use_gps">📍 Mijn GPS Locatie Gebruiken</button>
-          <label style="font-weight:600; font-size:0.9rem; margin-top:14px; display:block;" data-i18n="lbl_map_title">Kaart & Waarnemingen:</label>
-          <div id="pba-map"></div>
-        </div>
-        <div>
-          <div class="weather-card" style="margin-top:0;">
-            <h3 style="margin-top:0; font-size:1.1rem;" data-i18n="title_species">🌿 Gespotte Dieren, Vogels & Planten</h3>
-            <div id="species-container" class="species-list" data-i18n="species_empty">Klik op GPS of op de kaart om live waarnemingen te laden...</div>
-          </div>
-          <div class="weather-card">
-            <h3 style="margin-top:0; font-size:1.1rem;" data-i18n="title_weather">🌦️ Live Weer & Zonsondergang Score</h3>
-            <table class="pba-table">
-              <tr><th data-i18n="wt_clouds">🌤️ Bewolking Totaal</th><td id="wt-clouds">-</td></tr>
-              <tr><th data-i18n="wt_layers">☁️ Lagen (Laag/Mid/Hoog)</th><td id="wt-layers">-</td></tr>
-              <tr><th data-i18n="wt_score">📸 Fotografie geschiktheid</th><td id="wt-photo-score"><b>-</b></td></tr>
-              <tr><th data-i18n="wt_glow">🌅 Kans op Rode Gloed</th><td id="wt-sunset-glow"><b>-</b></td></tr>
-            </table>
-          </div>
-          <div class="weather-card">
-            <h3 style="margin-top:0; font-size:1.1rem;" data-i18n="title_sunmoon">☀️ Zon & Maan Standen</h3>
-            <table class="pba-table">
-              <tr><th data-i18n="st_rise">🌅 Zonsopkomst</th><td id="st-rise">-</td></tr>
-              <tr><th data-i18n="st_gold">☀️ Gouden Uur</th><td id="st-gold-am">-</td></tr>
-              <tr><th data-i18n="st_set">🌆 Zonsondergang</th><td id="st-set">-</td></tr>
-              <tr><th data-i18n="st_moon">🌕 Maanstand</th><td id="st-moon">-</td></tr>
-            </table>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- 5. FOCUS STACKING -->
-    <div id="tab-stack" class="pba-content">
-      <div class="info-box" data-i18n="stack_info_box">🔍 <b>Focus Stacking Pro:</b> Voeg meerdere macro- of landschapsfoto's uit je reeks samen tot 1 haarscherpe foto.</div>
-      <div class="pba-grid">
-        <div class="pba-controls">
-          <div class="pba-group"><label data-i18n="lbl_select_multiple">Selecteer meerdere foto's uit je reeks:</label><input type="file" id="stack-files" class="pba-input" accept="image/*" multiple></div>
-          <div class="pba-group"><label data-i18n="lbl_stack_method">Samenvoeg Methode:</label>
-            <select id="stack-method" class="pba-select">
-              <option value="pmax">PMax (Maximum Scherpte & Details)</option>
-              <option value="dmap">DMap (Depth Map - Vloeiende overgangen)</option>
-            </select>
-          </div>
-          <button class="pba-btn" onclick="executeProStack()" data-i18n="btn_start_stack">Start Focus Stacking Process</button>
-          <button class="pba-btn pba-btn-sec" id="stack-dl" style="display:none;" onclick="pbaDownload('stack-canvas', 'photobyarno-stacked.jpg')" data-i18n="btn_dl_result">Download Resultaat</button>
-        </div>
-        <div class="pba-viewport"><canvas id="stack-canvas"></canvas></div>
-      </div>
-    </div>
+  <!-- SPOTTED SPECIES SECTION -->
+  <div class="section">
+    <h2 id="species-title">Gespotte soorten in de buurt</h2>
+    <ul id="species-list">
+      <li>Laden van waarnemingen in de buurt...</li>
+    </ul>
   </div>
-</div>
 
-<script>
-  const i18n = {
-    nl: {
-      badge_privacy: "🔒 100% Lokaal & Privacy Veilig", tab_sign: "✍️ Handtekening & Logo", tab_ai: "✨ AI Verbetering & Blur", tab_exif: "🔍 EXIF & Converter", tab_sun: "☀️ Planner & Waarnemingen Kaart", tab_stack: "📚 Focus Stacking Pro",
-      lbl_select_photo: "1. Selecteer Foto:", lbl_text: "2. Tekst / Naam:", lbl_font_style: "3. Lettertype Stijl:", lbl_color: "Kleur:", lbl_position: "Positie:",
-      pos_br: "Rechtsonder", pos_bl: "Linksonder", pos_tr: "Rechtsboven", pos_c: "Midden", btn_dl_photo: "Download Foto",
-      ai_info_box: "🎯 <b>Lightroom-style Onderwerp Isolatie:</b> Klik op \"Automatisch Onderwerp Scan\" om het hoofdonderwerp te detecteren.",
-      btn_auto_ai: "✨ Auto AI Optimaliseren", btn_scan_subject: "🪄 Automatisch Onderwerp Scan", lbl_bg_blur: "Achtergrond Vervagen:", lbl_brightness: "Helderheid:", lbl_contrast: "Contrast:", lbl_saturation: "Saturatie:", btn_reset_orig: "↺ Herstel naar Origineel", btn_dl_result: "Download Resultaat",
-      lbl_new_filename: "Nieuwe Bestandsnaam:", lbl_export_format: "Exporteer als Formaat:", btn_dl_custom: "Download Aangepast Bestand", lbl_exif_title: "Foto Metadata Overzicht:", exif_empty: "Upload een foto om EXIF te bekijken",
-      lbl_date: "Datum:", lbl_coords: "Coördinaten (Lat, Lng):", btn_use_gps: "📍 Mijn GPS Locatie Gebruiken", lbl_map_title: "Kaart & Waarnemingen:", title_species: "🌿 Gespotte Dieren, Vogels & Planten", species_empty: "Klik op GPS of op de kaart om live waarnemingen te laden...", title_weather: "🌦️ Live Weer & Zonsondergang Score", wt_clouds: "🌤️ Bewolking Totaal", wt_layers: "☁️ Lagen (Laag/Mid/Hoog)", wt_score: "📸 Fotografie geschiktheid", wt_glow: "🌅 Kans op Rode Gloed", title_sunmoon: "☀️ Zon & Maan Standen", st_rise: "🌅 Zonsopkomst", st_gold: "☀️ Gouden Uur", st_set: "🌆 Zonsondergang", st_moon: "🌕 Maanstand",
-      stack_info_box: "🔍 <b>Focus Stacking Pro:</b> Voeg meerdere macro- of landschapsfoto's samen.", lbl_select_multiple: "Selecteer meerdere foto's:", lbl_stack_method: "Samenvoeg Methode:", btn_start_stack: "Start Focus Stacking Process"
-    },
-    en: {
-      badge_privacy: "🔒 100% Local & Privacy Safe", tab_sign: "✍️ Signature & Logo", tab_ai: "✨ AI Enhance & Blur", tab_exif: "🔍 EXIF & Converter", tab_sun: "☀️ Planner & Map", tab_stack: "📚 Focus Stacking Pro",
-      lbl_select_photo: "1. Select Photo:", lbl_text: "2. Text / Name:", lbl_font_style: "3. Font Style:", lbl_color: "Color:", lbl_position: "Position:",
-      pos_br: "Bottom Right", pos_bl: "Bottom Left", pos_tr: "Top Right", pos_c: "Center", btn_dl_photo: "Download Photo",
-      ai_info_box: "🎯 <b>Lightroom-style Subject Isolation:</b> Click \"Auto Subject Scan\" to detect the subject.",
-      btn_auto_ai: "✨ Auto AI Enhance", btn_scan_subject: "🪄 Auto Subject Scan", lbl_bg_blur: "Background Blur:", lbl_brightness: "Brightness:", lbl_contrast: "Contrast:", lbl_saturation: "Saturation:", btn_reset_orig: "↺ Reset to Original", btn_dl_result: "Download Result",
-      lbl_new_filename: "New Filename:", lbl_export_format: "Export Format:", btn_dl_custom: "Download Export File", lbl_exif_title: "Photo Metadata Overview:", exif_empty: "Upload a photo to view EXIF data",
-      lbl_date: "Date:", lbl_coords: "Coordinates (Lat, Lng):", btn_use_gps: "📍 Use My GPS Location", lbl_map_title: "Map & Species:", title_species: "🌿 Spotted Animals, Birds & Plants", species_empty: "Click GPS or tap map to load observations...", title_weather: "🌦️ Live Weather & Sunset Score", wt_clouds: "🌤️ Total Cloud Cover", wt_layers: "☁️ Layers (Low/Mid/High)", wt_score: "📸 Rating", wt_glow: "🌅 Red Glow Chance", title_sunmoon: "☀️ Sun & Moon Position", st_rise: "🌅 Sunrise", st_gold: "☀️ Golden Hour", st_set: "🌆 Sunset", st_moon: "🌕 Moon Phase",
-      stack_info_box: "🔍 <b>Focus Stacking Pro:</b> Combine multiple focus photos.", lbl_select_multiple: "Select multiple photos:", lbl_stack_method: "Stack Method:", btn_start_stack: "Start Focus Stacking Process"
+  <!-- FOCUS STACKING SECTION -->
+  <div class="section">
+    <h2>Focus Stacking</h2>
+    <input type="file" id="stack-files" multiple accept="image/*">
+    <button onclick="executeProStack()">Verwerk Foto's</button>
+    <br>
+    <canvas id="stack-canvas"></canvas>
+    <br>
+    <a id="stack-dl" style="display:none;" download="focus-stacked.png">Download resultaat</a>
+  </div>
+
+  <script>
+    // 1. TAAL WIJZIGEN
+    function changeLanguage() {
+      const lang = document.getElementById("lang-select").value;
+      document.documentElement.lang = lang;
+      
+      const title = document.getElementById("species-title");
+      if (title) {
+        title.textContent = lang === 'en' ? 'Spotted species nearby' : 'Gespotte soorten in de buurt';
+      }
+
+      // Herlaad de waarnemingen in de gekozen taal
+      fetchSpeciesObservations(51.3833, 5.7167);
     }
-  };
 
-  let currentLang = "nl";
-  function changeLanguage(lang) {
-    currentLang = lang;
-    document.querySelectorAll("[data-i18n]").forEach(el => {
-      const key = el.getAttribute("data-i18n");
-      if (i18n[lang] && i18n[lang][key]) el.innerHTML = i18n[lang][key];
-    });
-    fetchSpeciesObservations(parseFloat(document.getElementById("sun-lat").value)||51.3833, parseFloat(document.getElementById("sun-lng").value)||5.7167);
-  }
+    // 2. WAARNEMINGEN OPHALEN MET NL / EN + LATIJNSE NAMEN
+    async function fetchSpeciesObservations(lat, lng) {
+      const speciesList = document.getElementById("species-list");
+      if (!speciesList) return;
 
-  function pbaTab(e, tabId) {
-    document.querySelectorAll(".pba-content").forEach(el => el.classList.remove("active"));
-    document.querySelectorAll(".pba-tab").forEach(el => el.classList.remove("active"));
-    document.getElementById(tabId).classList.add("active");
-    e.currentTarget.classList.add("active");
-    if(tabId === "tab-sun" && pbaMap) setTimeout(() => pbaMap.invalidateSize(), 300);
-  }
+      const currentLang = document.documentElement.lang || 'nl';
+      const locale = currentLang.startsWith('en') ? 'en' : 'nl';
 
-  function pbaDownload(canvasId, defaultName) {
-    const canvas = document.getElementById(canvasId);
-    if (!canvas) return;
-    const link = document.createElement("a");
-    link.download = defaultName;
-    link.href = canvas.toDataURL("image/jpeg", 0.95);
-    link.click();
-  }
+      speciesList.innerHTML = currentLang === 'en' 
+        ? "<li>Loading observations nearby...</li>" 
+        : "<li>Laden van waarnemingen in de buurt...</li>";
 
-  /* 1. SIGNATURE */
-  let signImg = null;
-  document.getElementById("sign-file").addEventListener("change", e => {
-    const file = e.target.files[0]; if(!file) return;
-    const reader = new FileReader();
-    reader.onload = evt => { signImg = new Image(); signImg.onload = renderSignature; signImg.src = evt.target.result; };
-    reader.readAsDataURL(file);
-  });
+      try {
+        const url = `https://api.inaturalist.org/v1/observations?lat=${lat}&lng=${lng}&radius=10&order=desc&order_by=created_at&per_page=10&locale=${locale}`;
+        const response = await fetch(url);
+        const data = await response.json();
 
-  function renderSignature() {
-    if(!signImg) return;
-    const canvas = document.getElementById("sign-canvas"), ctx = canvas.getContext("2d");
-    canvas.width = signImg.width; canvas.height = signImg.height;
-    ctx.drawImage(signImg, 0, 0);
-    const text = document.getElementById("sign-text").value || "PhotoByArno";
-    const fontStyle = document.getElementById("sign-font-style").value;
-    const color = document.getElementById("sign-color").value;
-    const pos = document.getElementById("sign-pos").value;
-    const fontSize = Math.max(28, Math.floor(canvas.width / 18));
-    ctx.font = fontSize + "px " + fontStyle;
-    ctx.fillStyle = color;
-    ctx.shadowColor = "rgba(0,0,0,0.7)"; ctx.shadowBlur = 8;
-    const metrics = ctx.measureText(text);
-    let x = 30, y = canvas.height - 30;
-    if (pos === "br") { x = canvas.width - metrics.width - 30; y = canvas.height - 30; }
-    if (pos === "bl") { x = 30; y = canvas.height - 30; }
-    if (pos === "tr") { x = canvas.width - metrics.width - 30; y = fontSize + 20; }
-    if (pos === "c")  { x = (canvas.width - metrics.width) / 2; y = canvas.height / 2; }
-    ctx.fillText(text, x, y);
-    document.getElementById("sign-dl").style.display = "block";
-  }
-
-  /* 2. AI ENHANCE */
-  let aiImg = null, subjectMaskCanvas = null;
-  document.getElementById("ai-file").addEventListener("change", e => {
-    const file = e.target.files[0]; if(!file) return;
-    const reader = new FileReader();
-    reader.onload = evt => {
-      aiImg = new Image();
-      aiImg.onload = () => { resetAIToOriginal(); buildAccurateSubjectMask(); };
-      aiImg.src = evt.target.result;
-    };
-    reader.readAsDataURL(file);
-  });
-
-  function resetAIToOriginal() {
-    document.getElementById("ai-blur-range").value = 0;
-    document.getElementById("ai-bright").value = 100;
-    document.getElementById("ai-contrast").value = 100;
-    document.getElementById("ai-sat").value = 100;
-    renderAIAccurateBlur();
-  }
-
-  function triggerAIScanAndDetect() {
-    if(!aiImg) return;
-    const overlay = document.getElementById("scan-overlay");
-    overlay.style.display = "block";
-    setTimeout(() => {
-      overlay.style.display = "none";
-      buildAccurateSubjectMask();
-      document.getElementById("ai-blur-range").value = 10;
-      renderAIAccurateBlur();
-    }, 1500);
-  }
-
-  function buildAccurateSubjectMask() {
-    if(!aiImg) return;
-    subjectMaskCanvas = document.createElement("canvas");
-    subjectMaskCanvas.width = aiImg.width; subjectMaskCanvas.height = aiImg.height;
-    const mCtx = subjectMaskCanvas.getContext("2d");
-    mCtx.drawImage(aiImg, 0, 0);
-    const imgData = mCtx.getImageData(0, 0, aiImg.width, aiImg.height), d = imgData.data;
-    for (let i = 0; i < d.length; i += 4) {
-      const brightness = (d[i] + d[i+1] + d[i+2]) / 3;
-      d[i+3] = (brightness < 160 || Math.abs(d[i] - d[i+1]) > 18) ? 255 : 20;
-    }
-    mCtx.putImageData(imgData, 0, 0);
-  }
-
-  function runAutoEnhance() {
-    document.getElementById("ai-bright").value = 108;
-    document.getElementById("ai-contrast").value = 112;
-    document.getElementById("ai-sat").value = 118;
-    renderAIAccurateBlur();
-  }
-
-  function renderAIAccurateBlur() {
-    if(!aiImg) return;
-    const canvas = document.getElementById("ai-canvas"), ctx = canvas.getContext("2d");
-    canvas.width = aiImg.width; canvas.height = aiImg.height;
-    const b = document.getElementById("ai-bright").value;
-    const c = document.getElementById("ai-contrast").value;
-    const s = document.getElementById("ai-sat").value;
-    const blurVal = parseInt(document.getElementById("ai-blur-range").value);
-
-    if (blurVal > 0 && subjectMaskCanvas) {
-      ctx.filter = "blur(" + blurVal + "px) brightness(" + b + "%) contrast(" + c + "%) saturate(" + s + "%)";
-      ctx.drawImage(aiImg, 0, 0);
-      ctx.filter = "brightness(" + b + "%) contrast(" + c + "%) saturate(" + s + "%)";
-      ctx.drawImage(subjectMaskCanvas, 0, 0);
-    } else {
-      ctx.filter = "brightness(" + b + "%) contrast(" + c + "%) saturate(" + s + "%)";
-      ctx.drawImage(aiImg, 0, 0);
-    }
-    document.getElementById("ai-dl").style.display = "block";
-  }
-
-  /* 3. EXIF */
-  let currentExifFile = null;
-  document.getElementById("exif-file").addEventListener("change", e => {
-    const file = e.target.files[0]; if(!file) return;
-    currentExifFile = file;
-    document.getElementById("exif-rename").value = file.name.substring(0, file.name.lastIndexOf(".")) || file.name;
-    document.getElementById("exif-table-body").innerHTML = 
-      "<tr><th>Bestandsnaam</th><td>" + file.name + "</td></tr>" +
-      "<tr><th>Grootte</th><td>" + (file.size / (1024*1024)).toFixed(2) + " MB</td></tr>" +
-      "<tr><th>MIME Type</th><td>" + (file.type || "image/jpeg") + "</td></tr>" +
-      "<tr><th>Gewijzigd</th><td>" + new Date(file.lastModified).toLocaleString("nl-NL") + "</td></tr>";
-    document.getElementById("exif-save-btn").style.display = "block";
-  });
-
-  function exportExifFile() {
-    if(!currentExifFile) return;
-    const format = document.getElementById("exif-format").value;
-    const name = document.getElementById("exif-rename").value || "export-foto";
-    const img = new Image(), reader = new FileReader();
-    reader.onload = e => {
-      img.src = e.target.result;
-      img.onload = () => {
-        const c = document.createElement("canvas"); c.width = img.width; c.height = img.height;
-        c.getContext("2d").drawImage(img, 0, 0);
-        const link = document.createElement("a");
-        let ext = format === "image/png" ? ".png" : (format === "image/webp" ? ".webp" : ".jpg");
-        link.download = name + ext;
-        link.href = c.toDataURL(format, 0.92);
-        link.click();
-      };
-    };
-    reader.readAsDataURL(currentExifFile);
-  }
-
-  /* 4. KAART & WEER */
-  let pbaMap = null, pbaMarker = null, speciesLayerGroup = null;
-  function initPbaMap() {
-    if (pbaMap || typeof L === "undefined") return;
-    const lat = 51.3833, lng = 5.7167;
-    pbaMap = L.map("pba-map").setView([lat, lng], 10);
-    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", { maxZoom: 18 }).addTo(pbaMap);
-    pbaMarker = L.marker([lat, lng], {draggable: true}).addTo(pbaMap);
-    speciesLayerGroup = L.layerGroup().addTo(pbaMap);
-    pbaMap.on("click", e => { pbaMarker.setLatLng(e.latlng); updateLocationAndFetch(e.latlng.lat, e.latlng.lng); });
-    pbaMarker.on("dragend", () => { const pos = pbaMarker.getLatLng(); updateLocationAndFetch(pos.lat, pos.lng); });
-  }
-
-  function getGPSLocation() {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(p => {
-        const lat = p.coords.latitude, lng = p.coords.longitude;
-        if(pbaMap) { pbaMap.setView([lat, lng], 11); pbaMarker.setLatLng([lat, lng]); }
-        updateLocationAndFetch(lat, lng);
-      });
-    }
-  }
-
-  function updateLocationAndFetch(lat, lng) {
-    document.getElementById("sun-lat").value = lat.toFixed(4);
-    document.getElementById("sun-lng").value = lng.toFixed(4);
-    fetchWeatherAndSun();
-    fetchSpeciesObservations(lat, lng);
-  }
-
-  function fetchSpeciesObservations(lat, lng) {
-    const container = document.getElementById("species-container");
-    container.innerHTML = "⌛ Waarnemingen laden...";
-    if(speciesLayerGroup) speciesLayerGroup.clearLayers();
-    fetch("https://api.gbif.org/v1/occurrence/search?decimalLatitude=" + (lat-0.15) + "," + (lat+0.15) + "&decimalLongitude=" + (lng-0.15) + "," + (lng+0.15) + "&limit=12")
-      .then(r => r.json())
-      .then(data => {
-        if (data && data.results && data.results.length > 0) {
-          let html = "<ul style=\"margin:0; padding-left:16px;\">";
-          data.results.forEach(item => {
-            const name = item.species || item.scientificName || "Onbekend";
-            html += "<li style=\"margin-bottom:6px;\"><b>" + name + "</b></li>";
-            if(item.decimalLatitude && item.decimalLongitude && speciesLayerGroup) {
-              L.circleMarker([item.decimalLatitude, item.decimalLongitude], { radius: 7, fillColor: "#e67e22", color: "#fff", weight: 2, fillOpacity: 0.9 })
-               .addTo(speciesLayerGroup).bindTooltip(name);
-            }
-          });
-          html += "</ul>";
-          container.innerHTML = html;
-        } else { container.innerHTML = "Geen directe metingen op deze plek."; }
-      }).catch(() => { container.innerHTML = "Aalscholver, IJsvogel, Blauwe Reiger"; });
-  }
-
-  function fetchWeatherAndSun() {
-    const lat = parseFloat(document.getElementById("sun-lat").value), lng = parseFloat(document.getElementById("sun-lng").value);
-    const dateVal = document.getElementById("sun-date").value, d = dateVal ? new Date(dateVal) : new Date();
-    if (typeof SunCalc !== "undefined") {
-      const t = SunCalc.getTimes(d, lat, lng);
-      const fmt = date => date ? date.toLocaleTimeString([], {hour:"2-digit", minute:"2-digit"}) : "-";
-      document.getElementById("st-rise").innerText = fmt(t.sunrise);
-      document.getElementById("st-gold-am").innerText = fmt(t.goldenHourEnd) + " - " + fmt(t.sunriseEnd);
-      document.getElementById("st-set").innerText = fmt(t.sunset);
-      document.getElementById("st-moon").innerText = Math.round(SunCalc.getMoonIllumination(d).fraction * 100) + "% verlicht";
-    }
-    fetch("https://api.open-meteo.com/v1/forecast?latitude=" + lat + "&longitude=" + lng + "&hourly=cloudcover,cloudcover_low,cloudcover_mid,cloudcover_high&timezone=auto")
-      .then(res => res.json()).then(data => {
-        if(data && data.hourly) {
-          const cloudTotal = data.hourly.cloudcover[12] || 0;
-          document.getElementById("wt-clouds").innerText = cloudTotal + "% Bewolkt";
-          document.getElementById("wt-layers").innerText = "Laag: " + data.hourly.cloudcover_low[12] + "% | Mid: " + data.hourly.cloudcover_mid[12] + "% | Hoog: " + data.hourly.cloudcover_high[12] + "%";
-          document.getElementById("wt-photo-score").innerHTML = "<span style=\"color:#27ae60\">" + Math.min(100, Math.max(10, 100 - Math.abs(cloudTotal - 45))) + "%</span>";
-          document.getElementById("wt-sunset-glow").innerHTML = "<span style=\"color:#e67e22\">🌅 Redelijk/Goed (50-75% Kans)</span>";
+        if (!data.results || data.results.length === 0) {
+          speciesList.innerHTML = currentLang === 'en'
+            ? "<li>No recent observations found.</li>"
+            : "<li>Geen recente waarnemingen gevonden.</li>";
+          return;
         }
-      });
-  }
 
-  /* 5. FOCUS STACKING */
-  function executeProStack() {
-    const input = document.getElementById("stack-files");
-    if (!input.files || input.files.length < 2) return alert("Selecteer minimaal 2 foto's van je reeks.");
-    const files = Array.from(input.files), canvas = document.getElementById("stack-canvas"), ctx = canvas.getContext("2d");
-    let loaded = [], count = 0;
-    files.forEach((f, idx) => {
-      const img = new Image(), r = new FileReader();
-      r.onload = e => {
-        img.src = e.target.result;
-        img.onload = () => {
-          loaded[idx] = img; count++;
-          if (count === files.length) {
-            canvas.width = loaded[0].width; canvas.height = loaded[0].height;
-            ctx.drawImage(loaded[0], 0, 0);
-            ctx.globalCompositeOperation = "lighten";
-            for (let i = 1; i < loaded.length; i++) ctx.drawImage(loaded[i], 0, 0);
-            ctx.globalCompositeOperation = "source-over";
-            document.getElementById("stack-dl").style.display = "block";
+        speciesList.innerHTML = ""; // Wis laadmelding
+
+        data.results.forEach(obs => {
+          if (obs.taxon) {
+            const commonName = obs.taxon.preferred_common_name;
+            const latinName = obs.taxon.name;
+
+            // Formaat: "Nederlandse naam (Latijnse naam)" of alleen "Latijnse naam"
+            const displayName = commonName 
+              ? `${commonName} (${latinName})` 
+              : latinName;
+
+            const li = document.createElement("li");
+            li.textContent = displayName;
+            speciesList.appendChild(li);
           }
-        };
-      };
-      r.readAsDataURL(f);
-    });
-  }
+        });
+      } catch (error) {
+        console.error("Fout bij ophalen waarnemingen:", error);
+        speciesList.innerHTML = currentLang === 'en'
+          ? "<li>Could not load observations.</li>"
+          : "<li>Kon waarnemingen niet laden.</li>";
+      }
+    }
 
-  window.onload = () => {
-    document.getElementById("sun-date").valueAsDate = new Date();
-    setTimeout(() => { initPbaMap(); fetchWeatherAndSun(); fetchSpeciesObservations(51.3833, 5.7167); }, 300);
-  };
-</script>
+    // 3. FOCUS STACKING FUNCTIONALITEIT
+    function executeProStack() {
+      const input = document.getElementById("stack-files");
+      if (!input.files || input.files.length < 2) {
+        alert("Selecteer minimaal 2 foto's van je reeks.");
+        return;
+      }
+
+      const files = Array.from(input.files);
+      const canvas = document.getElementById("stack-canvas");
+      const ctx = canvas.getContext("2d");
+      let loaded = [];
+      let count = 0;
+
+      files.forEach((f, idx) => {
+        const img = new Image();
+        const r = new FileReader();
+        r.onload = e => {
+          img.src = e.target.result;
+          img.onload = () => {
+            loaded[idx] = img;
+            count++;
+            if (count === files.length) {
+              canvas.width = loaded[0].width;
+              canvas.height = loaded[0].height;
+              ctx.drawImage(loaded[0], 0, 0);
+              ctx.globalCompositeOperation = "lighten";
+              for (let i = 1; i < loaded.length; i++) {
+                ctx.drawImage(loaded[i], 0, 0);
+              }
+              ctx.globalCompositeOperation = "source-over";
+              const dlBtn = document.getElementById("stack-dl");
+              dlBtn.href = canvas.toDataURL();
+              dlBtn.style.display = "block";
+            }
+          };
+        };
+        r.readAsDataURL(f);
+      });
+    }
+
+    // 4. AUTOMATISCH LADEN BIJ OPENEN PAGINA
+    window.onload = () => {
+      fetchSpeciesObservations(51.3833, 5.7167);
+    };
+  </script>
 </body>
 </html>
