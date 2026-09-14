@@ -3,136 +3,285 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Photo Suite</title>
+  <title>Natuurfotografie Suite Pro</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      margin: 20px;
-      background-color: #f4f4f9;
-      color: #333;
-    }
-    h1, h2 {
-      color: #2c3e50;
-    }
-    .section {
-      background: #fff;
-      padding: 15px;
-      margin-bottom: 20px;
-      border-radius: 8px;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    }
-    label {
-      font-weight: bold;
-      display: block;
-      margin-top: 10px;
-    }
-    input, select, button {
-      margin-top: 5px;
-      padding: 8px;
-      border-radius: 4px;
-      border: 1px solid #ccc;
-    }
-    button {
-      background-color: #3498db;
-      color: white;
-      border: none;
-      cursor: pointer;
-    }
-    button:hover {
-      background-color: #2980b9;
-    }
-    canvas {
-      border: 1px solid #ccc;
-      margin-top: 10px;
-      max-width: 100%;
-    }
-    ul {
-      padding-left: 20px;
-    }
+    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 20px; background: #f0f2f5; color: #333; }
+    h1 { color: #1a365d; text-align: center; margin-bottom: 20px; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 20px; max-width: 1400px; margin: 0 auto; }
+    .card { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+    h2 { color: #2b6cb0; font-size: 1.25rem; margin-top: 0; border-bottom: 2px solid #edf2f7; padding-bottom: 8px; }
+    label { font-weight: 600; display: block; margin-top: 10px; font-size: 0.9rem; }
+    input, select, button { width: 100%; margin-top: 5px; padding: 10px; border-radius: 6px; border: 1px solid #cbd5e0; box-sizing: border-box; }
+    button { background-color: #3182ce; color: white; border: none; font-weight: bold; cursor: pointer; margin-top: 15px; transition: background 0.2s; }
+    button:hover { background-color: #2b6cb0; }
+    #map { height: 250px; border-radius: 8px; margin-top: 10px; }
+    ul { padding-left: 20px; margin: 5px 0; }
+    li { margin-bottom: 4px; }
+    canvas { border: 1px solid #cbd5e0; margin-top: 10px; max-width: 100%; border-radius: 6px; }
+    .res-box { background: #ebf8ff; padding: 10px; border-radius: 6px; margin-top: 10px; font-size: 0.95rem; line-height: 1.4; }
   </style>
 </head>
 <body>
 
-  <h1>Photo Suite</h1>
+  <h1>Natuurfotografie Suite Pro</h1>
 
-  <!-- TAAL SELECTIE -->
-  <div class="section">
-    <label for="lang-select">Taal / Language:</label>
-    <select id="lang-select" onchange="changeLanguage()">
-      <option value="nl" selected>Nederlands</option>
-      <option value="en">English</option>
-    </select>
-  </div>
+  <div class="grid">
+    
+    <!-- 1. TAAL & LOCATIE -->
+    <div class="card">
+      <h2 id="t-settings">Instellingen & Kaart</h2>
+      <label id="t-lang-label" for="lang-select">Taal / Language:</label>
+      <select id="lang-select" onchange="changeLanguage()">
+        <option value="nl" selected>Nederlands</option>
+        <option value="en">English</option>
+      </select>
 
-  <!-- SPOTTED SPECIES SECTION -->
-  <div class="section">
-    <h2 id="species-title">Gespotte soorten in de buurt</h2>
-    <ul id="species-list">
-      <li>Laden van waarnemingen in de buurt...</li>
-    </ul>
-  </div>
+      <label id="t-date-label" for="sun-date">Datum:</label>
+      <input type="date" id="sun-date" onchange="updateAllData()">
 
-  <!-- FOCUS STACKING SECTION -->
-  <div class="section">
-    <h2>Focus Stacking</h2>
-    <input type="file" id="stack-files" multiple accept="image/*">
-    <button onclick="executeProStack()">Verwerk Foto's</button>
-    <br>
-    <canvas id="stack-canvas"></canvas>
-    <br>
-    <a id="stack-dl" style="display:none;" download="focus-stacked.png">Download resultaat</a>
+      <div id="map"></div>
+    </div>
+
+    <!-- 2. ZONNESTAND & GOUDEN UUR -->
+    <div class="card">
+      <h2 id="t-sun-title">Zonnestand & Gouden Uur</h2>
+      <div id="sun-results" class="res-box">Laden van zonnegegevens...</div>
+    </div>
+
+    <!-- 3. WEER & ADVIES -->
+    <div class="card">
+      <h2 id="t-weather-title">Weer & Advies</h2>
+      <div id="weather-results" class="res-box">Laden van weergegevens...</div>
+    </div>
+
+    <!-- 4. GESPOTTE SOORTEN IN DE BUURT -->
+    <div class="card">
+      <h2 id="t-species-title">Gespotte soorten in de buurt</h2>
+      <ul id="species-list" style="max-height: 250px; overflow-y: auto;">
+        <li>Laden van waarnemingen...</li>
+      </ul>
+    </div>
+
+    <!-- 5. SCHERPTEDIEPTE (DoF) CALCULATOR -->
+    <div class="card">
+      <h2 id="t-dof-title">Scherptediepte (DoF) Calculator</h2>
+      <label id="t-sensor-label">Sensorformaat:</label>
+      <select id="dof-sensor" onchange="calculateDoF()">
+        <option value="0.030">Full Frame (35mm)</option>
+        <option value="0.020">APS-C (Canon)</option>
+        <option value="0.019">APS-C (Nikon/Sony/Fuji)</option>
+        <option value="0.015">Micro Four Thirds (MFT)</option>
+      </select>
+
+      <label id="t-focal-label">Brandpuntsafstand (mm):</label>
+      <input type="number" id="dof-focal" value="50" oninput="calculateDoF()">
+
+      <label id="t-aperture-label">Diafragma (f/getal):</label>
+      <input type="number" id="dof-aperture" value="2.8" step="0.1" oninput="calculateDoF()">
+
+      <label id="t-dist-label">Afstand tot onderwerp (meter):</label>
+      <input type="number" id="dof-dist" value="2" step="0.1" oninput="calculateDoF()">
+
+      <div id="dof-results" class="res-box">Berekenen...</div>
+    </div>
+
+    <!-- 6. FOCUS STACKING -->
+    <div class="card">
+      <h2 id="t-stack-title">Focus Stacking</h2>
+      <input type="file" id="stack-files" multiple accept="image/*">
+      <button id="t-stack-btn" onclick="executeProStack()">Verwerk Foto's</button>
+      <canvas id="stack-canvas"></canvas>
+      <a id="stack-dl" style="display:none; margin-top:10px;" download="focus-stacked.png">Download resultaat</a>
+    </div>
+
   </div>
 
   <script>
-    // 1. TAAL WIJZIGEN
+    let currentLat = 51.3833;
+    let currentLng = 5.7167;
+    let map, marker;
+
+    // TAAL & TEKSTEN
+    const translations = {
+      nl: {
+        settings: "Instellingen & Kaart",
+        langLabel: "Taal / Language:",
+        dateLabel: "Datum:",
+        sunTitle: "Zonnestand & Gouden Uur",
+        weatherTitle: "Weer & Advies",
+        speciesTitle: "Gespotte soorten in de buurt",
+        dofTitle: "Scherptediepte (DoF) Calculator",
+        sensorLabel: "Sensorformaat:",
+        focalLabel: "Brandpuntsafstand (mm):",
+        apertureLabel: "Diafragma (f/getal):",
+        distLabel: "Afstand tot onderwerp (meter):",
+        stackTitle: "Focus Stacking",
+        stackBtn: "Verwerk Foto's",
+        loading: "Laden...",
+        noSpecies: "Geen recente waarnemingen gevonden.",
+        errorSpecies: "Kon waarnemingen niet laden."
+      },
+      en: {
+        settings: "Settings & Map",
+        langLabel: "Language / Taal:",
+        dateLabel: "Date:",
+        sunTitle: "Sun Position & Golden Hour",
+        weatherTitle: "Weather & Advice",
+        speciesTitle: "Spotted species nearby",
+        dofTitle: "Depth of Field (DoF) Calculator",
+        sensorLabel: "Sensor Size:",
+        focalLabel: "Focal Length (mm):",
+        apertureLabel: "Aperture (f-stop):",
+        distLabel: "Distance to Subject (m):",
+        stackTitle: "Focus Stacking",
+        stackBtn: "Process Photos",
+        loading: "Loading...",
+        noSpecies: "No recent observations found.",
+        errorSpecies: "Could not load observations."
+      }
+    };
+
+    function initMap() {
+      map = L.map('map').setView([currentLat, currentLng], 11);
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '© OpenStreetMap'
+      }).addTo(map);
+
+      marker = L.marker([currentLat, currentLng], {draggable: true}).addTo(map);
+      marker.on('dragend', function(e) {
+        const coord = e.target.getLatLng();
+        currentLat = coord.lat;
+        currentLng = coord.lng;
+        updateAllData();
+      });
+    }
+
     function changeLanguage() {
       const lang = document.getElementById("lang-select").value;
       document.documentElement.lang = lang;
-      
-      const title = document.getElementById("species-title");
-      if (title) {
-        title.textContent = lang === 'en' ? 'Spotted species nearby' : 'Gespotte soorten in de buurt';
-      }
+      const t = translations[lang];
 
-      // Herlaad de waarnemingen in de gekozen taal
-      fetchSpeciesObservations(51.3833, 5.7167);
+      document.getElementById("t-settings").textContent = t.settings;
+      document.getElementById("t-lang-label").textContent = t.langLabel;
+      document.getElementById("t-date-label").textContent = t.dateLabel;
+      document.getElementById("t-sun-title").textContent = t.sunTitle;
+      document.getElementById("t-weather-title").textContent = t.weatherTitle;
+      document.getElementById("t-species-title").textContent = t.speciesTitle;
+      document.getElementById("t-dof-title").textContent = t.dofTitle;
+      document.getElementById("t-sensor-label").textContent = t.sensorLabel;
+      document.getElementById("t-focal-label").textContent = t.focalLabel;
+      document.getElementById("t-aperture-label").textContent = t.apertureLabel;
+      document.getElementById("t-dist-label").textContent = t.distLabel;
+      document.getElementById("t-stack-title").textContent = t.stackTitle;
+      document.getElementById("t-stack-btn").textContent = t.stackBtn;
+
+      updateAllData();
     }
 
-    // 2. WAARNEMINGEN OPHALEN MET NL / EN + LATIJNSE NAMEN
-    async function fetchSpeciesObservations(lat, lng) {
-      const speciesList = document.getElementById("species-list");
-      if (!speciesList) return;
+    function updateAllData() {
+      fetchSunData();
+      fetchWeatherData();
+      fetchSpeciesObservations(currentLat, currentLng);
+      calculateDoF();
+    }
 
-      const currentLang = document.documentElement.lang || 'nl';
-      const locale = currentLang.startsWith('en') ? 'en' : 'nl';
-
-      speciesList.innerHTML = currentLang === 'en' 
-        ? "<li>Loading observations nearby...</li>" 
-        : "<li>Laden van waarnemingen in de buurt...</li>";
+    // 1. ZONNESTAND (Sunrise-Sunset API)
+    async function fetchSunData() {
+      const sunBox = document.getElementById("sun-results");
+      const dateVal = document.getElementById("sun-date").value;
+      const lang = document.getElementById("lang-select").value;
 
       try {
-        const url = `https://api.inaturalist.org/v1/observations?lat=${lat}&lng=${lng}&radius=10&order=desc&order_by=created_at&per_page=10&locale=${locale}`;
+        const res = await fetch(`https://api.sunrise-sunset.org/json?lat=${currentLat}&lng=${currentLng}&date=${dateVal}&formatted=0`);
+        const data = await res.json();
+        if (data.status === "OK") {
+          const sunrise = new Date(data.results.sunrise).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+          const sunset = new Date(data.results.sunset).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+          const civilStart = new Date(data.results.civil_twilight_begin).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+          const civilEnd = new Date(data.results.civil_twilight_end).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+
+          if (lang === 'en') {
+            sunBox.innerHTML = `
+              <strong>Sunrise:</strong> ${sunrise}<br>
+              <strong>Sunset:</strong> ${sunset}<br>
+              <strong>Golden Hour (Morning):</strong> ${civilStart} - ${sunrise}<br>
+              <strong>Golden Hour (Evening):</strong> ${sunset} - ${civilEnd}
+            `;
+          } else {
+            sunBox.innerHTML = `
+              <strong>Zonsopkomst:</strong> ${sunrise}<br>
+              <strong>Zonsondergang:</strong> ${sunset}<br>
+              <strong>Gouden Uur (Ochtend):</strong> ${civilStart} - ${sunrise}<br>
+              <strong>Gouden Uur (Avond):</strong> ${sunset} - ${civilEnd}
+            `;
+          }
+        }
+      } catch (e) {
+        sunBox.innerHTML = "Fout bij laden zonnegegevens.";
+      }
+    }
+
+    // 2. WEER & ADVIES (Open-Meteo API)
+    async function fetchWeatherData() {
+      const weatherBox = document.getElementById("weather-results");
+      const lang = document.getElementById("lang-select").value;
+
+      try {
+        const res = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${currentLat}&longitude=${currentLng}&current_weather=true`);
+        const data = await res.json();
+        if (data.current_weather) {
+          const temp = data.current_weather.temperature;
+          const wind = data.current_weather.windspeed;
+          
+          let advice = "";
+          if (lang === 'en') {
+            advice = wind > 20 ? "High wind speeds: macro photography might be challenging." : "Good weather conditions for outdoor photography.";
+            weatherBox.innerHTML = `
+              <strong>Temperature:</strong> ${temp} °C<br>
+              <strong>Wind Speed:</strong> ${wind} km/h<br>
+              <strong>Tip:</strong> ${advice}
+            `;
+          } else {
+            advice = wind > 20 ? "Vrij veel wind: macrofotografie kan lastig zijn." : "Prima omstandigheden voor buitenfotografie.";
+            weatherBox.innerHTML = `
+              <strong>Temperatuur:</strong> ${temp} °C<br>
+              <strong>Windsnelheid:</strong> ${wind} km/h<br>
+              <strong>Advies:</strong> ${advice}
+            `;
+          }
+        }
+      } catch (e) {
+        weatherBox.innerHTML = "Fout bij laden weergegevens.";
+      }
+    }
+
+    // 3. GESPOTTE SOORTEN (iNaturalist API)
+    async function fetchSpeciesObservations(lat, lng) {
+      const speciesList = document.getElementById("species-list");
+      const lang = document.getElementById("lang-select").value;
+      const t = translations[lang];
+
+      speciesList.innerHTML = `<li>${t.loading}</li>`;
+
+      try {
+        const url = `https://api.inaturalist.org/v1/observations?lat=${lat}&lng=${lng}&radius=10&order=desc&order_by=created_at&per_page=10&locale=${lang}`;
         const response = await fetch(url);
         const data = await response.json();
 
         if (!data.results || data.results.length === 0) {
-          speciesList.innerHTML = currentLang === 'en'
-            ? "<li>No recent observations found.</li>"
-            : "<li>Geen recente waarnemingen gevonden.</li>";
+          speciesList.innerHTML = `<li>${t.noSpecies}</li>`;
           return;
         }
 
-        speciesList.innerHTML = ""; // Wis laadmelding
+        speciesList.innerHTML = "";
 
         data.results.forEach(obs => {
           if (obs.taxon) {
             const commonName = obs.taxon.preferred_common_name;
             const latinName = obs.taxon.name;
-
-            // Formaat: "Nederlandse naam (Latijnse naam)" of alleen "Latijnse naam"
-            const displayName = commonName 
-              ? `${commonName} (${latinName})` 
-              : latinName;
+            const displayName = commonName ? `${commonName} (${latinName})` : latinName;
 
             const li = document.createElement("li");
             li.textContent = displayName;
@@ -140,14 +289,60 @@
           }
         });
       } catch (error) {
-        console.error("Fout bij ophalen waarnemingen:", error);
-        speciesList.innerHTML = currentLang === 'en'
-          ? "<li>Could not load observations.</li>"
-          : "<li>Kon waarnemingen niet laden.</li>";
+        speciesList.innerHTML = `<li>${t.errorSpecies}</li>`;
       }
     }
 
-    // 3. FOCUS STACKING FUNCTIONALITEIT
+    // 4. SCHERPTEDIEPTE (DoF) CALCULATOR
+    function calculateDoF() {
+      const coc = parseFloat(document.getElementById("dof-sensor").value);
+      const f = parseFloat(document.getElementById("dof-focal").value);
+      const N = parseFloat(document.getElementById("dof-aperture").value);
+      const d = parseFloat(document.getElementById("dof-dist").value) * 1000; // omzetten naar mm
+      const lang = document.getElementById("lang-select").value;
+
+      if (!f || !N || !d) return;
+
+      // Hyperfocale afstand (H) in mm
+      const H = (f * f) / (N * coc);
+
+      // Dichtbij punt (Dn) en Ver punt (Df) in mm
+      const Dn = (d * (H - f)) / (H + (d - f));
+      const Df = (d * (H - f)) / (H - (d - f));
+
+      let totalDof = 0;
+      let dfText = "";
+
+      if (Df < 0 || Df === Infinity) {
+        dfText = "∞ (Oneindig)";
+        totalDof = "∞";
+      } else {
+        dfText = (Df / 1000).toFixed(2) + " m";
+        totalDof = ((Df - Dn) / 1000).toFixed(2) + " m";
+      }
+
+      const dnText = (Dn / 1000).toFixed(2) + " m";
+      const hText = (H / 1000).toFixed(2) + " m";
+
+      const resBox = document.getElementById("dof-results");
+      if (lang === 'en') {
+        resBox.innerHTML = `
+          <strong>Hyperfocal Distance:</strong> ${hText}<br>
+          <strong>Near Limit:</strong> ${dnText}<br>
+          <strong>Far Limit:</strong> ${dfText}<br>
+          <strong>Total Depth of Field:</strong> ${totalDof}
+        `;
+      } else {
+        resBox.innerHTML = `
+          <strong>Hyperfocale Afstand:</strong> ${hText}<br>
+          <strong>Dichtstbijzijnde scherpte:</strong> ${dnText}<br>
+          <strong>Verste scherpte:</strong> ${dfText}<br>
+          <strong>Totale Scherptediepte:</strong> ${totalDof}
+        `;
+      }
+    }
+
+    // 5. FOCUS STACKING
     function executeProStack() {
       const input = document.getElementById("stack-files");
       if (!input.files || input.files.length < 2) {
@@ -180,7 +375,7 @@
               ctx.globalCompositeOperation = "source-over";
               const dlBtn = document.getElementById("stack-dl");
               dlBtn.href = canvas.toDataURL();
-              dlBtn.style.display = "block";
+              dlBtn.style.display = "inline-block";
             }
           };
         };
@@ -188,9 +383,11 @@
       });
     }
 
-    // 4. AUTOMATISCH LADEN BIJ OPENEN PAGINA
+    // INITIALISATIE BIJ LADEN
     window.onload = () => {
-      fetchSpeciesObservations(51.3833, 5.7167);
+      document.getElementById("sun-date").valueAsDate = new Date();
+      initMap();
+      updateAllData();
     };
   </script>
 </body>
