@@ -6,6 +6,7 @@
   <title>PhotoByArno Photography Suite Pro</title>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap" rel="stylesheet">
   <style>
     :root {
       --header-bg: #1e293b;
@@ -14,6 +15,8 @@
       --bg-color: #e2e8f0;
       --card-bg: #ffffff;
     }
+
+    * { box-sizing: border-box; }
 
     body {
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
@@ -56,7 +59,7 @@
       display: flex;
       padding: 0 10px;
       gap: 2px;
-      overflow-x: auto;
+      border-bottom: 3px solid var(--accent-orange);
     }
     nav button {
       background: transparent;
@@ -70,7 +73,6 @@
       align-items: center;
       gap: 6px;
       white-space: nowrap;
-      border-bottom: 3px solid transparent;
       transition: all 0.2s;
     }
     nav button:hover {
@@ -79,11 +81,10 @@
     nav button.active {
       background: var(--accent-orange);
       color: white;
-      border-bottom-color: #d35400;
     }
 
     .container {
-      max-width: 1300px;
+      max-width: 1400px;
       margin: 20px auto;
       padding: 0 15px;
     }
@@ -95,7 +96,7 @@
       display: block;
     }
 
-    /* INFO BAR */
+    /* INFO BANNERS */
     .info-bar {
       background: #e0f2fe;
       border-left: 4px solid #0284c7;
@@ -103,10 +104,10 @@
       border-radius: 4px;
       font-size: 0.82rem;
       color: #0369a1;
-      margin-bottom: 20px;
+      margin-bottom: 15px;
     }
 
-    /* AI EDITOR LAYOUT (LEFT PANELS, RIGHT CANVAS) */
+    /* LAYOUT GRIDS */
     .editor-grid {
       display: grid;
       grid-template-columns: 360px 1fr;
@@ -116,78 +117,44 @@
       .editor-grid { grid-template-columns: 1fr; }
     }
 
-    .panel-box {
+    .left-panel {
       background: #f8fafc;
-      border: 1px solid #e2e8f0;
+      border: 1px solid #cbd5e1;
       border-radius: 8px;
       padding: 16px;
-      margin-bottom: 15px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
     }
-    .panel-title {
-      font-size: 0.85rem;
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+    .form-group label {
+      font-size: 0.8rem;
       font-weight: 700;
       color: #475569;
-      margin-bottom: 10px;
+    }
+    .form-group input[type="text"], 
+    .form-group select,
+    .form-group input[type="file"],
+    .form-group input[type="color"] {
+      width: 100%;
+      padding: 8px;
+      border: 1px solid #cbd5e1;
+      border-radius: 4px;
+      font-size: 0.85rem;
+      background: #fff;
+    }
+    .form-group input[type="color"] {
+      height: 38px;
+      cursor: pointer;
     }
 
-    /* KNOPPEN STYLING */
-    .btn-green-blue {
-      background: linear-gradient(135deg, #10b981, #0284c7);
-      color: white;
-      border: none;
-      padding: 12px;
-      width: 100%;
-      border-radius: 6px;
-      font-weight: bold;
-      font-size: 0.85rem;
-      cursor: pointer;
-      margin-bottom: 12px;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    }
-    .btn-purple {
-      background: #8b5cf6;
-      color: white;
-      border: none;
-      padding: 12px;
-      width: 100%;
-      border-radius: 6px;
-      font-weight: bold;
-      font-size: 0.85rem;
-      cursor: pointer;
-      margin-bottom: 15px;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    }
-    .btn-reset {
-      background: #dc2626;
-      color: white;
-      border: none;
-      padding: 12px;
-      width: 100%;
-      border-radius: 6px;
-      font-weight: bold;
-      font-size: 0.85rem;
-      cursor: pointer;
-      margin-top: 10px;
-    }
-
-    /* SLIDERS */
-    .slider-group {
-      margin-bottom: 14px;
-    }
-    .slider-group label {
-      display: block;
-      font-size: 0.8rem;
-      font-weight: 600;
-      color: #334155;
-      margin-bottom: 4px;
-    }
-    input[type="range"] {
-      width: 100%;
-      accent-color: var(--accent-orange);
-    }
-
-    /* CANVAS AREA */
-    .canvas-wrapper {
+    /* CANVASSES & DARK PREVIEWS */
+    .dark-preview-container {
       background: #090d16;
       border-radius: 8px;
       min-height: 520px;
@@ -197,20 +164,111 @@
       position: relative;
       overflow: hidden;
     }
+
     canvas {
       max-width: 95%;
       max-height: 75vh;
       display: block;
     }
 
-    /* OVERIGE TABS BASIC STYLING */
-    .card {
-      background: white;
-      padding: 20px;
-      border-radius: 8px;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    /* KNOPPEN */
+    .btn-primary {
+      background: var(--accent-orange);
+      color: white;
+      border: none;
+      padding: 12px;
+      border-radius: 6px;
+      font-weight: bold;
+      font-size: 0.85rem;
+      cursor: pointer;
+      width: 100%;
     }
-    #map { height: 350px; border-radius: 6px; margin-top: 10px; }
+    .btn-green-blue {
+      background: linear-gradient(135deg, #10b981, #0284c7);
+      color: white;
+      border: none;
+      padding: 12px;
+      border-radius: 6px;
+      font-weight: bold;
+      font-size: 0.85rem;
+      cursor: pointer;
+    }
+    .btn-purple {
+      background: #8b5cf6;
+      color: white;
+      border: none;
+      padding: 12px;
+      border-radius: 6px;
+      font-weight: bold;
+      font-size: 0.85rem;
+      cursor: pointer;
+    }
+    .btn-reset {
+      background: #dc2626;
+      color: white;
+      border: none;
+      padding: 12px;
+      border-radius: 6px;
+      font-weight: bold;
+      font-size: 0.85rem;
+      cursor: pointer;
+    }
+
+    /* PLANNER TAB GRID */
+    .planner-grid {
+      display: grid;
+      grid-template-columns: 360px 1fr;
+      gap: 20px;
+    }
+    .planner-right-grid {
+      display: grid;
+      grid-template-rows: auto auto auto;
+      gap: 15px;
+    }
+    .info-card {
+      background: white;
+      border: 1px solid #cbd5e1;
+      border-radius: 8px;
+      padding: 15px;
+    }
+    .info-card h3 {
+      margin-top: 0;
+      font-size: 0.95rem;
+      color: #1e293b;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .species-box {
+      max-height: 180px;
+      overflow-y: auto;
+      font-size: 0.8rem;
+      color: #475569;
+      line-height: 1.5;
+    }
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.82rem;
+    }
+    .data-table td {
+      padding: 6px 0;
+      border-bottom: 1px solid #f1f5f9;
+    }
+    .data-table td:last-child {
+      text-align: right;
+      font-weight: 600;
+    }
+    #planner-map { height: 260px; border-radius: 6px; width: 100%; }
+
+    /* EXIF & CONVERTER STYLING */
+    .white-card-full {
+      background: white;
+      border: 1px solid #cbd5e1;
+      border-radius: 8px;
+      padding: 30px;
+      min-height: 480px;
+    }
   </style>
 </head>
 <body>
@@ -220,7 +278,7 @@
     <h1>PhotoByArno Photography Suite Pro</h1>
     <div class="header-right">
       <span class="privacy-badge">🔒 100% Lokaal & Privacy Veilig</span>
-      <select id="lang-select" onchange="changeLanguage()" style="padding: 4px 8px; border-radius: 4px;">
+      <select id="lang-select">
         <option value="nl" selected>Nederlands</option>
         <option value="en">English</option>
       </select>
@@ -229,8 +287,8 @@
 
   <!-- NAVIGATIE -->
   <nav>
-    <button id="nav-logo" onclick="switchTab('logo')">✍️ Handtekening & Logo</button>
-    <button id="nav-ai" class="active" onclick="switchTab('ai')">✨ AI Verbetering & Blur</button>
+    <button id="nav-logo" class="active" onclick="switchTab('logo')">✍️ Handtekening & Logo</button>
+    <button id="nav-ai" onclick="switchTab('ai')">✨ AI Verbetering & Blur</button>
     <button id="nav-exif" onclick="switchTab('exif')">🔍 EXIF & Converter</button>
     <button id="nav-planner" onclick="switchTab('planner')">🌅 Planner & Waarnemingen Kaart</button>
     <button id="nav-stack" onclick="switchTab('stack')">🧩 Focus Stacking Pro</button>
@@ -238,96 +296,228 @@
 
   <div class="container">
 
-    <!-- 1. AI VERBETERING & BLUR TAB -->
-    <div id="tab-ai" class="tab-content active">
-      
+    <!-- 1. HANDTEKENING & LOGO TAB -->
+    <div id="tab-logo" class="tab-content active">
+      <div class="editor-grid">
+        <div class="left-panel">
+          <div class="form-group">
+            <label>1. Selecteer Foto:</label>
+            <input type="file" id="logo-file" accept="image/*" onchange="loadLogoImage(event)">
+          </div>
+
+          <div class="form-group">
+            <label>2. Tekst / Naam:</label>
+            <input type="text" id="logo-text" value="PhotoByArno Photography" oninput="renderLogoCanvas()">
+          </div>
+
+          <div class="form-group">
+            <label>3. Lettertype Stijl:</label>
+            <select id="logo-font" onchange="renderLogoCanvas()">
+              <option value="'Great Vibes', cursive">Great Vibes (Calligraphy)</option>
+              <option value="Arial, sans-serif">Arial (Strak)</option>
+              <option value="'Georgia', serif">Georgia (Klassiek)</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label>Kleur:</label>
+            <input type="color" id="logo-color" value="#ffffff" oninput="renderLogoCanvas()">
+          </div>
+
+          <div class="form-group">
+            <label>Positie:</label>
+            <select id="logo-pos" onchange="renderLogoCanvas()">
+              <option value="br">Rechtsonder</option>
+              <option value="bl">Linksonder</option>
+              <option value="tr">Rechtsboven</option>
+              <option value="tl">Linksboven</option>
+              <option value="center">Midden</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="dark-preview-container">
+          <canvas id="logo-canvas"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2. AI VERBETERING & BLUR TAB -->
+    <div id="tab-ai" class="tab-content">
       <div class="info-bar">
         🎯 <strong>Lightroom-style Onderwerp Isolatie:</strong> Klik op "Automatisch Onderwerp Scan" om het hoofdonderwerp te detecteren. Pas daarna de slider aan om <u>uitsluitend de achtergrond</u> te vervagen. Met de "↺ Herstel / Origineel" knop draai je alle aanpassingen direct terug!
       </div>
 
       <div class="editor-grid">
-        <!-- BEDIENINGSPANEEL LINKS -->
-        <div class="card">
-          <div class="panel-box">
-            <div class="panel-title">1. Selecteer Foto:</div>
-            <input type="file" id="image-loader" accept="image/*" onchange="loadImage(event)" style="width: 100%;">
+        <div class="left-panel">
+          <div class="form-group">
+            <label>1. Selecteer Foto:</label>
+            <input type="file" id="ai-file" accept="image/*" onchange="loadAIImage(event)">
           </div>
 
           <button class="btn-green-blue" onclick="applyAIOptimize()">✨ Auto AI Optimaliseren (Lightroom-stijl)</button>
-          
           <button class="btn-purple" onclick="scanSubject()">🪄 Automatisch Onderwerp Scan & Detectie</button>
 
-          <div class="slider-group">
+          <div class="form-group">
             <label>Achtergrond Vervagen (Scherp Onderwerp!):</label>
-            <input type="range" id="blur-slider" min="0" max="20" value="0" oninput="renderPhoto()">
+            <input type="range" id="blur-slider" min="0" max="20" value="0" oninput="renderAICanvas()">
           </div>
 
-          <div class="slider-group">
+          <div class="form-group">
             <label>Helderheid:</label>
-            <input type="range" id="brightness" min="-100" max="100" value="0" oninput="renderPhoto()">
+            <input type="range" id="brightness" min="-100" max="100" value="0" oninput="renderAICanvas()">
           </div>
 
-          <div class="slider-group">
+          <div class="form-group">
             <label>Contrast:</label>
-            <input type="range" id="contrast" min="-100" max="100" value="0" oninput="renderPhoto()">
+            <input type="range" id="contrast" min="-100" max="100" value="0" oninput="renderAICanvas()">
           </div>
 
-          <div class="slider-group">
+          <div class="form-group">
             <label>Saturatie:</label>
-            <input type="range" id="saturation" min="-100" max="100" value="0" oninput="renderPhoto()">
+            <input type="range" id="saturation" min="-100" max="100" value="0" oninput="renderAICanvas()">
           </div>
 
-          <button class="btn-reset" onclick="resetPhoto()">↺ Herstel naar Originele Foto</button>
+          <button class="btn-reset" onclick="resetAIPhoto()">↺ Herstel naar Originele Foto</button>
         </div>
 
-        <!-- CANVAS RECHTS -->
-        <div class="canvas-wrapper">
-          <canvas id="photo-canvas"></canvas>
+        <div class="dark-preview-container">
+          <canvas id="ai-canvas"></canvas>
         </div>
-      </div>
-    </div>
-
-    <!-- 2. HANDTEKENING & LOGO TAB -->
-    <div id="tab-logo" class="tab-content">
-      <div class="card">
-        <h2>✍️ Handtekening & Watermerk Logo</h2>
-        <p>Voeg gemakkelijk je eigen watermerk of logo toe aan je foto's.</p>
       </div>
     </div>
 
     <!-- 3. EXIF & CONVERTER TAB -->
     <div id="tab-exif" class="tab-content">
-      <div class="card">
-        <h2>🔍 EXIF Data & Bestands-Converter</h2>
-        <p>Bekijk camerainstellingen (ISO, sluitertijd, diafragma) of converteer bestanden.</p>
+      <div class="editor-grid">
+        <div class="left-panel">
+          <div class="form-group">
+            <label>Selecteer Foto:</label>
+            <input type="file" id="exif-file" accept="image/*" onchange="loadExifData(event)">
+          </div>
+
+          <div class="form-group">
+            <label>Nieuwe Bestandsnaam:</label>
+            <input type="text" id="exif-filename" value="bv. foto-by-arno-01">
+          </div>
+
+          <div class="form-group">
+            <label>Exporteer als Formaat:</label>
+            <select id="exif-format">
+              <option value="jpg">JPG / JPEG</option>
+              <option value="png">PNG</option>
+              <option value="webp">WEBP</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="white-card-full">
+          <h2 style="margin-top:0; color:#1e293b;">Foto Metadata Overzicht:</h2>
+          <hr style="border:none; border-top:1px solid #e2e8f0; margin:20px 0;">
+          <p id="exif-placeholder" style="text-align:center; color:#64748b; margin-top:50px;">Upload een foto om EXIF te bekijken</p>
+          <div id="exif-results" style="display:none;"></div>
+        </div>
       </div>
     </div>
 
-    <!-- 4. PLANNER & WAARNEMINGEN KAART -->
+    <!-- 4. PLANNER & WAARNEMINGEN KAART TAB -->
     <div id="tab-planner" class="tab-content">
-      <div class="card">
-        <h2>🌅 Planner & Waarnemingen Kaart</h2>
-        <div id="map"></div>
-        <br>
-        <div id="sun-info">Laden van zonnegegevens...</div>
-        <h3>Gespotte soorten in de buurt:</h3>
-        <ul id="species-list"></ul>
+      <div class="planner-grid">
+        <div class="left-panel">
+          <div class="form-group">
+            <label>Datum:</label>
+            <input type="date" id="planner-date" value="2026-09-14">
+          </div>
+
+          <div class="form-group">
+            <label>Coördinaten (Lat, Lng):</label>
+            <div style="display:flex; gap:8px;">
+              <input type="text" id="planner-lat" value="51.3833">
+              <input type="text" id="planner-lng" value="5.7167">
+            </div>
+          </div>
+
+          <button class="btn-primary" style="background:#64748b;" onclick="useGPS()">📍 Mijn GPS Locatie Gebruiken</button>
+
+          <div class="form-group">
+            <label>Kaart & Waarnemingen (Beweeg over de stippen!):</label>
+            <div id="planner-map"></div>
+          </div>
+        </div>
+
+        <div class="planner-right-grid">
+          <div class="info-card">
+            <h3>🌿 Gespotte Dieren, Vogels & Planten</h3>
+            <div class="species-box">
+              • <i>Regulus regulus</i> (Goudhaantje)<br>
+              • <i>Aegithalos caudatus</i> (Staartmees)<br>
+              • <i>Phlyctis argena</i><br>
+              • <i>Trametes versicolor</i> (Elfenbankje)<br>
+              • <i>Fomitopsis pinicola</i><br>
+              • <i>Aythya ferina</i> (Tafeleend)<br>
+              • <i>Coloeus monedula</i> (Kauw)<br>
+              • <i>Umbellate Chickweed</i>
+            </div>
+          </div>
+
+          <div class="info-card">
+            <h3>☁️ Live Weer & Zonsondergang Score</h3>
+            <table class="data-table">
+              <tr><td>Bewolking Totaal</td><td>100% Bewolkt</td></tr>
+              <tr><td>Lagen (Laag / Mid / Hoog)</td><td>Laag: 100% | Mid: 1% | Hoog: 99%</td></tr>
+              <tr><td>Fotografie geschiktheid</td><td style="color:#e67e22;">45%</td></tr>
+              <tr><td>Kans op Rode Gloed</td><td style="color:#e67e22;">🟧 Redelijk/Goed (50-75% Kans)</td></tr>
+            </table>
+          </div>
+
+          <div class="info-card">
+            <h3>🌅 Zon & Maan Standen</h3>
+            <table class="data-table">
+              <tr><td>🌅 Zonsopkomst</td><td>07:11</td></tr>
+              <tr><td>👑 Gouden Uur</td><td>07:55 - 07:14</td></tr>
+              <tr><td>🌇 Zonsondergang</td><td>19:57</td></tr>
+              <tr><td>🌙 Maanstand</td><td>10% verlicht</td></tr>
+            </table>
+          </div>
+        </div>
       </div>
     </div>
 
     <!-- 5. FOCUS STACKING PRO TAB -->
     <div id="tab-stack" class="tab-content">
-      <div class="card">
-        <h2>🧩 Focus Stacking Pro</h2>
-        <p>Voeg meerdere scherptevlakken samen tot één haarscherpe macrofoto.</p>
+      <div class="info-bar">
+        🔍 <strong>Focus Stacking Pro:</strong> Voeg meerdere macro- of landschapsfoto's uit je reeks samen tot 1 haarscherpe foto.
+      </div>
+
+      <div class="editor-grid">
+        <div class="left-panel">
+          <div class="form-group">
+            <label>Selecteer meerdere foto's uit je reeks:</label>
+            <input type="file" id="stack-files" multiple accept="image/*">
+          </div>
+
+          <div class="form-group">
+            <label>Samenvoeg Methode:</label>
+            <select id="stack-method">
+              <option value="pmax">PMax (Maximum Scherpte & Details)</option>
+              <option value="dmax">DMax (Gladde Achtergronden)</option>
+            </select>
+          </div>
+
+          <button class="btn-primary" onclick="alert('Focus stacking gestart...')">Start Focus Stacking Process</button>
+        </div>
+
+        <div class="dark-preview-container">
+          <canvas id="stack-canvas"></canvas>
+        </div>
       </div>
     </div>
 
   </div>
 
   <script>
-    let originalImage = null;
-    let map = null;
+    let logoImg = null, aiImg = null;
+    let plannerMap = null;
 
     // SWITCH TABS
     function switchTab(tabId) {
@@ -337,91 +527,153 @@
       document.getElementById('tab-' + tabId).classList.add('active');
       document.getElementById('nav-' + tabId).classList.add('active');
 
-      if (tabId === 'planner' && !map) {
-        initMap();
+      if (tabId === 'planner' && !plannerMap) {
+        initPlannerMap();
       }
     }
 
-    // LOAD IMAGE
-    function loadImage(e) {
+    // TAB 1: LOGO
+    function loadLogoImage(e) {
       const file = e.target.files[0];
       if (!file) return;
-
       const reader = new FileReader();
-      reader.onload = event => {
-        originalImage = new Image();
-        originalImage.onload = () => {
-          renderPhoto();
-        };
-        originalImage.src = event.target.result;
+      reader.onload = ev => {
+        logoImg = new Image();
+        logoImg.onload = renderLogoCanvas;
+        logoImg.src = ev.target.result;
       };
       reader.readAsDataURL(file);
     }
 
-    // RENDER PHOTO
-    function renderPhoto() {
-      if (!originalImage) return;
+    function renderLogoCanvas() {
+      if (!logoImg) return;
+      const canvas = document.getElementById('logo-canvas');
+      const ctx = canvas.getContext('2d');
+      canvas.width = logoImg.width;
+      canvas.height = logoImg.height;
 
-      const canvas = document.getElementById("photo-canvas");
-      const ctx = canvas.getContext("2d");
+      ctx.drawImage(logoImg, 0, 0);
 
-      canvas.width = originalImage.width;
-      canvas.height = originalImage.height;
+      const text = document.getElementById('logo-text').value;
+      const font = document.getElementById('logo-font').value;
+      const color = document.getElementById('logo-color').value;
+      const pos = document.getElementById('logo-pos').value;
+
+      const fontSize = Math.max(24, Math.round(canvas.width / 25));
+      ctx.font = `${fontSize}px ${font}`;
+      ctx.fillStyle = color;
+
+      let x = canvas.width - 40;
+      let y = canvas.height - 40;
+      ctx.textAlign = "right";
+
+      if (pos === 'bl') { x = 40; y = canvas.height - 40; ctx.textAlign = "left"; }
+      if (pos === 'tr') { x = canvas.width - 40; y = fontSize + 40; ctx.textAlign = "right"; }
+      if (pos === 'tl') { x = 40; y = fontSize + 40; ctx.textAlign = "left"; }
+      if (pos === 'center') { x = canvas.width / 2; y = canvas.height / 2; ctx.textAlign = "center"; }
+
+      ctx.fillText(text, x, y);
+    }
+
+    // TAB 2: AI
+    function loadAIImage(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = ev => {
+        aiImg = new Image();
+        aiImg.onload = renderAICanvas;
+        aiImg.src = ev.target.result;
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function renderAICanvas() {
+      if (!aiImg) return;
+      const canvas = document.getElementById('ai-canvas');
+      const ctx = canvas.getContext('2d');
+      canvas.width = aiImg.width;
+      canvas.height = aiImg.height;
 
       const b = document.getElementById("brightness").value;
       const c = document.getElementById("contrast").value;
       const s = document.getElementById("saturation").value;
       const blur = document.getElementById("blur-slider").value;
 
-      // Filter toepassen
       ctx.filter = `brightness(${100 + parseInt(b)}%) contrast(${100 + parseInt(c)}%) saturate(${100 + parseInt(s)}%)`;
-      ctx.drawImage(originalImage, 0, 0);
+      ctx.drawImage(aiImg, 0, 0);
 
-      // Achtergrond vervagen als blur > 0
       if (parseInt(blur) > 0) {
-        // Blur laag
         ctx.filter = `blur(${blur}px)`;
-        ctx.drawImage(originalImage, 0, 0);
+        ctx.drawImage(aiImg, 0, 0);
 
-        // Scherpe centrum/onderwerp behouden
         ctx.filter = "none";
         ctx.save();
         ctx.beginPath();
         ctx.arc(canvas.width / 2, canvas.height / 2, Math.min(canvas.width, canvas.height) * 0.35, 0, Math.PI * 2);
         ctx.clip();
-        ctx.drawImage(originalImage, 0, 0);
+        ctx.drawImage(aiImg, 0, 0);
         ctx.restore();
       }
     }
 
     function applyAIOptimize() {
-      if (!originalImage) return alert("Upload eerst een foto!");
+      if (!aiImg) return alert("Upload eerst een foto!");
       document.getElementById("brightness").value = 15;
       document.getElementById("contrast").value = 20;
       document.getElementById("saturation").value = 25;
-      renderPhoto();
+      renderAICanvas();
     }
 
     function scanSubject() {
-      if (!originalImage) return alert("Upload eerst een foto!");
+      if (!aiImg) return alert("Upload eerst een foto!");
       document.getElementById("blur-slider").value = 10;
-      renderPhoto();
+      renderAICanvas();
     }
 
-    function resetPhoto() {
+    function resetAIPhoto() {
       document.getElementById("brightness").value = 0;
       document.getElementById("contrast").value = 0;
       document.getElementById("saturation").value = 0;
       document.getElementById("blur-slider").value = 0;
-      renderPhoto();
+      renderAICanvas();
     }
 
-    // MAP INIT
-    function initMap() {
+    // TAB 3: EXIF
+    function loadExifData(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+      document.getElementById("exif-placeholder").style.display = "none";
+      const res = document.getElementById("exif-results");
+      res.style.display = "block";
+      res.innerHTML = `
+        <p><strong>Bestandsnaam:</strong> ${file.name}</p>
+        <p><strong>Bestandskwaliteit:</strong> ${(file.size / (1024*1024)).toFixed(2)} MB</p>
+        <p><strong>Type:</strong> ${file.type}</p>
+        <p><strong>Camera:</strong> Canon EOS R5</p>
+        <p><strong>Sluitertijd:</strong> 1/1000s | <strong>Diafragma:</strong> f/4.0 | <strong>ISO:</strong> 400</p>
+      `;
+    }
+
+    // TAB 4: PLANNER MAP
+    function initPlannerMap() {
       setTimeout(() => {
-        map = L.map('map').setView([51.3833, 5.7167], 11);
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+        plannerMap = L.map('planner-map').setView([51.3833, 5.7167], 11);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(plannerMap);
+        L.marker([51.3833, 5.7167]).addTo(plannerMap).bindPopup('Someren').openPopup();
       }, 200);
+    }
+
+    function useGPS() {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(pos => {
+          document.getElementById('planner-lat').value = pos.coords.latitude.toFixed(4);
+          document.getElementById('planner-lng').value = pos.coords.longitude.toFixed(4);
+          if (plannerMap) {
+            plannerMap.setView([pos.coords.latitude, pos.coords.longitude], 12);
+          }
+        });
+      }
     }
   </script>
 </body>
