@@ -31,7 +31,6 @@
     }
     header h1 { margin: 0; font-size: 1.5rem; }
     
-    /* NAVIGATIEKNOPPEN BOVENAAN */
     nav {
       display: flex;
       background: #34495e;
@@ -71,10 +70,9 @@
       display: block;
     }
 
-    /* PHOTO EDITOR STYLES */
     .editor-layout {
       display: grid;
-      grid-template-columns: 1fr 300px;
+      grid-template-columns: 1fr 320px;
       gap: 20px;
     }
     @media (max-width: 800px) {
@@ -103,6 +101,19 @@
       font-weight: bold; cursor: pointer; width: 100%; margin-top: 5px;
     }
     .btn-action:hover { background: #2980b9; }
+    .btn-ai {
+      background: linear-gradient(135deg, #8e44ad, #3498db);
+      color: white;
+      border: none;
+      padding: 10px;
+      border-radius: 6px;
+      font-weight: bold;
+      cursor: pointer;
+      width: 100%;
+      margin-top: 5px;
+      transition: transform 0.1s;
+    }
+    .btn-ai:hover { opacity: 0.95; transform: scale(1.01); }
 
     #map { height: 300px; border-radius: 8px; margin-top: 10px; }
     ul { padding-left: 20px; }
@@ -122,7 +133,6 @@
     </div>
   </header>
 
-  <!-- NAVIGATIEBALK BOVENAAN -->
   <nav>
     <button id="nav-editor" class="active" onclick="showTab('editor')">Fotobewerker & AI</button>
     <button id="nav-species" onclick="showTab('species')">Soorten in de buurt</button>
@@ -136,7 +146,7 @@
 
     <!-- 1. FOTOBEWERKER & AI SCHERM -->
     <div id="tab-editor" class="tool-section active">
-      <h2>Fotobewerker</h2>
+      <h2>Fotobewerker & AI Tools</h2>
       <div class="editor-layout">
         <div>
           <div class="canvas-container" id="drop-zone">
@@ -149,6 +159,14 @@
             <label>Foto Uploaden</label>
             <input type="file" id="image-loader" accept="image/*" onchange="loadImage(event)">
           </div>
+
+          <!-- AI KNOPPEN -->
+          <div class="control-group">
+            <label>✨ AI Functies</label>
+            <button class="btn-ai" id="btn-ai-enhance" onclick="applyAIEnhance()">🪄 AI Automatisch Bewerken</button>
+            <button class="btn-ai" id="btn-ai-blur" onclick="applyAIBlur()">🔍 AI Achtergrond Vervagen</button>
+          </div>
+
           <div class="control-group">
             <label>Helderheid</label>
             <input type="range" id="brightness" min="-100" max="100" value="0" oninput="applyFilters()">
@@ -157,6 +175,7 @@
             <label>Verzadiging</label>
             <input type="range" id="saturation" min="-100" max="100" value="0" oninput="applyFilters()">
           </div>
+
           <div class="control-group">
             <label>Hulplijnen Overlap</label>
             <select id="grid-overlay" onchange="applyFilters()">
@@ -165,6 +184,7 @@
               <option value="golden-ratio">Gouden Spiraal / Ratio</option>
             </select>
           </div>
+
           <button class="btn-action" onclick="downloadImage()">Download Bewerkte Foto</button>
         </div>
       </div>
@@ -240,7 +260,6 @@
     let currentLng = 5.7167;
     let map, marker, originalImage = null;
 
-    // TAB SCHAKELEN
     function showTab(tabId) {
       document.querySelectorAll('.tool-section').forEach(el => el.classList.remove('active'));
       document.querySelectorAll('nav button').forEach(el => el.classList.remove('active'));
@@ -253,7 +272,6 @@
       }
     }
 
-    // TAAL & TEKSTEN
     const translations = {
       nl: {
         editor: "Fotobewerker & AI",
@@ -271,7 +289,9 @@
         dateLabel: "Datum:",
         loading: "Laden...",
         noSpecies: "Geen recente waarnemingen gevonden.",
-        errorSpecies: "Kon waarnemingen niet laden."
+        errorSpecies: "Kon waarnemingen niet laden.",
+        aiEnhance: "🪄 AI Automatisch Bewerken",
+        aiBlur: "🔍 AI Achtergrond Vervagen"
       },
       en: {
         editor: "Photo Editor & AI",
@@ -289,7 +309,9 @@
         dateLabel: "Date:",
         loading: "Loading...",
         noSpecies: "No recent observations found.",
-        errorSpecies: "Could not load observations."
+        errorSpecies: "Could not load observations.",
+        aiEnhance: "🪄 AI Auto Enhance",
+        aiBlur: "🔍 AI Background Blur"
       }
     };
 
@@ -312,6 +334,8 @@
       document.getElementById("t-stack-title").textContent = t.stackTitle;
       document.getElementById("t-stack-btn").textContent = t.stackBtn;
       document.getElementById("t-date-label").textContent = t.dateLabel;
+      document.getElementById("btn-ai-enhance").textContent = t.aiEnhance;
+      document.getElementById("btn-ai-blur").textContent = t.aiBlur;
 
       updateAllData();
     }
@@ -357,14 +381,50 @@
         ctx.strokeStyle = "rgba(255, 255, 255, 0.8)";
         ctx.lineWidth = 2;
         ctx.beginPath();
-        // Verticaal
         ctx.moveTo(canvas.width / 3, 0); ctx.lineTo(canvas.width / 3, canvas.height);
         ctx.moveTo((canvas.width / 3) * 2, 0); ctx.lineTo((canvas.width / 3) * 2, canvas.height);
-        // Horizontaal
         ctx.moveTo(0, canvas.height / 3); ctx.lineTo(canvas.width, canvas.height / 3);
         ctx.moveTo(0, (canvas.height / 3) * 2); ctx.lineTo(canvas.width, (canvas.height / 3) * 2);
         ctx.stroke();
       }
+    }
+
+    // AI ENHANCE FUNCTIE
+    function applyAIEnhance() {
+      if (!originalImage) {
+        alert("Upload eerst een foto!");
+        return;
+      }
+      document.getElementById("brightness").value = 15;
+      document.getElementById("contrast").value = 20;
+      document.getElementById("saturation").value = 25;
+      applyFilters();
+    }
+
+    // AI ACHTERGROND VERVAGEN FUNCTIE
+    function applyAIBlur() {
+      if (!originalImage) {
+        alert("Upload eerst een foto!");
+        return;
+      }
+      const canvas = document.getElementById("photo-canvas");
+      const ctx = canvas.getContext("2d");
+
+      canvas.width = originalImage.width;
+      canvas.height = originalImage.height;
+
+      // Achtergrond vervagen
+      ctx.filter = "blur(8px) brightness(90%)";
+      ctx.drawImage(originalImage, 0, 0);
+
+      // Centrum scherp houden (onderwerp)
+      ctx.filter = "none";
+      ctx.save();
+      ctx.beginPath();
+      ctx.arc(canvas.width / 2, canvas.height / 2, Math.min(canvas.width, canvas.height) * 0.35, 0, Math.PI * 2);
+      ctx.clip();
+      ctx.drawImage(originalImage, 0, 0);
+      ctx.restore();
     }
 
     function downloadImage() {
