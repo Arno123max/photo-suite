@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>PhotoByArno Photography Suite Pro</title>
+  <title>PhotoByArno Photography Suite Pro - v1.0 (September 2026)</title>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap" rel="stylesheet">
@@ -16,63 +16,83 @@
       --card-bg: #ffffff;
     }
 
-    * { box-sizing: border-box; }
+    * { 
+      box-sizing: border-box; 
+    }
 
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    html, body {
       margin: 0;
       padding: 0;
+      width: 100%;
+      overflow-x: hidden; /* Voorkomt horizontaal wegspringen op mobiel */
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
       background: var(--bg-color);
       color: #333;
     }
 
-    /* HEADER */
+    /* HEADER MOBIEL FRIENDLY */
     header {
       background: var(--header-bg);
       color: white;
-      padding: 12px 24px;
+      padding: 12px 16px;
       display: flex;
+      flex-wrap: wrap;
       justify-content: space-between;
       align-items: center;
+      gap: 10px;
+      width: 100%;
     }
     header h1 {
       margin: 0;
-      font-size: 1.3rem;
+      font-size: 1.1rem;
       font-weight: 700;
+      white-space: nowrap;
     }
     .header-right {
       display: flex;
       align-items: center;
-      gap: 15px;
+      gap: 10px;
+      flex-wrap: wrap;
     }
     .privacy-badge {
       background: #334155;
-      padding: 4px 10px;
+      padding: 4px 8px;
       border-radius: 12px;
-      font-size: 0.75rem;
+      font-size: 0.7rem;
       color: #cbd5e1;
+      white-space: nowrap;
     }
 
-    /* NAVIGATIE BALK */
+    /* NAVIGATIE BALK MET SCROLL OP MOBIEL */
     nav {
       background: var(--nav-bg);
       display: flex;
-      padding: 0 10px;
+      padding: 0 8px;
       gap: 2px;
       border-bottom: 3px solid var(--accent-orange);
+      overflow-x: auto;
+      white-space: nowrap;
+      -webkit-overflow-scrolling: touch;
+      width: 100%;
+    }
+    nav::-webkit-scrollbar {
+      height: 4px;
+    }
+    nav::-webkit-scrollbar-thumb {
+      background: #334155;
     }
     nav button {
       background: transparent;
       color: #94a3b8;
       border: none;
-      padding: 12px 18px;
-      font-size: 0.85rem;
+      padding: 12px 14px;
+      font-size: 0.8rem;
       font-weight: 600;
       cursor: pointer;
       display: flex;
       align-items: center;
       gap: 6px;
-      white-space: nowrap;
+      flex-shrink: 0;
       transition: all 0.2s;
     }
     nav button:hover {
@@ -85,8 +105,9 @@
 
     .container {
       max-width: 1400px;
-      margin: 20px auto;
-      padding: 0 15px;
+      margin: 15px auto;
+      padding: 0 12px;
+      width: 100%;
     }
 
     .tab-content {
@@ -100,37 +121,51 @@
     .info-bar {
       background: #e0f2fe;
       border-left: 4px solid #0284c7;
-      padding: 10px 15px;
+      padding: 10px 12px;
       border-radius: 4px;
-      font-size: 0.82rem;
+      font-size: 0.8rem;
       color: #0369a1;
       margin-bottom: 15px;
+      line-height: 1.4;
     }
 
-    /* LAYOUT GRIDS */
-    .editor-grid {
+    /* LAYOUT GRIDS (RESPONSIVE) */
+    .editor-grid, .planner-grid {
       display: grid;
-      grid-template-columns: 360px 1fr;
-      gap: 20px;
+      grid-template-columns: 340px 1fr;
+      gap: 15px;
+      width: 100%;
     }
+
+    /* MOBIEL: ALLES NAAR 1 KOLOM */
     @media (max-width: 900px) {
-      .editor-grid { grid-template-columns: 1fr; }
+      .editor-grid, .planner-grid { 
+        grid-template-columns: 1fr; 
+      }
+      header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      .header-right {
+        width: 100%;
+        justify-content: space-between;
+      }
     }
 
     .left-panel {
       background: #f8fafc;
       border: 1px solid #cbd5e1;
       border-radius: 8px;
-      padding: 16px;
+      padding: 14px;
       display: flex;
       flex-direction: column;
-      gap: 14px;
+      gap: 12px;
     }
 
     .form-group {
       display: flex;
       flex-direction: column;
-      gap: 5px;
+      gap: 4px;
     }
     .form-group label {
       font-size: 0.8rem;
@@ -140,7 +175,8 @@
     .form-group input[type="text"], 
     .form-group select,
     .form-group input[type="file"],
-    .form-group input[type="color"] {
+    .form-group input[type="color"],
+    .form-group input[type="date"] {
       width: 100%;
       padding: 8px;
       border: 1px solid #cbd5e1;
@@ -153,21 +189,23 @@
       cursor: pointer;
     }
 
-    /* CANVASSES & DARK PREVIEWS */
+    /* PREVIEWS */
     .dark-preview-container {
       background: #090d16;
       border-radius: 8px;
-      min-height: 520px;
+      min-height: 350px;
       display: flex;
       align-items: center;
       justify-content: center;
       position: relative;
       overflow: hidden;
+      padding: 10px;
     }
 
     canvas {
-      max-width: 95%;
-      max-height: 75vh;
+      max-width: 100%;
+      height: auto;
+      max-height: 65vh;
       display: block;
     }
 
@@ -176,7 +214,7 @@
       background: var(--accent-orange);
       color: white;
       border: none;
-      padding: 12px;
+      padding: 10px;
       border-radius: 6px;
       font-weight: bold;
       font-size: 0.85rem;
@@ -187,7 +225,7 @@
       background: linear-gradient(135deg, #10b981, #0284c7);
       color: white;
       border: none;
-      padding: 12px;
+      padding: 10px;
       border-radius: 6px;
       font-weight: bold;
       font-size: 0.85rem;
@@ -197,7 +235,7 @@
       background: #8b5cf6;
       color: white;
       border: none;
-      padding: 12px;
+      padding: 10px;
       border-radius: 6px;
       font-weight: bold;
       font-size: 0.85rem;
@@ -207,7 +245,7 @@
       background: #dc2626;
       color: white;
       border: none;
-      padding: 12px;
+      padding: 10px;
       border-radius: 6px;
       font-weight: bold;
       font-size: 0.85rem;
@@ -215,32 +253,27 @@
     }
 
     /* PLANNER TAB GRID */
-    .planner-grid {
-      display: grid;
-      grid-template-columns: 360px 1fr;
-      gap: 20px;
-    }
     .planner-right-grid {
-      display: grid;
-      grid-template-rows: auto auto auto;
-      gap: 15px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
     }
     .info-card {
       background: white;
       border: 1px solid #cbd5e1;
       border-radius: 8px;
-      padding: 15px;
+      padding: 12px;
     }
     .info-card h3 {
       margin-top: 0;
-      font-size: 0.95rem;
+      font-size: 0.9rem;
       color: #1e293b;
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 6px;
     }
     .species-box {
-      max-height: 180px;
+      max-height: 160px;
       overflow-y: auto;
       font-size: 0.8rem;
       color: #475569;
@@ -249,25 +282,37 @@
     .data-table {
       width: 100%;
       border-collapse: collapse;
-      font-size: 0.82rem;
+      font-size: 0.8rem;
     }
     .data-table td {
-      padding: 6px 0;
+      padding: 5px 0;
       border-bottom: 1px solid #f1f5f9;
     }
     .data-table td:last-child {
       text-align: right;
       font-weight: 600;
     }
-    #planner-map { height: 260px; border-radius: 6px; width: 100%; }
+    #planner-map { 
+      height: 250px; 
+      border-radius: 6px; 
+      width: 100%; 
+    }
 
-    /* EXIF & CONVERTER STYLING */
     .white-card-full {
       background: white;
       border: 1px solid #cbd5e1;
       border-radius: 8px;
-      padding: 30px;
-      min-height: 480px;
+      padding: 20px;
+      min-height: 300px;
+    }
+
+    /* FOOTER MET VERSIE */
+    footer {
+      text-align: center;
+      padding: 15px 10px;
+      font-size: 0.75rem;
+      color: #64748b;
+      margin-top: 20px;
     }
   </style>
 </head>
@@ -285,12 +330,12 @@
     </div>
   </header>
 
-  <!-- NAVIGATIE -->
+  <!-- NAVIGATIE BALK -->
   <nav>
     <button id="nav-logo" class="active" onclick="switchTab('logo')">✍️ Handtekening & Logo</button>
     <button id="nav-ai" onclick="switchTab('ai')">✨ AI Verbetering & Blur</button>
     <button id="nav-exif" onclick="switchTab('exif')">🔍 EXIF & Converter</button>
-    <button id="nav-planner" onclick="switchTab('planner')">🌅 Planner & Waarnemingen Kaart</button>
+    <button id="nav-planner" onclick="switchTab('planner')">🌅 Planner & Kaart</button>
     <button id="nav-stack" onclick="switchTab('stack')">🧩 Focus Stacking Pro</button>
   </nav>
 
@@ -345,7 +390,7 @@
     <!-- 2. AI VERBETERING & BLUR TAB -->
     <div id="tab-ai" class="tab-content">
       <div class="info-bar">
-        🎯 <strong>Lightroom-style Onderwerp Isolatie:</strong> Klik op "Automatisch Onderwerp Scan" om het hoofdonderwerp te detecteren. Pas daarna de slider aan om <u>uitsluitend de achtergrond</u> te vervagen. Met de "↺ Herstel / Origineel" knop draai je alle aanpassingen direct terug!
+        🎯 <strong>Lightroom-style Onderwerp Isolatie:</strong> Klik op "Automatisch Onderwerp Scan" om het hoofdonderwerp te detecteren en de achtergrond te vervagen.
       </div>
 
       <div class="editor-grid">
@@ -355,11 +400,11 @@
             <input type="file" id="ai-file" accept="image/*" onchange="loadAIImage(event)">
           </div>
 
-          <button class="btn-green-blue" onclick="applyAIOptimize()">✨ Auto AI Optimaliseren (Lightroom-stijl)</button>
-          <button class="btn-purple" onclick="scanSubject()">🪄 Automatisch Onderwerp Scan & Detectie</button>
+          <button class="btn-green-blue" onclick="applyAIOptimize()">✨ Auto AI Optimaliseren</button>
+          <button class="btn-purple" onclick="scanSubject()">🪄 Automatisch Onderwerp Scan</button>
 
           <div class="form-group">
-            <label>Achtergrond Vervagen (Scherp Onderwerp!):</label>
+            <label>Achtergrond Vervagen:</label>
             <input type="range" id="blur-slider" min="0" max="20" value="0" oninput="renderAICanvas()">
           </div>
 
@@ -378,7 +423,7 @@
             <input type="range" id="saturation" min="-100" max="100" value="0" oninput="renderAICanvas()">
           </div>
 
-          <button class="btn-reset" onclick="resetAIPhoto()">↺ Herstel naar Originele Foto</button>
+          <button class="btn-reset" onclick="resetAIPhoto()">↺ Herstel Origineel</button>
         </div>
 
         <div class="dark-preview-container">
@@ -398,7 +443,7 @@
 
           <div class="form-group">
             <label>Nieuwe Bestandsnaam:</label>
-            <input type="text" id="exif-filename" value="bv. foto-by-arno-01">
+            <input type="text" id="exif-filename" value="foto-by-arno-01">
           </div>
 
           <div class="form-group">
@@ -412,9 +457,9 @@
         </div>
 
         <div class="white-card-full">
-          <h2 style="margin-top:0; color:#1e293b;">Foto Metadata Overzicht:</h2>
-          <hr style="border:none; border-top:1px solid #e2e8f0; margin:20px 0;">
-          <p id="exif-placeholder" style="text-align:center; color:#64748b; margin-top:50px;">Upload een foto om EXIF te bekijken</p>
+          <h2 style="margin-top:0; color:#1e293b; font-size: 1.1rem;">Foto Metadata Overzicht:</h2>
+          <hr style="border:none; border-top:1px solid #e2e8f0; margin:15px 0;">
+          <p id="exif-placeholder" style="text-align:center; color:#64748b; margin-top:30px;">Upload een foto om EXIF te bekijken</p>
           <div id="exif-results" style="display:none;"></div>
         </div>
       </div>
@@ -486,7 +531,7 @@
     <!-- 5. FOCUS STACKING PRO TAB -->
     <div id="tab-stack" class="tab-content">
       <div class="info-bar">
-        🔍 <strong>Focus Stacking Pro:</strong> Voeg meerdere macro- of landschapsfoto's uit je reeks samen tot 1 haarscherpe foto.
+        🔍 <strong>Focus Stacking Pro:</strong> Voeg meerdere macro- of landschapsfoto's samen tot 1 haarscherpe foto.
       </div>
 
       <div class="editor-grid">
@@ -515,6 +560,11 @@
 
   </div>
 
+  <!-- FOOTER MET VERSIENUMMER -->
+  <footer>
+    Gemaakt voor fotografen door <strong>@photobyarno</strong> • Versie september 2026 (v1.0)
+  </footer>
+
   <script>
     let logoImg = null, aiImg = null;
     let plannerMap = null;
@@ -527,8 +577,12 @@
       document.getElementById('tab-' + tabId).classList.add('active');
       document.getElementById('nav-' + tabId).classList.add('active');
 
-      if (tabId === 'planner' && !plannerMap) {
-        initPlannerMap();
+      if (tabId === 'planner') {
+        if (!plannerMap) {
+          initPlannerMap();
+        } else {
+          setTimeout(() => plannerMap.invalidateSize(), 200);
+        }
       }
     }
 
@@ -655,7 +709,7 @@
       `;
     }
 
-    // TAB 4: PLANNER MAP MET WAARNEMINGSBOLLETJES
+    // TAB 4: PLANNER MAP
     function initPlannerMap() {
       setTimeout(() => {
         plannerMap = L.map('planner-map').setView([51.3887, 5.7070], 11);
