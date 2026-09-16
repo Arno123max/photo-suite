@@ -198,16 +198,12 @@
                     <div class="form-group">
                         <label>3. Lettertype Stijl (8 Opties):</label>
                         <select id="wmFont">
-                            <!-- Handgeschreven stijlen -->
                             <option value="Great Vibes">✍️ Great Vibes (Calligraphy Script)</option>
                             <option value="Dancing Script">✍️ Dancing Script (Speels Handgeschreven)</option>
-                            <!-- Serif / Klassiek -->
                             <option value="Playfair Display">🏛️ Playfair Display (Sjiek Elegant)</option>
                             <option value="Cinzel">🏛️ Cinzel (Klassiek / Monumentaal)</option>
-                            <!-- Sans-serif / Strak -->
                             <option value="Montserrat">📱 Montserrat (Modern / Strak)</option>
                             <option value="Roboto">📱 Roboto (Neutraal)</option>
-                            <!-- Typewriter & Standaard -->
                             <option value="Courier Prime">⌨️ Courier Prime (Typemachine)</option>
                             <option value="Arial">⚙️ Arial (Standaard)</option>
                         </select>
@@ -289,9 +285,8 @@
                     </div>
                     <button class="btn btn-orange" onclick="convertImage()">Converteer & Download</button>
                 </div>
-                <div class="preview-panel" style="background: #fff; color: #333; justify-content: flex-start; align-items: flex-start; padding: 20px;">
-                    <h3>EXIF Metadata:</h3>
-                    <pre id="exifOutput" style="white-space: pre-wrap;">Upload een foto om EXIF data (camera, sluitertijd, ISO) te bekijken...</pre>
+                <div class="preview-panel" id="exifPreviewBox" style="background: #fff; color: #333; flex-direction: column; justify-content: center; align-items: center; padding: 20px; border: 1px solid #cbd5e1;">
+                    <p style="color: #888;">Upload een foto om deze te bekijken en EXIF-data te zien...</p>
                 </div>
             </div>
         </section>
@@ -496,12 +491,23 @@
             renderBlur();
         }
 
-        // 3. EXIF Logic
+        // 3. EXIF Logic met Foto Voorbeeld & Metadata
         document.getElementById('exifImageInput').addEventListener('change', (e) => {
             const file = e.target.files[0];
             if (!file) return;
-            document.getElementById('exifOutput').innerText = 
-                `Bestandsnaam: ${file.name}\nBestandsgrootte: ${(file.size/1024/1024).toFixed(2)} MB\nType: ${file.type}`;
+
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                const previewBox = document.getElementById('exifPreviewBox');
+                previewBox.innerHTML = `
+                    <img src="${event.target.result}" style="max-width: 100%; max-height: 250px; border-radius: 6px; margin-bottom: 15px; object-fit: contain; border: 1px solid #ddd;">
+                    <div style="text-align: left; width: 100%;">
+                        <h4 style="margin: 0 0 5px 0;">EXIF Metadata:</h4>
+                        <pre style="white-space: pre-wrap; font-family: monospace; background: #f8fafc; padding: 10px; border-radius: 4px; border: 1px solid #cbd5e1; color: #333; margin: 0;">Bestandsnaam: ${file.name}\nBestandsgrootte: ${(file.size/1024/1024).toFixed(2)} MB\nType: ${file.type}</pre>
+                    </div>
+                `;
+            };
+            reader.readAsDataURL(file);
         });
 
         function convertImage() {
@@ -533,7 +539,6 @@
                 attribution: '© OpenStreetMap'
             }).addTo(map);
 
-            // 4 Gespotte Dieren op de Kaart met HOVER TOOLTIP
             const sightings = [
                 { lat: 51.3950, lng: 5.6900, name: "🐦 Regulus regulus (Goudhaantje)" },
                 { lat: 51.3820, lng: 5.7200, name: "🐦 Aegithalos caudatus (Staartmees)" },
@@ -543,7 +548,6 @@
 
             sightings.forEach(spot => {
                 const marker = L.marker([spot.lat, spot.lng]).addTo(map);
-                // Bind tooltip voor HOVER weergave
                 marker.bindTooltip(spot.name, { permanent: false, direction: 'top' });
             });
         }
