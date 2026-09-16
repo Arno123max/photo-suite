@@ -5,9 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Free Instagram Photo Splitter & Reel Maker | PhotoByArno Suite Pro</title>
     <meta name="description" content="Create seamless Instagram carousels, split photos, and make auto-playing Reels for free. Part of PhotoByArno Photography Suite Pro. 100% private & local in your browser.">
+    
+    <!-- Leaflet CSS & JS -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap" rel="stylesheet">
+
+    <!-- Google Fonts: 8 verschillende stijlen inclusief 2 handgeschreven -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600&family=Courier+Prime&family=Dancing+Script:wght@600&family=Great+Vibes&family=Montserrat:wght@500&family=Playfair+Display:ital@0;1&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+
     <style>
         :root {
             --header-bg: #1e293b;
@@ -28,7 +35,7 @@
             color: #333;
         }
 
-        /* Top Bar & Nav */
+        /* Header Bar */
         .site-header {
             background-color: var(--header-bg);
             color: #fff;
@@ -60,7 +67,7 @@
 
         .tab-btn.active { color: #fff; background-color: var(--accent-orange); }
 
-        /* Main Container */
+        /* Container */
         .main-container { max-width: 1200px; margin: 20px auto; padding: 0 15px; }
 
         .page-intro {
@@ -136,6 +143,10 @@
 
         .support-footer a { color: #2e6b56; text-decoration: none; font-weight: 600; }
         .support-footer a:hover { text-decoration: underline; }
+
+        /* Custom Status Box */
+        .status-msg { display: none; padding: 8px; border-radius: 4px; font-size: 0.85em; margin-top: 8px; text-align: center; }
+        .status-msg.success { display: block; background: #dcfce7; color: #166534; }
     </style>
 </head>
 <body>
@@ -185,11 +196,20 @@
                         <input type="text" id="wmText" value="PhotoByArno Photography">
                     </div>
                     <div class="form-group">
-                        <label>3. Lettertype Stijl:</label>
+                        <label>3. Lettertype Stijl (8 Opties):</label>
                         <select id="wmFont">
-                            <option value="Great Vibes">Great Vibes (Calligraphy)</option>
-                            <option value="Arial">Arial (Strak)</option>
-                            <option value="Georgia">Georgia (Klassiek)</option>
+                            <!-- Handgeschreven stijlen -->
+                            <option value="Great Vibes">✍️ Great Vibes (Calligraphy Script)</option>
+                            <option value="Dancing Script">✍️ Dancing Script (Speels Handgeschreven)</option>
+                            <!-- Serif / Klassiek -->
+                            <option value="Playfair Display">🏛️ Playfair Display (Sjiek Elegant)</option>
+                            <option value="Cinzel">🏛️ Cinzel (Klassiek / Monumentaal)</option>
+                            <!-- Sans-serif / Strak -->
+                            <option value="Montserrat">📱 Montserrat (Modern / Strak)</option>
+                            <option value="Roboto">📱 Roboto (Neutraal)</option>
+                            <!-- Typewriter & Standaard -->
+                            <option value="Courier Prime">⌨️ Courier Prime (Typemachine)</option>
+                            <option value="Arial">⚙️ Arial (Standaard)</option>
                         </select>
                     </div>
                     <div class="form-group">
@@ -225,6 +245,7 @@
                     </div>
                     <button class="btn" onclick="autoOptimize()">✨ Auto AI Optimaliseren</button>
                     <button class="btn btn-purple" onclick="autoSubjectScan()">🪄 Automatisch Onderwerp Scan</button>
+                    <div id="aiStatus" class="status-msg"></div>
                     <hr>
                     <div class="form-group">
                         <label>Achtergrond Vervagen:</label>
@@ -291,23 +312,25 @@
                         </div>
                     </div>
                     <button class="btn" onclick="getLocation()">📍 Mijn GPS Locatie Gebruiken</button>
+                    <div id="gpsStatus" class="status-msg"></div>
                     
                     <hr>
                     <h4>🌿 Gespotte Dieren, Vogels & Planten</h4>
+                    <p style="font-size: 0.8em; color: #666; margin-top: -5px;">💡 <em>Beweeg met je muis over de stippen op de kaart!</em></p>
                     <ul style="font-size: 0.85em; padding-left: 20px; color: #555;">
-                        <li>Regulus regulus (Goudhaantje)</li>
-                        <li>Aegithalos caudatus (Staartmees)</li>
-                        <li>Trametes versicolor (Elfenbankje)</li>
-                        <li>Aythya ferina (Tafeleend)</li>
+                        <li>🐦 Regulus regulus (Goudhaantje)</li>
+                        <li>🐦 Aegithalos caudatus (Staartmees)</li>
+                        <li>🍄 Trametes versicolor (Elfenbankje)</li>
+                        <li>🦆 Aythya ferina (Tafeleend)</li>
                     </ul>
                 </div>
 
                 <div>
-                    <div style="background: #f8fafc; padding: 15px; border-radius: 6px; margin-bottom: 10px; border: 1px solid #e2e8f0;">
+                    <div style="background: #f8fafc; padding: 12px 15px; border-radius: 6px; margin-bottom: 10px; border: 1px solid #e2e8f0;">
                         <strong>☁️ Live Weer & Zonsondergang Score</strong><br>
                         <small>Fotografie geschiktheid: <strong style="color: #27ae60;">45% (Redelijk/Goed)</strong></small>
                     </div>
-                    <div id="map" style="height: 350px; border-radius: 6px;"></div>
+                    <div id="map" style="height: 380px; border-radius: 6px;"></div>
                 </div>
             </div>
         </section>
@@ -357,7 +380,7 @@
             event.currentTarget.classList.add('active');
 
             if(tabId === 'planner' && !window.mapInitialized) {
-                initMap();
+                setTimeout(initMap, 100);
             }
         }
 
@@ -378,6 +401,11 @@
             };
             reader.readAsDataURL(file);
         });
+
+        document.getElementById('wmText').addEventListener('input', renderWatermark);
+        document.getElementById('wmFont').addEventListener('change', renderWatermark);
+        document.getElementById('wmColor').addEventListener('change', renderWatermark);
+        document.getElementById('wmPosition').addEventListener('change', renderWatermark);
 
         function renderWatermark() {
             if (!currentWmImg) return;
@@ -451,12 +479,13 @@
             document.getElementById('contrastRange').value = 115;
             document.getElementById('saturateRange').value = 120;
             renderBlur();
+            showStatus('aiStatus', '✨ Auto AI Optimalisatie toegepast!');
         }
 
         function autoSubjectScan() {
-            alert('AI Onderwerp Scan voltooid! Achtergrond gedetecteerd en vervaagd.');
             document.getElementById('blurRange').value = 8;
             renderBlur();
+            showStatus('aiStatus', '🪄 AI Onderwerp Scan voltooid: Achtergrond vervaagd!');
         }
 
         function resetFilters() {
@@ -496,20 +525,44 @@
             reader.readAsDataURL(fileInput.files[0]);
         }
 
-        // 4. Map Logic
+        // 4. Map Logic met 4 Dieren-Markers & Hover Tooltips
         function initMap() {
             window.mapInitialized = true;
             const map = L.map('map').setView([51.3887, 5.7070], 12);
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
-            L.marker([51.3887, 5.7070]).addTo(map).bindPopup('Asten / Strabrechtse Heide').openPopup();
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '© OpenStreetMap'
+            }).addTo(map);
+
+            // 4 Gespotte Dieren op de Kaart met HOVER TOOLTIP
+            const sightings = [
+                { lat: 51.3950, lng: 5.6900, name: "🐦 Regulus regulus (Goudhaantje)" },
+                { lat: 51.3820, lng: 5.7200, name: "🐦 Aegithalos caudatus (Staartmees)" },
+                { lat: 51.3750, lng: 5.6850, name: "🍄 Trametes versicolor (Elfenbankje)" },
+                { lat: 51.4010, lng: 5.7300, name: "🦆 Aythya ferina (Tafeleend)" }
+            ];
+
+            sightings.forEach(spot => {
+                const marker = L.marker([spot.lat, spot.lng]).addTo(map);
+                // Bind tooltip voor HOVER weergave
+                marker.bindTooltip(spot.name, { permanent: false, direction: 'top' });
+            });
         }
 
         function getLocation() {
             navigator.geolocation.getCurrentPosition((pos) => {
                 document.getElementById('latVal').value = pos.coords.latitude.toFixed(4);
                 document.getElementById('lngVal').value = pos.coords.longitude.toFixed(4);
-                alert('GPS Locatie Opgewoon! Planner bijgewerkt.');
+                showStatus('gpsStatus', '📍 GPS Locatie opgeslagen & planner bijgewerkt!');
+            }, () => {
+                showStatus('gpsStatus', '⚠️ GPS Toegang geweigerd of niet beschikbaar.');
             });
+        }
+
+        function showStatus(elementId, text) {
+            const el = document.getElementById(elementId);
+            el.innerText = text;
+            el.className = 'status-msg success';
+            setTimeout(() => { el.className = 'status-msg'; }, 4000);
         }
 
         function processStacking() {
