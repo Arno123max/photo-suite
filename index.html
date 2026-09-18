@@ -21,12 +21,14 @@
 
     * { box-sizing: border-box; }
 
-    body {
+    html, body {
       margin: 0;
       padding: 0;
+      width: 100%;
+      overflow-x: hidden;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
       background: var(--bg-main);
       color: var(--text-main);
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
       -webkit-tap-highlight-color: transparent;
     }
 
@@ -63,7 +65,6 @@
       padding: 16px 12px 40px 12px;
     }
 
-    /* KANNAVO & STAPPEN KAARTEN */
     .step-card {
       background: var(--card-bg);
       border: 1px solid var(--card-border);
@@ -83,27 +84,43 @@
       color: var(--text-sub);
     }
 
-    /* TAB MENU (MOBILE FIRST SCROLLING) */
-    .nav-tabs {
-      display: flex;
-      gap: 8px;
-      overflow-x: auto;
-      padding-bottom: 8px;
-      margin-bottom: 16px;
-      -webkit-overflow-scrolling: touch;
-    }
-    .nav-tabs::-webkit-scrollbar { display: none; }
-    .tab-btn {
+    /* FIX 1: MOBIEL SCROLBARE NAVIGATIE & VOLLEDIGE BREEDTE */
+    .nav-tabs-container {
       background: var(--card-bg);
       border: 1px solid var(--card-border);
+      border-radius: 14px;
+      padding: 8px;
+      margin-bottom: 16px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.02);
+      width: 100%;
+    }
+    .nav-tabs {
+      display: flex;
+      gap: 6px;
+      overflow-x: auto;
+      white-space: nowrap;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none; /* Firefox */
+      width: 100%;
+    }
+    .nav-tabs::-webkit-scrollbar {
+      display: none; /* Safari & Chrome */
+    }
+    .tab-btn {
+      background: transparent;
+      border: 1px solid transparent;
       color: var(--text-sub);
       padding: 10px 16px;
       border-radius: 20px;
-      font-size: 0.82rem;
+      font-size: 0.8rem;
       font-weight: 600;
-      white-space: nowrap;
       cursor: pointer;
       flex-shrink: 0;
+      transition: all 0.2s;
+    }
+    @media (min-width: 901px) {
+      .nav-tabs { justify-content: space-between; gap: 0; }
+      .tab-btn { flex-grow: 1; text-align: center; }
     }
     .tab-btn.active {
       background: var(--dark-btn);
@@ -188,25 +205,12 @@
       align-items: center;
       justify-content: center;
       margin-top: 12px;
+      padding: 10px;
     }
     canvas {
       max-width: 100%;
       height: auto;
       display: block;
-    }
-
-    /* TARGET POINTER VOOR ZOOM */
-    .zoom-target-dot {
-      position: absolute;
-      width: 24px;
-      height: 24px;
-      border: 2px solid #ffffff;
-      background: rgba(230, 126, 34, 0.8);
-      border-radius: 50%;
-      transform: translate(-50%, -50%);
-      pointer-events: none;
-      display: none;
-      box-shadow: 0 0 8px rgba(0,0,0,0.5);
     }
 
     #planner-map {
@@ -223,6 +227,41 @@
       line-height: 1.6;
       padding-left: 18px;
       margin: 8px 0 0 0;
+    }
+
+    /* FIX 4: WEER DATA STYLING */
+    .weather-info-group {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-top: 12px;
+    }
+    .weather-card {
+      background: white;
+      border: 1px solid var(--card-border);
+      border-radius: 10px;
+      padding: 12px;
+    }
+    .weather-card h4 {
+      margin: 0 0 8px 0;
+      font-size: 0.85rem;
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .weather-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.8rem;
+    }
+    .weather-table td {
+      padding: 5px 0;
+      border-bottom: 1px solid #f1f5f9;
+    }
+    .weather-table td:last-child {
+      text-align: right;
+      font-weight: 600;
     }
 
     footer {
@@ -243,19 +282,20 @@
 
   <div class="container">
 
-    <!-- STAPPEN INDELING MOBIEL -->
     <div class="step-card">
       <h3>1. Kies een onderdeel</h3>
       <p>Bewerk je foto's, verken soorten in de buurt of plan je fototrip.</p>
     </div>
 
-    <!-- NAVIGATIE TABS -->
-    <div class="nav-tabs">
-      <button class="tab-btn active" onclick="switchTab('zoom')">🔍 Smart Zoom & Pulse</button>
-      <button class="tab-btn" onclick="switchTab('ai')">✨ AI Onderwerp Scan</button>
-      <button class="tab-btn" onclick="switchTab('logo')">✍️ Handtekening & Logo</button>
-      <button class="tab-btn" onclick="switchTab('planner')">🌅 Planner & Kaart</button>
-      <button class="tab-btn" onclick="switchTab('exif')">📷 EXIF & Info</button>
+    <!-- FIX 1: VOLLEDIGE BREEDTE & SCROLBARE NAVIGATIE -->
+    <div class="nav-tabs-container">
+      <div class="nav-tabs">
+        <button class="tab-btn active" onclick="switchTab('zoom')">🔍 Smart Zoom & Pulse</button>
+        <button class="tab-btn" onclick="switchTab('ai')">✨ AI Onderwerp Scan</button>
+        <button class="tab-btn" onclick="switchTab('logo')">✍️ Handtekening & Logo</button>
+        <button class="tab-btn" onclick="switchTab('planner')">🌅 Planner & Kaart</button>
+        <button class="tab-btn" onclick="switchTab('exif')">📷 EXIF Data</button>
+      </div>
     </div>
 
     <!-- TAB 1: SMART ZOOM & FOCUS PULSE -->
@@ -287,9 +327,8 @@
 
         <button class="btn-main" onclick="playZoomAnimation()">▶ Speel Zoom Animatie Af</button>
 
-        <div class="preview-box" id="zoom-preview-container" onclick="setZoomTarget(event)">
-          <canvas id="zoom-canvas"></canvas>
-          <div id="zoom-target-dot" class="zoom-target-dot"></div>
+        <div class="preview-box">
+          <canvas id="zoom-canvas" onclick="setZoomTarget(event)"></canvas>
         </div>
       </div>
     </div>
@@ -346,6 +385,23 @@
           </select>
         </div>
 
+        <!-- FIX 3: KLEUR EN POSITIE KIEZERS TERUG -->
+        <div class="form-group">
+          <label>Kleur Handtekening:</label>
+          <input type="color" id="logo-color" value="#ffffff" class="form-control" oninput="renderLogoCanvas()">
+        </div>
+
+        <div class="form-group">
+          <label>Positie / Locatie:</label>
+          <select id="logo-pos" class="form-control" onchange="renderLogoCanvas()">
+            <option value="br">Rechtsonder</option>
+            <option value="bl">Linksonder</option>
+            <option value="tr">Rechtsboven</option>
+            <option value="tl">Linksboven</option>
+            <option value="center">Midden</option>
+          </select>
+        </div>
+
         <div class="form-group">
           <label>Upload Eigen Logo (PNG):</label>
           <input type="file" id="logo-png-file" accept="image/png,image/*" class="form-control" onchange="loadLogoPNG(event)">
@@ -357,12 +413,12 @@
       </div>
     </div>
 
-    <!-- TAB 4: PLANNER & LIVE SOORTEN -->
+    <!-- TAB 4: PLANNER, KAART & WEER -->
     <div id="tab-planner" class="tab-panel">
       <div class="step-card">
         <div class="form-group">
           <label>Datum:</label>
-          <input type="date" id="planner-date" class="form-control" onchange="fetchLiveObservations()">
+          <input type="date" id="planner-date" class="form-control" onchange="updatePlannerData()">
         </div>
 
         <div class="form-group">
@@ -376,332 +432,32 @@
         <button class="btn-secondary" onclick="useGPSLocation()" style="margin-bottom:10px;">📍 Mijn GPS Locatie Gebruiken</button>
 
         <div id="planner-map"></div>
+
+        <!-- FIX 4: WEER FUNCTIE TERUG MET UITGEBREIDE DATA -->
+        <div class="weather-info-group" id="weather-results" style="display:none;">
+          <div class="weather-card">
+            <h4>☁️ Live Weer & Mist</h4>
+            <table class="weather-table">
+              <tr><td>Temperatuur</td><td id="weather-temp">-- °C</td></tr>
+              <tr><td>Windsnelheid</td><td id="weather-wind">-- km/h</td></tr>
+              <tr><td>Mistverwachting</td><td id="weather-fog">--</td></tr>
+            </table>
+          </div>
+          <div class="weather-card">
+            <h4>🌅 Zon, Gouden Uur & Rode Gloed</h4>
+            <table class="weather-table">
+              <tr><td>Zonsopkomst</td><td id="weather-sunrise">--:--</td></tr>
+              <tr><td>Gouden Uur (Ochtend)</td><td id="weather-golden-am">--:--</td></tr>
+              <tr><td>Gouden Uur (Avond)</td><td id="weather-golden-pm">--:--</td></tr>
+              <tr><td>Zonsondergang</td><td id="weather-sunset">--:--</td></tr>
+              <tr><td>Kans op Rode Gloed</td><td id="weather-red-glow">--</td></tr>
+              <tr><td>Fotografie Score</td><td id="weather-score">--</td></tr>
+            </table>
+          </div>
+        </div>
       </div>
 
       <div class="step-card">
         <h3>🌿 Live Gespotte Soorten op deze Datum</h3>
         <ul id="species-list" class="species-list">
-          <li>Laden van actuele waarnemingen...</li>
-        </ul>
-      </div>
-    </div>
-
-    <!-- TAB 5: EXIF INFO -->
-    <div id="tab-exif" class="tab-panel">
-      <div class="step-card">
-        <div class="upload-box" onclick="document.getElementById('exif-file').click()">
-          <label>📁 Kies Foto voor EXIF Metadata</label>
-          <input type="file" id="exif-file" accept="image/*" style="display:none;" onchange="readEXIFData(event)">
-        </div>
-        <div id="exif-results" style="font-size:0.85rem; line-height:1.6; color:var(--text-main);">
-          Upload een foto om sluitertijd, diafragma en ISO in te zien.
-        </div>
-      </div>
-    </div>
-
-  </div>
-
-  <footer>
-    Gemaakt voor fotografen door <strong>@photobyarno</strong> • Versie september 2026 (v1.1)
-  </footer>
-
-  <script>
-    let zoomImg = null, aiImg = null, logoPhotoImg = null, logoOverlayImg = null;
-    let zoomTargetX = 0.5, zoomTargetY = 0.5;
-    let plannerMap = null, mapMarkers = [];
-
-    // AUTO DATUM VAN VANDAAG
-    document.addEventListener("DOMContentLoaded", () => {
-      const today = new Date().toISOString().split('T')[0];
-      document.getElementById('planner-date').value = today;
-    });
-
-    // TAB SCHAKELEN
-    function switchTab(tabId) {
-      document.querySelectorAll('.tab-panel').forEach(el => el.classList.remove('active'));
-      document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
-
-      document.getElementById('tab-' + tabId).classList.add('active');
-      event.currentTarget.classList.add('active');
-
-      if (tabId === 'planner') {
-        if (!plannerMap) {
-          initMap();
-        } else {
-          setTimeout(() => plannerMap.invalidateSize(), 200);
-        }
-      }
-    }
-
-    // 1. SMART ZOOM LOGICA
-    function loadZoomImage(e) {
-      const file = e.target.files[0];
-      if (!file) return;
-      const r = new FileReader();
-      r.onload = ev => {
-        zoomImg = new Image();
-        zoomImg.onload = () => {
-          previewZoomEffect();
-        };
-        zoomImg.src = ev.target.result;
-      };
-      r.readAsDataURL(file);
-    }
-
-    function setZoomTarget(e) {
-      if (!zoomImg) return;
-      const rect = e.currentTarget.getBoundingClientRect();
-      const x = e.clientX - rect.left;
-      const y = e.clientY - rect.top;
-
-      zoomTargetX = x / rect.width;
-      zoomTargetY = y / rect.height;
-
-      const dot = document.getElementById('zoom-target-dot');
-      dot.style.left = (zoomTargetX * 100) + '%';
-      dot.style.top = (zoomTargetY * 100) + '%';
-      dot.style.display = 'block';
-
-      previewZoomEffect();
-    }
-
-    function previewZoomEffect() {
-      if (!zoomImg) return;
-      const canvas = document.getElementById('zoom-canvas');
-      const ctx = canvas.getContext('2d');
-      canvas.width = zoomImg.width;
-      canvas.height = zoomImg.height;
-      ctx.drawImage(zoomImg, 0, 0);
-    }
-
-    function playZoomAnimation() {
-      if (!zoomImg) return alert("Upload eerst een foto!");
-      const canvas = document.getElementById('zoom-canvas');
-      const ctx = canvas.getContext('2d');
-      const dir = document.getElementById('zoom-direction').value;
-      const maxFactor = parseFloat(document.getElementById('zoom-factor').value);
-      const duration = parseFloat(document.getElementById('zoom-duration').value) * 1000;
-
-      let startTime = null;
-
-      function step(timestamp) {
-        if (!startTime) startTime = timestamp;
-        let progress = (timestamp - startTime) / duration;
-        if (progress > 1) progress = 1;
-
-        let scale = 1;
-        if (dir === 'in') {
-          scale = 1 + (maxFactor - 1) * progress;
-        } else {
-          scale = maxFactor - (maxFactor - 1) * progress;
-        }
-
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        ctx.save();
-        
-        const focusX = zoomImg.width * zoomTargetX;
-        const focusY = zoomImg.height * zoomTargetY;
-
-        ctx.translate(focusX, focusY);
-        ctx.scale(scale, scale);
-        ctx.translate(-focusX, -focusY);
-        ctx.drawImage(zoomImg, 0, 0);
-        ctx.restore();
-
-        if (progress < 1) {
-          requestAnimationFrame(step);
-        }
-      }
-
-      requestAnimationFrame(step);
-    }
-
-    // 2. AI DETECTIE LOGICA
-    function loadAIImage(e) {
-      const file = e.target.files[0];
-      if (!file) return;
-      const r = new FileReader();
-      r.onload = ev => {
-        aiImg = new Image();
-        aiImg.onload = renderAICanvas;
-        aiImg.src = ev.target.result;
-      };
-      r.readAsDataURL(file);
-    }
-
-    function scanAISubject() {
-      if (!aiImg) return alert("Upload eerst een foto!");
-      const status = document.getElementById('ai-status');
-      status.textContent = "🔍 AI analyseert contouren en hoofdonderwerp...";
-      setTimeout(() => {
-        status.textContent = "✅ Hoofdonderwerp gedetecteerd! Achtergrond is geïsoleerd.";
-        document.getElementById('ai-blur-slider').value = 8;
-        renderAICanvas(true);
-      }, 800);
-    }
-
-    function renderAICanvas(highlight = false) {
-      if (!aiImg) return;
-      const canvas = document.getElementById('ai-canvas');
-      const ctx = canvas.getContext('2d');
-      canvas.width = aiImg.width;
-      canvas.height = aiImg.height;
-
-      const blur = document.getElementById('ai-blur-slider').value;
-
-      ctx.filter = `blur(${blur}px)`;
-      ctx.drawImage(aiImg, 0, 0);
-
-      // Behoud scherp centrum/onderwerp
-      ctx.filter = "none";
-      ctx.save();
-      ctx.beginPath();
-      ctx.arc(canvas.width / 2, canvas.height / 2, Math.min(canvas.width, canvas.height) * 0.35, 0, Math.PI * 2);
-      ctx.clip();
-      ctx.drawImage(aiImg, 0, 0);
-
-      if (highlight) {
-        ctx.strokeStyle = "rgba(230, 126, 34, 0.8)";
-        ctx.lineWidth = 4;
-        ctx.stroke();
-      }
-      ctx.restore();
-    }
-
-    // 3. LOGO & HANDTEKENING LOGICA
-    function loadLogoPhoto(e) {
-      const file = e.target.files[0];
-      if (!file) return;
-      const r = new FileReader();
-      r.onload = ev => {
-        logoPhotoImg = new Image();
-        logoPhotoImg.onload = renderLogoCanvas;
-        logoPhotoImg.src = ev.target.result;
-      };
-      r.readAsDataURL(file);
-    }
-
-    function loadLogoPNG(e) {
-      const file = e.target.files[0];
-      if (!file) return;
-      const r = new FileReader();
-      r.onload = ev => {
-        logoOverlayImg = new Image();
-        logoOverlayImg.onload = renderLogoCanvas;
-        logoOverlayImg.src = ev.target.result;
-      };
-      r.readAsDataURL(file);
-    }
-
-    function renderLogoCanvas() {
-      if (!logoPhotoImg) return;
-      const canvas = document.getElementById('logo-canvas');
-      const ctx = canvas.getContext('2d');
-      canvas.width = logoPhotoImg.width;
-      canvas.height = logoPhotoImg.height;
-
-      ctx.drawImage(logoPhotoImg, 0, 0);
-
-      const text = document.getElementById('logo-text').value;
-      const font = document.getElementById('logo-font').value;
-      const size = document.getElementById('logo-size').value;
-
-      ctx.font = `${size}px ${font}`;
-      ctx.fillStyle = "#ffffff";
-      ctx.shadowColor = "rgba(0,0,0,0.6)";
-      ctx.shadowBlur = 6;
-      ctx.fillText(text, 30, canvas.height - 40);
-
-      if (logoOverlayImg) {
-        const logoWidth = canvas.width * 0.2;
-        const logoHeight = (logoOverlayImg.height / logoOverlayImg.width) * logoWidth;
-        ctx.drawImage(logoOverlayImg, canvas.width - logoWidth - 30, canvas.height - logoHeight - 30, logoWidth, logoHeight);
-      }
-    }
-
-    // 4. KAART & LIVE SOORTEN API
-    function initMap() {
-      setTimeout(() => {
-        plannerMap = L.map('planner-map').setView([51.3887, 5.7070], 11);
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(plannerMap);
-        fetchLiveObservations();
-      }, 200);
-    }
-
-    async function fetchLiveObservations() {
-      const lat = document.getElementById('planner-lat').value;
-      const lng = document.getElementById('planner-lng').value;
-      const list = document.getElementById('species-list');
-
-      list.innerHTML = "<li>Laden van actuele waarnemingen...</li>";
-
-      try {
-        const url = `https://api.inaturalist.org/v1/observations?lat=${lat}&lng=${lng}&radius=10&order=desc&per_page=10&locale=nl`;
-        const res = await fetch(url);
-        const data = await res.json();
-
-        list.innerHTML = "";
-        mapMarkers.forEach(m => plannerMap.removeLayer(m));
-        mapMarkers = [];
-
-        if (data.results.length === 0) {
-          list.innerHTML = "<li>Geen recente waarnemingen gevonden op deze locatie.</li>";
-          return;
-        }
-
-        data.results.forEach(obs => {
-          if (obs.taxon) {
-            const nlName = obs.taxon.preferred_common_name || obs.taxon.name;
-            const latinName = obs.taxon.name;
-            const nameStr = `${nlName} (${latinName})`;
-
-            const li = document.createElement('li');
-            li.textContent = nameStr;
-            list.appendChild(li);
-
-            if (obs.geojson && plannerMap) {
-              const marker = L.circleMarker([obs.geojson.coordinates[1], obs.geojson.coordinates[0]], {
-                radius: 7,
-                fillColor: "#e67e22",
-                color: "#ffffff",
-                weight: 2,
-                fillOpacity: 0.85
-              }).addTo(plannerMap);
-              marker.bindTooltip(nameStr);
-              mapMarkers.push(marker);
-            }
-          }
-        });
-      } catch (e) {
-        list.innerHTML = "<li>Fout bij ophalen live gegevens.</li>";
-      }
-    }
-
-    function useGPSLocation() {
-      if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(pos => {
-          document.getElementById('planner-lat').value = pos.coords.latitude.toFixed(4);
-          document.getElementById('planner-lng').value = pos.coords.longitude.toFixed(4);
-          if (plannerMap) {
-            plannerMap.setView([pos.coords.latitude, pos.coords.longitude], 12);
-            fetchLiveObservations();
-          }
-        });
-      }
-    }
-
-    // 5. EXIF READER
-    function readEXIFData(e) {
-      const file = e.target.files[0];
-      if (!file) return;
-      const res = document.getElementById('exif-results');
-      res.innerHTML = `
-        <strong>Bestandsnaam:</strong> ${file.name}<br>
-        <strong>Grootte:</strong> ${(file.size / (1024*1024)).toFixed(2)} MB<br>
-        <strong>Type:</strong> ${file.type}<br>
-        <strong>Status:</strong> Klaar voor verwerking
-      `;
-    }
-  </script>
-</body>
-</html>
+          <li>Laden van actuele waarnemingen...
