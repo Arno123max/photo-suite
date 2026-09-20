@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>PhotoByArno Photography Suite Pro v1.4</title>
+  <title>PhotoByArno Photography Suite Pro v1.5</title>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600&family=Great+Vibes&family=Montserrat:wght@400;600&family=Pacifico&family=Playfair+Display:ital@0;1&family=Satisfy&display=swap" rel="stylesheet">
@@ -258,6 +258,13 @@
     .exif-cols:empty { display: none; }
     .exif-cols .weather-card { margin-bottom: 12px; break-inside: avoid; }
     #exif-thumb { max-height: 240px; width: auto; max-width: 100%; }
+    .exif-actions .btn-row { margin-top: 0; }
+    @media (max-width: 859px) {
+      .tool-grid.exif { display: flex; flex-direction: column; }
+      #exif-tables { order: 5; } #exif-actions { order: 4; }
+    }
+    .info-box { background: #eef5ee; border: 1px solid #b7cfb7; border-left: 5px solid #6f9c6f; color: #2f4a2f; border-radius: 9px; padding: 9px 12px; font-size: 0.78rem; font-weight: 600; margin: -6px 0 12px; }
+    .linkbtn { background: none; border: 0; color: var(--accent); font: inherit; font-weight: 600; text-decoration: underline; cursor: pointer; padding: 0; }
     .chips { display: flex; gap: 6px; flex-wrap: wrap; }
     .chip { padding: 6px 11px; border: 1px solid var(--card-border); background: #fff; border-radius: 16px; font-size: 0.75rem; font-weight: 600; color: var(--text-sub); cursor: pointer; font-family: inherit; }
     .chip.active { background: var(--dark-btn); color: #fff; border-color: var(--dark-btn); }
@@ -294,6 +301,9 @@
       .species-list { max-height: 190px; }
       .exif-cols { column-count: 2; column-gap: 12px; }
       #exif-thumb { max-height: 170px; }
+      .exif-actions { grid-column: 1 / -1; display: grid; grid-template-columns: minmax(200px, 1fr) 2fr; gap: 4px 14px; align-items: end; border-top: 1px solid var(--card-border); padding-top: 10px; }
+      .exif-actions .hint { grid-column: 1 / -1; margin: 0; }
+      .exif-actions .form-group { margin-bottom: 0; }
       .result-box video { max-height: 220px; }
       footer { margin-top: 12px; padding-bottom: 8px; }
     }
@@ -304,7 +314,7 @@
   <header>
     <h1>PhotoByArno Suite Pro</h1>
     <div class="header-right">
-      <span class="header-badge">v1.4<span class="hb-date"> • Sep 2026</span></span>
+      <span class="header-badge">v1.5<span class="hb-date"> • Sep 2026</span></span>
       <div class="lang" role="group" aria-label="Taal / Language"><button class="lang-btn active" data-lang="nl" onclick="setLang('nl')">NL</button><button class="lang-btn" data-lang="en" onclick="setLang('en')">EN</button></div>
     </div>
   </header>
@@ -532,10 +542,11 @@
       <div class="step-card"><div class="tool-grid">
         <div class="tool-left">
           <label class="upload-box" for="logo-photo-file">
-            <strong>📁 Kies achtergrondfoto</strong>
+            <strong>📁 Kies achtergrondfoto (of meerdere)</strong>
             <span>Zonder foto zie je alvast een voorbeeld van je handtekening</span>
-            <input type="file" id="logo-photo-file" accept="image/*" onchange="loadLogoPhoto(event)">
+            <input type="file" id="logo-photo-file" accept="image/*" multiple onchange="loadLogoPhoto(event)">
           </label>
+          <div id="logo-batch" class="info-box hidden"><span id="logo-batch-text"></span> <button class="btn-secondary" style="width:auto;padding:5px 10px;margin-left:6px;" onclick="clearLogoBatch()">✖ Selectie wissen</button></div>
           <div class="preview-box sticky">
             <canvas id="logo-canvas" width="1200" height="800"></canvas>
           </div>
@@ -582,10 +593,10 @@
           </div>
           <div class="btn-row"><button class="btn-secondary hidden" id="logo-clear" onclick="clearLogo()">✖ Logo verwijderen</button></div>
           <div class="form-group" style="margin-top:8px;">
-            <label for="logo-name">Bestandsnaam (zonder .jpg):</label>
+            <label for="logo-name" id="logo-name-label">Bestandsnaam (zonder .jpg):</label>
             <input type="text" id="logo-name" class="form-control" placeholder="bijv. foto-handtekening" oninput="this.dataset.touched='1'">
           </div>
-          <div class="btn-row"><button class="btn-main" onclick="saveLogoPhoto()">⬇ Foto opslaan (JPG)</button></div>
+          <div class="btn-row"><button class="btn-main" id="logo-save" onclick="saveLogoPhoto()">⬇ Foto opslaan (JPG)</button></div>
         </div>
       </div></div>
     </div>
@@ -611,6 +622,7 @@
           <button class="btn-secondary" onclick="useGPSLocation()" style="margin-bottom:8px;">📍 Mijn GPS locatie gebruiken</button>
           <div id="planner-map">Kaart wordt geladen…</div>
           <div id="species-legend" class="legend"></div>
+          <div id="sun-legend" class="legend"></div>
           <p class="hint" id="map-hint" style="margin-top:8px;">Tik op de kaart om een andere plek te kiezen. Beweeg met je muis over een gekleurde stip (of tik erop) om te zien welk dier daar is gespot.</p>
           <div id="planner-status" class="status"></div>
         </div>
@@ -634,6 +646,8 @@
                 <tr><td>Gouden Uur (Ochtend)</td><td id="weather-golden-am">--:--</td></tr>
                 <tr><td>Gouden Uur (Avond)</td><td id="weather-golden-pm">--:--</td></tr>
                 <tr><td>Zonsondergang</td><td id="weather-sunset">--:--</td></tr>
+                <tr><td>Richting zonsopkomst</td><td id="weather-az-rise">--</td></tr>
+                <tr><td>Richting zonsondergang</td><td id="weather-az-set">--</td></tr>
                 <tr><td>Kans op Rode Gloed</td><td id="weather-red-glow">--</td></tr>
                 <tr><td>Fotografie Score</td><td id="weather-score">--</td></tr>
               </table>
@@ -681,26 +695,31 @@
           <div id="exif-out" class="hidden">
             <div class="preview-box" style="min-height:0;"><canvas id="exif-thumb"></canvas></div>
             <div id="exif-gps-warn" class="warn-box hidden"></div>
-            <div class="form-group" style="margin-top:10px;">
-              <label for="exif-name">Bestandsnaam zonder metadata (zonder .jpg):</label>
-              <input type="text" id="exif-name" class="form-control" oninput="this.dataset.touched='1'">
-            </div>
-            <div class="btn-row">
-              <button class="btn-secondary hidden" id="exif-to-planner" onclick="exifToPlanner()">📍 Locatie gebruiken in planner</button>
-              <button class="btn-secondary" onclick="copyExif()">📋 Gegevens kopiëren</button>
-              <button class="btn-main" onclick="stripExifSave()">🧹 Metadata verwijderen &amp; opslaan</button>
-            </div>
-            <p class="hint">Bij JPG-bestanden wordt de metadata (EXIF, XMP, IPTC) zonder kwaliteitsverlies verwijderd; de beeldrichting blijft behouden.</p>
           </div>
         </div>
         <div class="tool-right">
           <div id="exif-tables" class="exif-cols"></div>
         </div>
+        <div id="exif-actions" class="exif-actions hidden">
+          <div class="form-group">
+              <label for="exif-name">Eigen bestandsnaam (leeg = automatisch, zonder .jpg):</label>
+              <input type="text" id="exif-name" class="form-control" placeholder="bijv. mijn-foto" oninput="this.dataset.touched='1'">
+            </div>
+            <div class="btn-row">
+              <button class="btn-secondary hidden" id="exif-to-planner" onclick="exifToPlanner()">📍 Locatie gebruiken in planner</button>
+              <button class="btn-secondary" onclick="copyExif()">📋 Gegevens kopiëren</button>
+              <button class="btn-main" onclick="privateStripSave()">🔒 Alleen privé-gegevens verwijderen &amp; opslaan</button>
+              <button class="btn-secondary" onclick="stripExifSave()">🧹 Metadata verwijderen &amp; opslaan</button>
+            </div>
+            <p class="hint">Alleen privé-gegevens: houdt camera, lens en belichting, verwijdert locatie, serienummers, eigenaar, opmerkingen, miniatuur, XMP en IPTC.</p>
+            <p class="hint">Bij JPG-bestanden wordt de metadata (EXIF, XMP, IPTC) zonder kwaliteitsverlies verwijderd; de beeldrichting blijft behouden.</p>
+        </div>
       </div></div>
     </div>
 
     <footer>
-      Foto's worden lokaal in je browser verwerkt en nergens naartoe gestuurd. Weer komt van Open-Meteo, soortenwaarnemingen van iNaturalist en de kaart van OpenStreetMap; zonnetijden worden lokaal berekend.
+      Foto's worden lokaal in je browser verwerkt en nergens naartoe gestuurd. Weer komt van Open-Meteo, soortenwaarnemingen van iNaturalist en de kaart van OpenStreetMap; zonnetijden worden lokaal berekend.<br>
+      <span>Je instellingen worden alleen in deze browser onthouden.</span> <button class="linkbtn" onclick="clearSettings()">🧽 Onthouden instellingen wissen</button>
     </footer>
   </div>
 
@@ -745,7 +764,7 @@ const I18N_PAIRS = [
   ['Straal {0} km', 'Radius {0} km'], ['Laden van actuele waarnemingen...', 'Loading recent observations...'], ['📁 Kies een foto', '📁 Choose a photo'],
   ['JPG geeft de meeste informatie. Alles blijft op je eigen apparaat.', 'JPG gives the most information. Everything stays on your own device.'], ['Nog geen foto gekozen.', 'No photo chosen yet.'],
   ['⚠ Deze foto bevat privé-gegevens: {0}. Verwijder de metadata voordat je de foto deelt (e-mail, WhatsApp als bestand, je website) als je die informatie privé wilt houden.', '⚠ This photo contains private data: {0}. Remove the metadata before sharing the photo (email, WhatsApp as a file, your website) if you want to keep that information private.'],
-  ['Bestandsnaam zonder metadata (zonder .jpg):', 'File name without metadata (without .jpg):'], ['📍 Locatie gebruiken in planner', '📍 Use location in planner'], ['📋 Gegevens kopiëren', '📋 Copy data'], ['🧹 Metadata verwijderen & opslaan', '🧹 Remove metadata & save'],
+  ['Eigen bestandsnaam (leeg = automatisch, zonder .jpg):', 'Own file name (empty = automatic, without .jpg):'], ['bijv. mijn-foto', 'e.g. my-photo'], ['📍 Locatie gebruiken in planner', '📍 Use location in planner'], ['📋 Gegevens kopiëren', '📋 Copy data'], ['🧹 Metadata verwijderen & opslaan', '🧹 Remove metadata & save'],
   ['Bij JPG-bestanden wordt de metadata (EXIF, XMP, IPTC) zonder kwaliteitsverlies verwijderd; de beeldrichting blijft behouden.', 'For JPG files the metadata (EXIF, XMP, IPTC) is removed without quality loss; the image orientation is kept.'],
   ["Foto's worden lokaal in je browser verwerkt en nergens naartoe gestuurd. Weer komt van Open-Meteo, soortenwaarnemingen van iNaturalist en de kaart van OpenStreetMap; zonnetijden worden lokaal berekend.", 'Photos are processed locally in your browser and never sent anywhere. Weather comes from Open-Meteo, species observations from iNaturalist and the map from OpenStreetMap; sun times are calculated locally.'],
   /* meldingen en statussen */
@@ -800,6 +819,12 @@ const I18N_PAIRS = [
   ['bijv. koplamp-bewerkt', 'e.g. headlight-edited'], ['Uitvoer:', 'Output:'], ['Hoge kwaliteit (tot 4096 px)', 'High quality (up to 4096 px)'], ['2048 px breed', '2048 px wide'], ['1080 px breed (Instagram)', '1080 px wide (Instagram)'],
   ['👁 Voor / na', '👁 Before / after'], ['↺ Alles herstellen', '↺ Reset everything'], ['bewerkt', 'edited'],
   ['Opgeslagen. De foto bevat geen locatie of cameragegevens meer.', 'Saved. The photo no longer contains location or camera data.'], ['Foto geladen: sleep om de uitsnede te kiezen.', 'Photo loaded: drag to choose the crop.'],
+  ['📁 Kies achtergrondfoto (of meerdere)', '📁 Choose background photo (or several)'], ["{0} foto's geselecteerd. Het voorbeeld toont de eerste; bij opslaan krijgen ze allemaal je handtekening (ZIP-bestand).", '{0} photos selected. The preview shows the first; when saving they all get your signature (ZIP file).'],
+  ['✖ Selectie wissen', '✖ Clear selection'], ['Naam van het ZIP-bestand (zonder .zip):', 'Name of the ZIP file (without .zip):'], ["⬇ Alle {0} foto's opslaan (ZIP)", '⬇ Save all {0} photos (ZIP)'], ['⏳ Bezig… {0}/{1}', '⏳ Working… {0}/{1}'],
+  ["Klaar: {0} foto's in één ZIP-bestand.", 'Done: {0} photos in one ZIP file.'], ['handtekening-fotos', 'signature-photos'], ['prive', 'private'],
+  ['🔒 Alleen privé-gegevens verwijderen & opslaan', '🔒 Remove private data only & save'], ['Alleen privé-gegevens: houdt camera, lens en belichting, verwijdert locatie, serienummers, eigenaar, opmerkingen, miniatuur, XMP en IPTC.', 'Private data only: keeps camera, lens and exposure, removes location, serial numbers, owner, comments, thumbnail, XMP and IPTC.'],
+  ['Privé-gegevens verwijderd; camera- en belichtingsgegevens zijn behouden.', 'Private data removed; camera and exposure data kept.'], ['Kon de privé-gegevens niet veilig los verwijderen; alle metadata is verwijderd.', 'Could not safely remove just the private data; all metadata was removed.'],
+  ['Richting zonsopkomst', 'Sunrise direction'], ['Richting zonsondergang', 'Sunset direction'], ['Je instellingen worden alleen in deze browser onthouden.', 'Your settings are only remembered in this browser.'], ['🧽 Onthouden instellingen wissen', '🧽 Clear remembered settings'], ['Instellingen gewist.', 'Settings cleared.'],
   /* algemeen patroon: "Naam (aantal)" – vertaalt alleen het bekende deel */
   ['{0} ({1})', '{0} ({1})']
 ];
@@ -893,7 +918,7 @@ function placeholder(c, text) { const x = c.getContext('2d'); x.fillStyle = '#1c
 /* Bestandsnamen: standaardnaam voorstellen zodat het origineel nooit wordt overschreven; gebruiker mag hem aanpassen */
 const fileBase = f => String(f && f.name || 'foto').replace(/\.[^.]+$/, '') || 'foto';
 function setDefaultName(id, v, reset) { const el = $(id); if (!el) return; if (reset) el.dataset.touched = ''; if (el.dataset.touched !== '1') el.value = v; }
-function outName(id, fb) { const v = String($(id).value || '').trim().replace(/[\\/:*?"<>|]+/g, '').replace(/\.(jpe?g|png|mp4|webm)$/i, '').replace(/[. ]+$/, '').trim(); return v || fb; }
+function outName(id, fb) { const v = String($(id).value || '').trim().replace(/[\\/:*?"<>|]+/g, '').replace(/\.(jpe?g|png|mp4|webm|zip)$/i, '').replace(/[. ]+$/, '').trim(); return v || fb; }
 
 /* Foto laden: werkkopie (max. cap px), EXIF-rotatie is dan meteen verwerkt en tekenen gaat snel. */
 async function loadImageFile(file, cap) {
@@ -1178,6 +1203,8 @@ function detectSubject(data, W5, H5, seed) {
     while (st.length) { const p = st.pop(); if (out[p] || mask[p]) continue; out[p] = 1; const px = p % w, py = (p / w) | 0; if (px > 0) st.push(p - 1); if (px < w - 1) st.push(p + 1); if (py > 0) st.push(p - w); if (py < h - 1) st.push(p + w); }
     for (let i = 0; i < n; i++) if (!out[i]) mask[i] = 1;
   }
+  /* dunne uitlopers (bijv. de rand van iets op de voorgrond die ook scherp is) weghalen */
+  if (best) mask = Uint8Array.from(morph(Float32Array.from(morph(mask, w, h, -Math.max(2, Math.round(w * .02)))), w, h, Math.max(2, Math.round(w * .02))));
   let area = 0; for (let i = 0; i < n; i++) area += mask[i]; area /= n;
   if (!best || area < .02 || area > .9) {
     fallback = true; mask = new Uint8Array(n); const rx = .3 * w, ry = .36 * h;
@@ -1458,18 +1485,27 @@ async function saveEdit() {
 }
 
 /* ═════════════ TAB 3 — HANDTEKENING & LOGO ═════════════ */
-const LG = { name: 'foto', photo: null, logo: null, fonts: {} };
-function loadLogoPhoto(e) { const f = e.target.files[0]; if (!f) return; loadImageFile(f, 3000).then(c => { LG.photo = c; LG.name = fileBase(f); setDefaultName('logo-name', LG.name + '-' + tr('handtekening'), true); renderLogoCanvas(); }).catch(err => toast(err.message)); e.target.value = ''; }
+const LG = { name: 'foto', photo: null, logo: null, fonts: {}, files: [] };
+function logoBatchUI() {
+  const bt = LG.files.length > 1;
+  $('logo-batch').classList.toggle('hidden', !bt);
+  if (bt) $('logo-batch-text').textContent = `${LG.files.length} foto's geselecteerd. Het voorbeeld toont de eerste; bij opslaan krijgen ze allemaal je handtekening (ZIP-bestand).`;
+  $('logo-name-label').textContent = bt ? 'Naam van het ZIP-bestand (zonder .zip):' : 'Bestandsnaam (zonder .jpg):';
+  $('logo-save').textContent = bt ? `⬇ Alle ${LG.files.length} foto's opslaan (ZIP)` : '⬇ Foto opslaan (JPG)';
+  setDefaultName('logo-name', bt ? tr('handtekening-fotos') : LG.name + '-' + tr('handtekening'), true);
+}
+function loadLogoPhoto(e) {
+  const fl = Array.from(e.target.files || []); if (!fl.length) return; e.target.value = '';
+  LG.files = fl.length > 1 ? fl : []; const f = fl[0];
+  loadImageFile(f, 3000).then(c => { LG.photo = c; LG.name = fileBase(f); logoBatchUI(); renderLogoCanvas(); }).catch(err => toast(err.message));
+}
+function clearLogoBatch() { LG.files = []; LG.photo = null; LG.name = 'foto'; logoBatchUI(); renderLogoCanvas(); }
 function loadLogoPNG(e) { const f = e.target.files[0]; if (!f) return; loadImageFile(f, 1400).then(c => { LG.logo = c; $('logo-clear').classList.remove('hidden'); renderLogoCanvas(); toast('Logo geladen.'); }).catch(err => toast(err.message)); e.target.value = ''; }
 function clearLogo() { LG.logo = null; $('logo-clear').classList.add('hidden'); renderLogoCanvas(); }
-function renderLogoCanvas() {
-  const c = $('logo-canvas'), base = LG.photo, cw = base ? base.width : 1200, ch = base ? base.height : 800;
-  if (c.width !== cw || c.height !== ch) { c.width = cw; c.height = ch; }
-  const x = c.getContext('2d');
-  if (base) smooth(x).drawImage(base, 0, 0); else { const g = x.createLinearGradient(0, 0, cw, ch); g.addColorStop(0, '#3a4a3c'); g.addColorStop(.55, '#6d7a5f'); g.addColorStop(1, '#a58a5c'); x.fillStyle = g; x.fillRect(0, 0, cw, ch); }
+/* De handtekening tekenen op elke foto (een of een hele serie): de grootte volgt de breedte van die foto */
+function drawSignature(x, cw, ch) {
   const text = $('logo-text').value.trim(), size = +$('logo-size').value, fam = $('logo-font').value, color = $('logo-color').value, pos = $('logo-pos').value;
   const unit = cw / 1000, fontPx = size * unit, m = Math.round(Math.min(cw, ch) * .035);
-  if (document.fonts && document.fonts.load && !LG.fonts[fam]) { LG.fonts[fam] = true; document.fonts.load(`${Math.round(fontPx)}px ${fam}`, text || 'A').then(renderLogoCanvas).catch(() => { }); }
   x.font = `${fontPx}px ${fam}`;
   const tw = text ? x.measureText(text).width : 0, th = text ? fontPx * 1.25 : 0;
   let lw = 0, lh = 0; if (LG.logo) { lw = Math.min(size * unit * 5, cw * .6); lh = lw * LG.logo.height / LG.logo.width; if (lh > ch * .4) { lh = ch * .4; lw = lh * LG.logo.width / LG.logo.height; } }
@@ -1483,8 +1519,52 @@ function renderLogoCanvas() {
   if (text) { x.font = `${fontPx}px ${fam}`; x.fillStyle = color; x.textBaseline = 'top'; x.fillText(text, ax(tw), by + lh + gap); }
   x.restore();
 }
+function renderLogoCanvas() {
+  const c = $('logo-canvas'), base = LG.photo, cw = base ? base.width : 1200, ch = base ? base.height : 800;
+  if (c.width !== cw || c.height !== ch) { c.width = cw; c.height = ch; }
+  const x = c.getContext('2d');
+  if (base) smooth(x).drawImage(base, 0, 0); else { const g = x.createLinearGradient(0, 0, cw, ch); g.addColorStop(0, '#3a4a3c'); g.addColorStop(.55, '#6d7a5f'); g.addColorStop(1, '#a58a5c'); x.fillStyle = g; x.fillRect(0, 0, cw, ch); }
+  const fam = $('logo-font').value;
+  if (document.fonts && document.fonts.load && !LG.fonts[fam]) { LG.fonts[fam] = true; document.fonts.load(`${Math.round(+$('logo-size').value * cw / 1000)}px ${fam}`, $('logo-text').value.trim() || 'A').then(renderLogoCanvas).catch(() => { }); }
+  drawSignature(x, cw, ch);
+}
+/* ZIP zonder compressie (foto's zijn al gecomprimeerd): zo hoef je maar één bestand te bewaren */
+let CRC_T = null;
+function crc32(u8) {
+  if (!CRC_T) { CRC_T = new Uint32Array(256); for (let n = 0; n < 256; n++) { let c = n; for (let k = 0; k < 8; k++) c = c & 1 ? 0xEDB88320 ^ (c >>> 1) : c >>> 1; CRC_T[n] = c >>> 0; } }
+  let c = 0xFFFFFFFF; for (let i = 0; i < u8.length; i++) c = CRC_T[(c ^ u8[i]) & 255] ^ (c >>> 8); return (c ^ 0xFFFFFFFF) >>> 0;
+}
+function makeZip(files) {
+  const enc = new TextEncoder(), parts = [], cen = []; let off = 0;
+  const d = new Date(), dt = ((d.getFullYear() - 1980) << 9) | ((d.getMonth() + 1) << 5) | d.getDate(), tm = (d.getHours() << 11) | (d.getMinutes() << 5) | (d.getSeconds() >> 1);
+  for (const f of files) {
+    const nm = enc.encode(f.name), crc = crc32(f.data), sz = f.data.length, h = new DataView(new ArrayBuffer(30));
+    h.setUint32(0, 0x04034b50, true); h.setUint16(4, 20, true); h.setUint16(6, 0x0800, true); h.setUint16(10, tm, true); h.setUint16(12, dt, true); h.setUint32(14, crc, true); h.setUint32(18, sz, true); h.setUint32(22, sz, true); h.setUint16(26, nm.length, true);
+    parts.push(new Uint8Array(h.buffer), nm, f.data);
+    const c = new DataView(new ArrayBuffer(46)); c.setUint32(0, 0x02014b50, true); c.setUint16(4, 20, true); c.setUint16(6, 20, true); c.setUint16(8, 0x0800, true); c.setUint16(12, tm, true); c.setUint16(14, dt, true); c.setUint32(16, crc, true); c.setUint32(20, sz, true); c.setUint32(24, sz, true); c.setUint16(28, nm.length, true); c.setUint32(42, off, true);
+    cen.push(new Uint8Array(c.buffer), nm); off += 30 + nm.length + sz;
+  }
+  let cs = 0; cen.forEach(p => { cs += p.length; });
+  const e = new DataView(new ArrayBuffer(22)); e.setUint32(0, 0x06054b50, true); e.setUint16(8, files.length, true); e.setUint16(10, files.length, true); e.setUint32(12, cs, true); e.setUint32(16, off, true);
+  return new Blob([...parts, ...cen, new Uint8Array(e.buffer)], { type: 'application/zip' });
+}
+async function saveLogoBatch() {
+  const btn = $('logo-save'); btn.disabled = true; const out = [], used = {};
+  try {
+    const fam = $('logo-font').value; if (document.fonts && document.fonts.load) { try { await document.fonts.load(`40px ${fam}`, $('logo-text').value || 'A'); } catch (_) { } }
+    for (let i = 0; i < LG.files.length; i++) {
+      btn.textContent = `⏳ Bezig… ${i + 1}/${LG.files.length}`; await sleep(15);
+      const c = await loadImageFile(LG.files[i], 3000), cv = mk(c.width, c.height), x = cv.getContext('2d'); smooth(x).drawImage(c, 0, 0); drawSignature(x, cv.width, cv.height);
+      const blob = await canvasBlob(cv, 'image/jpeg', .95); let nm = fileBase(LG.files[i]) + '-' + tr('handtekening'); if (used[nm]) nm += '-' + (++used[nm]); else used[nm] = 1;
+      out.push({ name: nm + '.jpg', data: new Uint8Array(await blob.arrayBuffer()) });
+    }
+    await shareOrSave(makeZip(out), outName('logo-name', tr('handtekening-fotos')) + '.zip'); toast(`Klaar: ${out.length} foto's in één ZIP-bestand.`);
+  } catch (e) { toast(e.message || 'Opslaan is niet gelukt.'); }
+  finally { btn.disabled = false; logoBatchUI(); }
+}
 async function saveLogoPhoto() {
   if (!LG.photo) { toast('Kies eerst een achtergrondfoto.'); return; }
+  if (LG.files.length > 1) { await saveLogoBatch(); return; }
   try { await shareOrSave(await canvasBlob($('logo-canvas'), 'image/jpeg', .95), outName('logo-name', LG.name + '-' + tr('handtekening')) + '.jpg'); } catch (e) { toast(e.message); }
 }
 
@@ -1503,6 +1583,18 @@ function sunTimes(date, lat, lng) {
   for (const [k, ang] of [['sun', -.833], ['golden', 6], ['civil', -6]]) { const Js = setJ(ang * RAD), Jr = Jnoon - (Js - Jnoon); res[k + 'Rise'] = fromJ(Jr); res[k + 'Set'] = fromJ(Js); }
   return res;
 }
+const rightAsc = l => Math.atan2(Math.sin(l) * Math.cos(OBL), Math.cos(l));
+/* richting van de zon in graden vanaf het noorden (90 = oost, 180 = zuid) */
+function sunAzimuth(date, lat, lng) {
+  const lw = RAD * -lng, phi = RAD * lat, d = toDays(date), M = meanAnom(d), L = eclLon(M), dc = decl(L), H = RAD * (280.16 + 360.9856235 * d) - lw - rightAsc(L);
+  return (Math.atan2(Math.sin(H), Math.cos(H) * Math.sin(phi) - Math.tan(dc) * Math.cos(phi)) / RAD + 180) % 360;
+}
+const COMPASS = { nl: ['N', 'NO', 'O', 'ZO', 'Z', 'ZW', 'W', 'NW'], en: ['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW'] };
+const fmtAz = deg => `${Math.round(deg)}° (${COMPASS[LANG === 'en' ? 'en' : 'nl'][Math.round(deg / 45) % 8]})`;
+function destPoint(lat, lng, brg, km) {
+  const R = 6371, d = km / R, b = brg * RAD, p1 = lat * RAD, l1 = lng * RAD, p2 = Math.asin(Math.sin(p1) * Math.cos(d) + Math.cos(p1) * Math.sin(d) * Math.cos(b)), l2 = l1 + Math.atan2(Math.sin(b) * Math.sin(d) * Math.cos(p1), Math.cos(d) - Math.sin(p1) * Math.sin(p2));
+  return [p2 / RAD, ((l2 / RAD + 540) % 360) - 180];
+}
 const sunTimesFor = (dateStr, lat, lng) => { const [y, m, d] = dateStr.split('-').map(Number); return sunTimes(new Date(Date.UTC(y, m - 1, d, 12) - lng / 15 * 3600e3), lat, lng); };
 function fmtTime(date, tz) {
   if (!date || isNaN(date)) return '—';
@@ -1519,7 +1611,7 @@ const addDays = (s, n) => { const [y, m, d] = s.split('-').map(Number), t = new 
 const fmtDate = s => s.slice(8, 10) + '-' + s.slice(5, 7) + '-' + s.slice(0, 4);
 const MONTHS = ['januari', 'februari', 'maart', 'april', 'mei', 'juni', 'juli', 'augustus', 'september', 'oktober', 'november', 'december'];
 
-const P = { obs: [], spLayer: null, map: null, marker: null, circle: null, inited: false, reqId: 0, ctrl: null, timer: 0 };
+const P = { sunAz: null, sunLayer: null, obs: [], spLayer: null, map: null, marker: null, circle: null, inited: false, reqId: 0, ctrl: null, timer: 0 };
 function ensureLeaflet() {
   return new Promise((res, rej) => {
     if (window.L) return res();
@@ -1544,7 +1636,7 @@ function buildMap() {
   P.marker = L.marker([c.lat, c.lng], { draggable: true }).addTo(P.map);
   P.marker.on('dragend', () => { const p = P.marker.getLatLng(); setCoords(p.lat, p.lng, true); });
   P.map.on('click', e => setCoords(e.latlng.lat, e.latlng.lng, true));
-  updateRadiusCircle(false); drawSpeciesMap();
+  updateRadiusCircle(false); drawSpeciesMap(); drawSunLines();
   setTimeout(() => P.map.invalidateSize(), 100);
 }
 function setCoords(lat, lng, fromMap) {
@@ -1617,6 +1709,10 @@ function renderSun(t, tz, dateStr) {
   setText('weather-golden-am', t.sunRise && !isNaN(t.sunRise) ? `${fmtTime(t.sunRise, tz)} – ${fmtTime(t.goldenRise, tz)}` : '—');
   setText('weather-golden-pm', t.sunSet && !isNaN(t.sunSet) ? `${fmtTime(t.goldenSet, tz)} – ${fmtTime(t.sunSet, tz)}` : '—');
   setText('sun-caption', `${fmtDate(dateStr)} · tijden in ${tz || 'jouw tijdzone'}`);
+  const cc = readCoords(), okS = cc && !isNaN(t.sunRise) && !isNaN(t.sunSet);
+  P.sunAz = okS ? { rise: sunAzimuth(t.sunRise, cc.lat, cc.lng), set: sunAzimuth(t.sunSet, cc.lat, cc.lng) } : null;
+  setText('weather-az-rise', P.sunAz ? fmtAz(P.sunAz.rise) : '—'); setText('weather-az-set', P.sunAz ? fmtAz(P.sunAz.set) : '—');
+  try { drawSunLines(); } catch (_) { }
   if (isNaN(t.sunRise) || isNaN(t.sunSet)) setText('sun-caption', `${fmtDate(dateStr)} · op deze plek en datum is er geen normale zonsopkomst/-ondergang (poolzomer of -winter).`);
 }
 function renderWeather(json, t, dateStr) {
@@ -1693,6 +1789,16 @@ function updateRadiusCircle(fit) {
   else { P.circle.setLatLng([c.lat, c.lng]); P.circle.setRadius(r); }
   if (fit) P.map.fitBounds(P.circle.getBounds(), { padding: [10, 10] });
 }
+function drawSunLines() {
+  const lg = $('sun-legend'), cc = readCoords();
+  if (!P.sunAz || !cc) { lg.innerHTML = ''; if (P.sunLayer) P.sunLayer.clearLayers(); return; }
+  const a = P.sunAz, rows = [[tr('Zonsopkomst'), a.rise, '#f59e0b'], [tr('Zonsondergang'), a.set, '#e0392b']];
+  lg.innerHTML = rows.map(r => `<span><i style="background:${r[2]}"></i>${esc(r[0])} ${esc(fmtAz(r[1]))}</span>`).join('');
+  if (!P.map || !window.L) return;
+  if (!P.sunLayer) P.sunLayer = L.layerGroup().addTo(P.map); P.sunLayer.clearLayers();
+  const km = (+$('species-radius').value || 10) * .9;
+  rows.forEach(r => L.polyline([[cc.lat, cc.lng], destPoint(cc.lat, cc.lng, r[1], km)], { color: r[2], weight: 3, opacity: .9, dashArray: '8 7', interactive: true }).bindTooltip(`${r[0]} ${fmtAz(r[1])}`, { sticky: true }).addTo(P.sunLayer));
+}
 function drawSpeciesMap() {
   const obs = P.obs || [], lg = $('species-legend'), counts = {};
   obs.forEach(o => { const g = o.group || 'Overig'; counts[g] = (counts[g] || 0) + 1; });
@@ -1710,7 +1816,7 @@ async function updateSpecies(fit) {
   const c = readCoords(); if (!c) return;
   const list = $('species-list'), dateStr = $('planner-date').value || todayStr(), group = $('species-group').value, radius = $('species-radius').value;
   const id = ++S.reqId; if (S.ctrl) S.ctrl.abort(); S.ctrl = new AbortController(); const sig = S.ctrl.signal;
-  updateRadiusCircle(fit === true); P.obs = []; drawSpeciesMap();
+  updateRadiusCircle(fit === true); P.obs = []; drawSpeciesMap(); if (fit === true) drawSunLines();
   list.innerHTML = '<li>Laden van actuele waarnemingen...</li>'; $('species-note').textContent = '';
   const both = async extra => {
     const [a, b] = await Promise.allSettled([inatSpecies(c, radius, group, extra, sig), inatObservations(c, radius, group, extra, sig)]);
@@ -1811,7 +1917,7 @@ const X = { file: null, buf: null, ex: null, dims: null, thumb: null, model: nul
 function renderExifView() {
   X.model = exifModel(X.ex, X.file, X.dims);
   const tc = $('exif-thumb'); tc.width = X.thumb.width; tc.height = X.thumb.height; tc.getContext('2d').drawImage(X.thumb, 0, 0);
-  $('exif-empty').classList.add('hidden'); $('exif-out').classList.remove('hidden');
+  $('exif-empty').classList.add('hidden'); $('exif-out').classList.remove('hidden'); $('exif-actions').classList.remove('hidden');
   const pv = X.model.priv;
   $('exif-gps-warn').classList.toggle('hidden', !pv.length);
   if (pv.length) $('exif-gps-warn').textContent = `⚠ Deze foto bevat privé-gegevens: ${pv.map(tr).join(', ')}. Verwijder de metadata voordat je de foto deelt (e-mail, WhatsApp als bestand, je website) als je die informatie privé wilt houden.`;
@@ -1822,7 +1928,7 @@ function renderExifView() {
 async function loadExif(e) {
   const f = e.target.files[0]; if (!f) return; e.target.value = '';
   try {
-    X.file = f; X.buf = await f.arrayBuffer(); setDefaultName('exif-name', fileBase(f) + '-' + tr('zonder-metadata'), true);
+    X.file = f; X.buf = await f.arrayBuffer(); setDefaultName('exif-name', '', true);
     X.ex = parseExif(X.buf); X.thumb = await loadImageFile(f, 900); X.dims = { w: X.thumb.origW, h: X.thumb.origH };
     renderExifView();
   } catch (err) { toast(err.message || 'Deze foto kon niet worden gelezen.'); }
@@ -1848,6 +1954,43 @@ function stripJpeg(buf, orientation) {
   parts.push(u.subarray(off));
   return new Blob(parts, { type: 'image/jpeg' });
 }
+const PRIV_IFD0 = [0x010E, 0x013B, 0x9C9B, 0x9C9C, 0x9C9D, 0x9C9E, 0x9C9F], PRIV_EXIF = [0xA420, 0xA430, 0xA431, 0xA435, 0x927C, 0x9286];
+/* Maakt privé-velden in het EXIF-blok leeg (op dezelfde plek, dus alle verwijzingen blijven kloppen) */
+function scrubExifSegment(u8) {
+  const v = new DataView(u8.buffer, u8.byteOffset, u8.byteLength), tiff = 10, le = v.getUint16(tiff) === 0x4949;
+  const clearEntry = e => { const type = v.getUint16(e + 2, le), cnt = v.getUint32(e + 4, le), sz = (TSIZE[type] || 0) * cnt; if (sz > 4) { const vo = tiff + v.getUint32(e + 8, le); if (vo + sz <= u8.length) u8.fill(0, vo, vo + sz); } u8.fill(0, e + 8, e + 12); v.setUint32(e + 4, 0, le); };
+  const scrub = (off, tags) => { const p = tiff + off; if (p + 2 > u8.length) return; const n = v.getUint16(p, le); for (let i = 0; i < n; i++) { const e = p + 2 + i * 12; if (e + 12 > u8.length) break; if (tags.includes(v.getUint16(e, le))) clearEntry(e); } };
+  const ifd0 = v.getUint32(tiff + 4, le), p0 = tiff + ifd0, n0 = v.getUint16(p0, le); let exifOff = null, gpsOff = null;
+  for (let i = 0; i < n0; i++) { const e = p0 + 2 + i * 12, tag = v.getUint16(e, le); if (tag === 0x8769) exifOff = v.getUint32(e + 8, le); if (tag === 0x8825) gpsOff = v.getUint32(e + 8, le); }
+  scrub(ifd0, PRIV_IFD0); if (exifOff != null) scrub(exifOff, PRIV_EXIF);
+  if (gpsOff != null) { const pg = tiff + gpsOff, ng = v.getUint16(pg, le); for (let i = 0; i < ng; i++) clearEntry(pg + 2 + i * 12); u8.fill(0, pg + 2, pg + 2 + ng * 12); v.setUint16(pg, 0, le); }
+  const nextPtr = p0 + 2 + n0 * 12, ifd1 = v.getUint32(nextPtr, le);   /* miniatuur: kan uitgesneden delen van de foto bevatten */
+  if (ifd1) { const p1 = tiff + ifd1, n1 = v.getUint16(p1, le); let jo = 0, jl = 0; for (let i = 0; i < n1; i++) { const e = p1 + 2 + i * 12, tag = v.getUint16(e, le); if (tag === 0x0201) jo = v.getUint32(e + 8, le); if (tag === 0x0202) jl = v.getUint32(e + 8, le); } if (jo && jl && tiff + jo + jl <= u8.length) u8.fill(0, tiff + jo, tiff + jo + jl); v.setUint32(nextPtr, 0, le); }
+}
+function privacyStripJpeg(buf) {
+  const u = new Uint8Array(buf), v = new DataView(buf); if (u.length < 4 || u[0] !== 0xFF || u[1] !== 0xD8) return null;
+  const parts = [u.subarray(0, 2)]; let off = 2;
+  while (off + 4 <= u.length) {
+    if (u[off] !== 0xFF) break; const m = u[off + 1]; if (m === 0xDA || m === 0xD9) break;
+    const len = v.getUint16(off + 2), seg = u.slice(off, off + 2 + len);
+    if (m === 0xED || m === 0xFE) { /* IPTC en opmerkingen weg */ }
+    else if (m === 0xE1) { if (seg[4] === 0x45 && seg[5] === 0x78 && seg[6] === 0x69 && seg[7] === 0x66) { try { scrubExifSegment(seg); } catch (_) { return null; } parts.push(seg); } /* XMP e.d. weg */ }
+    else parts.push(seg);
+    off += 2 + len;
+  }
+  parts.push(u.subarray(off)); return new Blob(parts, { type: 'image/jpeg' });
+}
+async function privateStripSave() {
+  if (!X.file) { toast('Kies eerst een foto.'); return; }
+  const el = $('exif-name'), base = el.dataset.touched === '1' ? outName('exif-name', fileBase(X.file) + '-' + tr('prive')) : fileBase(X.file) + '-' + tr('prive');
+  try {
+    let blob = privacyStripJpeg(X.buf), note = 'Privé-gegevens verwijderd; camera- en belichtingsgegevens zijn behouden.';
+    if (blob) { const chk = exifModel(parseExif(await blob.arrayBuffer()), X.file, null); if (chk.priv.length) blob = null; }
+    if (!blob) { blob = stripJpeg(X.buf, X.model ? X.model.orientation : 1); note = 'Kon de privé-gegevens niet veilig los verwijderen; alle metadata is verwijderd.'; }
+    if (!blob) { const im = await loadImageFile(X.file, 8192), png = /png/i.test(X.file.type); await shareOrSave(await canvasBlob(im, png ? 'image/png' : 'image/jpeg', .95), base + '.' + (png ? 'png' : 'jpg')); toast('Metadata verwijderd (foto opnieuw opgeslagen).'); return; }
+    await shareOrSave(blob, base + '.jpg'); toast(note);
+  } catch (e) { toast(e.message || 'Opslaan is niet gelukt.'); }
+}
 async function stripExifSave() {
   if (!X.file) { toast('Kies eerst een foto.'); return; }
   const base = outName('exif-name', fileBase(X.file) + '-' + tr('zonder-metadata'));
@@ -1858,6 +2001,25 @@ async function stripExifSave() {
     await shareOrSave(await canvasBlob(im, png ? 'image/png' : 'image/jpeg', .95), base + '.' + (png ? 'png' : 'jpg')); toast('Metadata verwijderd (foto opnieuw opgeslagen).');
   } catch (e) { toast(e.message || 'Opslaan is niet gelukt.'); }
 }
+
+/* ───────── Instellingen onthouden (alleen in deze browser) ───────── */
+const REMEMBER = ['logo-text', 'logo-font', 'logo-size', 'logo-color', 'logo-pos', 'zoom-effect', 'zoom-format', 'zoom-direction', 'zoom-factor', 'zoom-duration', 'edit-ratio', 'edit-out', 'species-group', 'species-radius'], DEFAULTS = {};
+REMEMBER.forEach(id => { const el = $(id); if (el) DEFAULTS[id] = el.value; });
+function saveSettings() { try { const j = {}; REMEMBER.forEach(id => { const el = $(id); if (el) j[id] = el.value; }); localStorage.setItem('ps-settings', JSON.stringify(j)); } catch (_) { } }
+function restoreSettings() {
+  try {
+    const j = JSON.parse(localStorage.getItem('ps-settings') || '{}');
+    REMEMBER.forEach(id => { const el = $(id); if (!el || j[id] == null) return; if (el.tagName === 'SELECT' && ![...el.options].some(o => o.value === String(j[id]))) return; el.value = j[id]; });
+  } catch (_) { }
+}
+function clearSettings() {
+  try { localStorage.removeItem('ps-settings'); } catch (_) { }
+  REMEMBER.forEach(id => { const el = $(id); if (el && DEFAULTS[id] != null) el.value = DEFAULTS[id]; });
+  try { previewZoomEffect(); renderLogoCanvas(); if (E.prev) { E.zoom = 1; editGeomChange(); } if (P.inited) { updateRadiusCircle(true); updateSpecies(); drawSunLines(); } } catch (_) { }
+  toast('Instellingen gewist.');
+}
+restoreSettings();
+REMEMBER.forEach(id => { const el = $(id); if (el) { el.addEventListener('input', saveSettings); el.addEventListener('change', saveSettings); } });
 
 /* ───────── Hoogte doorgeven aan de pagina eromheen (iframe past zich dan aan, geen scrollbalk) ───────── */
 function postHeight() { try { if (window.parent && window.parent !== window) window.parent.postMessage({ photoSuiteHeight: Math.ceil(document.body.getBoundingClientRect().height) + 4 }, '*'); } catch (_) { } }
