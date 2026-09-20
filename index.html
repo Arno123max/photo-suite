@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>PhotoByArno Photography Suite Pro v1.3</title>
+  <title>PhotoByArno Photography Suite Pro v1.4</title>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600&family=Great+Vibes&family=Montserrat:wght@400;600&family=Pacifico&family=Playfair+Display:ital@0;1&family=Satisfy&display=swap" rel="stylesheet">
@@ -258,6 +258,14 @@
     .exif-cols:empty { display: none; }
     .exif-cols .weather-card { margin-bottom: 12px; break-inside: avoid; }
     #exif-thumb { max-height: 240px; width: auto; max-width: 100%; }
+    .chips { display: flex; gap: 6px; flex-wrap: wrap; }
+    .chip { padding: 6px 11px; border: 1px solid var(--card-border); background: #fff; border-radius: 16px; font-size: 0.75rem; font-weight: 600; color: var(--text-sub); cursor: pointer; font-family: inherit; }
+    .chip.active { background: var(--dark-btn); color: #fff; border-color: var(--dark-btn); }
+    .sl-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px 16px; margin-bottom: 6px; }
+    .sl label { display: flex; justify-content: space-between; align-items: baseline; font-size: 0.76rem; font-weight: 600; margin-bottom: 1px; }
+    .sl output { color: var(--accent); font-weight: 700; }
+    .sl input[type=range] { width: 100%; accent-color: var(--accent); margin: 2px 0; }
+    #edit-canvas { touch-action: pan-y; }
     .leaflet-tooltip { font-family: inherit; font-size: 12px; line-height: 1.35; }
     .leaflet-tooltip small { color: #6e675f; }
     .leaflet-popup-content { font-size: 12px; line-height: 1.4; }
@@ -296,7 +304,7 @@
   <header>
     <h1>PhotoByArno Suite Pro</h1>
     <div class="header-right">
-      <span class="header-badge">v1.3<span class="hb-date"> • Sep 2026</span></span>
+      <span class="header-badge">v1.4<span class="hb-date"> • Sep 2026</span></span>
       <div class="lang" role="group" aria-label="Taal / Language"><button class="lang-btn active" data-lang="nl" onclick="setLang('nl')">NL</button><button class="lang-btn" data-lang="en" onclick="setLang('en')">EN</button></div>
     </div>
   </header>
@@ -306,6 +314,7 @@
     <div class="nav-tabs-container">
       <div class="nav-tabs">
         <button class="tab-btn active" data-tab="zoom" onclick="switchTab('zoom')">🔍 Smart Zoom &amp; Pulse</button>
+        <button class="tab-btn" data-tab="edit" onclick="switchTab('edit')">🎨 Foto's bewerken</button>
         <button class="tab-btn" data-tab="ai" onclick="switchTab('ai')">✨ Onderwerp Scan</button>
         <button class="tab-btn" data-tab="logo" onclick="switchTab('logo')">✍️ Handtekening &amp; Logo</button>
         <button class="tab-btn" data-tab="planner" onclick="switchTab('planner')">🌅 Planner &amp; Kaart</button>
@@ -373,6 +382,91 @@
             <button class="btn-secondary" id="zoom-record" onclick="recordZoomVideo()">🎬 Maak video (MP4/WebM)</button>
           </div>
           <div id="zoom-result" class="result-box hidden"></div>
+        </div>
+      </div></div>
+    </div>
+
+    <!-- TAB: FOTO'S BEWERKEN -->
+    <div id="tab-edit" class="tab-panel">
+      <div class="step-card"><div class="tool-grid">
+        <div class="tool-left">
+          <label class="upload-box" for="edit-file">
+            <strong>📁 Kies of sleep een foto</strong>
+            <span>Bijsnijden, kleur en scherpte aanpassen, klaar voor Instagram</span>
+            <input type="file" id="edit-file" accept="image/*" onchange="loadEditImage(event)">
+          </label>
+          <div class="preview-box sticky">
+            <canvas id="edit-canvas" width="720" height="480"></canvas>
+          </div>
+          <p class="hint" style="margin:8px 0 14px;">Sleep op de foto om de uitsnede te verschuiven. Houd “Voor / na” ingedrukt om het origineel te zien.</p>
+        </div>
+        <div class="tool-right">
+          <div class="two-col">
+            <div class="form-group">
+              <label for="edit-ratio">Bijsnijden naar:</label>
+              <select id="edit-ratio" class="form-control" onchange="editGeomChange()">
+                <option value="orig">Origineel</option>
+                <option value="1:1">1:1 Vierkant</option>
+                <option value="4:5">4:5 Portret (Instagram)</option>
+                <option value="1.91:1">1.91:1 Liggend (Instagram)</option>
+                <option value="9:16">9:16 Story/Reel</option>
+                <option value="3:2">3:2 Klassiek</option>
+                <option value="16:9">16:9 Breed</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Draaien:</label>
+              <div class="seg">
+                <button class="seg-btn" title="Linksom draaien" onclick="editRotate(-1)">↺</button>
+                <button class="seg-btn" title="Rechtsom draaien" onclick="editRotate(1)">↻</button>
+                <button class="seg-btn" title="Spiegelen" onclick="editFlip()">⇋</button>
+              </div>
+            </div>
+          </div>
+          <div class="sl-grid">
+            <div class="sl"><label for="edit-angle">Rechtzetten <output id="edit-angle-val">0°</output></label><input type="range" id="edit-angle" min="-15" max="15" step="0.5" value="0" oninput="editGeomChange()"></div>
+            <div class="sl"><label for="edit-zoom">Inzoomen <output id="edit-zoom-val">1,0×</output></label><input type="range" id="edit-zoom" min="1" max="3" step="0.05" value="1" oninput="editGeomChange()"></div>
+          </div>
+          <div class="form-group" style="margin-top:8px;">
+            <label>Filter:</label>
+            <div class="chips" id="edit-presets">
+              <button class="chip active" data-p="none" onclick="editPreset('none')">Geen</button>
+              <button class="chip" data-p="vivid" onclick="editPreset('vivid')">Levendig</button>
+              <button class="chip" data-p="nature" onclick="editPreset('nature')">Natuur</button>
+              <button class="chip" data-p="bw" onclick="editPreset('bw')">Zwart-wit</button>
+              <button class="chip" data-p="warm" onclick="editPreset('warm')">Warm</button>
+              <button class="chip" data-p="cool" onclick="editPreset('cool')">Koel</button>
+              <button class="chip" data-p="film" onclick="editPreset('film')">Filmisch</button>
+              <button class="chip" data-p="vintage" onclick="editPreset('vintage')">Vintage</button>
+            </div>
+          </div>
+          <div class="sl-grid">
+            <div class="sl"><label for="edit-b">Helderheid <output id="edit-b-val">0</output></label><input type="range" id="edit-b" min="-100" max="100" value="0" oninput="editChange()"></div>
+            <div class="sl"><label for="edit-c">Contrast <output id="edit-c-val">0</output></label><input type="range" id="edit-c" min="-100" max="100" value="0" oninput="editChange()"></div>
+            <div class="sl"><label for="edit-s">Verzadiging <output id="edit-s-val">0</output></label><input type="range" id="edit-s" min="-100" max="100" value="0" oninput="editChange()"></div>
+            <div class="sl"><label for="edit-w">Warmte <output id="edit-w-val">0</output></label><input type="range" id="edit-w" min="-100" max="100" value="0" oninput="editChange()"></div>
+            <div class="sl"><label for="edit-sh">Scherpte <output id="edit-sh-val">0</output></label><input type="range" id="edit-sh" min="0" max="100" value="0" oninput="editChange()"></div>
+            <div class="sl"><label for="edit-v">Vignet <output id="edit-v-val">0</output></label><input type="range" id="edit-v" min="0" max="100" value="0" oninput="editChange()"></div>
+          </div>
+          <div class="two-col" style="margin-top:8px;">
+            <div class="form-group">
+              <label for="edit-name">Bestandsnaam (zonder .jpg):</label>
+              <input type="text" id="edit-name" class="form-control" placeholder="bijv. koplamp-bewerkt" oninput="this.dataset.touched='1'">
+            </div>
+            <div class="form-group">
+              <label for="edit-out">Uitvoer:</label>
+              <select id="edit-out" class="form-control">
+                <option value="hq">Hoge kwaliteit (tot 4096 px)</option>
+                <option value="2048">2048 px breed</option>
+                <option value="1080">1080 px breed (Instagram)</option>
+              </select>
+            </div>
+          </div>
+          <div class="btn-row">
+            <button class="btn-secondary" id="edit-compare">👁 Voor / na</button>
+            <button class="btn-secondary" onclick="editReset()">↺ Alles herstellen</button>
+          </div>
+          <div class="btn-row"><button class="btn-main" onclick="saveEdit()">⬇ Foto opslaan (JPG)</button></div>
         </div>
       </div></div>
     </div>
@@ -697,6 +791,15 @@ const I18N_PAIRS = [
   ['GPS-coördinaten', 'GPS coordinates'], ['serienummer van je camera', 'serial number of your camera'], ['naam van de eigenaar', 'name of the owner'], ['Artiest/maker 🔒', 'Artist / creator 🔒'], ['Serienummer objectief 🔒', 'Lens serial number 🔒'],
   /* bestandsnaam-toevoegingen */
   ['onderwerp', 'subject'], ['handtekening', 'signature'], ['zonder-metadata', 'no-metadata'],
+  ["🎨 Foto's bewerken", '🎨 Edit photos'], ['Bijsnijden, kleur en scherpte aanpassen, klaar voor Instagram', 'Crop, adjust color and sharpness, ready for Instagram'],
+  ['Sleep op de foto om de uitsnede te verschuiven. Houd “Voor / na” ingedrukt om het origineel te zien.', 'Drag on the photo to move the crop. Hold “Before / after” to see the original.'],
+  ['Bijsnijden naar:', 'Crop to:'], ['4:5 Portret (Instagram)', '4:5 Portrait (Instagram)'], ['1.91:1 Liggend (Instagram)', '1.91:1 Landscape (Instagram)'], ['9:16 Story/Reel', '9:16 Story/Reel'], ['3:2 Klassiek', '3:2 Classic'], ['16:9 Breed', '16:9 Wide'],
+  ['Draaien:', 'Rotate:'], ['Linksom draaien', 'Rotate left'], ['Rechtsom draaien', 'Rotate right'], ['Spiegelen', 'Flip'], ['Rechtzetten {0}', 'Straighten {0}'], ['Inzoomen {0}', 'Zoom {0}'],
+  ['Rechtzetten', 'Straighten'], ['Inzoomen', 'Zoom'], ['Filter:', 'Filter:'], ['Geen', 'None'], ['Levendig', 'Vivid'], ['Natuur', 'Nature'], ['Zwart-wit', 'Black & white'], ['Warm', 'Warm'], ['Koel', 'Cool'], ['Filmisch', 'Cinematic'], ['Vintage', 'Vintage'],
+  ['Helderheid', 'Brightness'], ['Contrast', 'Contrast'], ['Verzadiging', 'Saturation'], ['Warmte', 'Warmth'], ['Scherpte', 'Sharpness'], ['Vignet', 'Vignette'],
+  ['bijv. koplamp-bewerkt', 'e.g. headlight-edited'], ['Uitvoer:', 'Output:'], ['Hoge kwaliteit (tot 4096 px)', 'High quality (up to 4096 px)'], ['2048 px breed', '2048 px wide'], ['1080 px breed (Instagram)', '1080 px wide (Instagram)'],
+  ['👁 Voor / na', '👁 Before / after'], ['↺ Alles herstellen', '↺ Reset everything'], ['bewerkt', 'edited'],
+  ['Opgeslagen. De foto bevat geen locatie of cameragegevens meer.', 'Saved. The photo no longer contains location or camera data.'], ['Foto geladen: sleep om de uitsnede te kiezen.', 'Photo loaded: drag to choose the crop.'],
   /* algemeen patroon: "Naam (aantal)" – vertaalt alleen het bekende deel */
   ['{0} ({1})', '{0} ({1})']
 ];
@@ -746,7 +849,7 @@ function setLang(l, initial) {
 }
 /* dynamische onderdelen opnieuw opbouwen in de gekozen taal */
 function refreshDynamic() {
-  try { previewZoomEffect(); drawAI(); renderLogoCanvas(); } catch (_) { }
+  try { previewZoomEffect(); drawAI(); drawEdit(); editSyncLabels(); renderLogoCanvas(); } catch (_) { }
   try { if (P.wx) renderWeather(P.wx.json, P.wx.t, P.wx.dateStr); else if (P.inited) renderSun(sunTimesFor($('planner-date').value || todayStr(), (readCoords() || { lat: 51.4 }).lat, (readCoords() || { lng: 5.7 }).lng), null, $('planner-date').value || todayStr()); } catch (_) { }
   try { if (P.inited) updateSpecies(); } catch (_) { }
   try { if (X.model) renderExifView(); } catch (_) { }
@@ -1247,6 +1350,113 @@ async function saveAIPhoto() {
   if (showBox) { $('ai-show-box').checked = true; drawAI(); }
 }
 
+/* ═════════════ TAB — FOTO'S BEWERKEN ═════════════ */
+const EDIT_PRESETS = { none: [0, 0, 0, 0, 0, 0], vivid: [5, 15, 30, 0, 20, 0], nature: [0, 10, 20, 5, 25, 10], bw: [0, 20, -100, 0, 15, 15], warm: [5, 5, 5, 35, 0, 0], cool: [0, 5, 0, -30, 0, 0], film: [-5, 20, -15, 10, 10, 30], vintage: [5, -10, -25, 25, 0, 40] };
+const EDIT_KEYS = ['b', 'c', 's', 'w', 'sh', 'v'];
+const E = { name: 'foto', full: null, prev: null, rot: 0, flip: false, angle: 0, zoom: 1, cx: .5, cy: .5, vals: { b: 0, c: 0, s: 0, w: 0, sh: 0, v: 0 }, compare: false, geo: null, pending: false, drag: null };
+/* uitsnede-berekening (los van tekenen, zodat het te testen is) */
+function editPlan(sw, sh, rot, angle, zoom, cx, cy, R, outW) {
+  const swap = rot % 2 === 1, iw = swap ? sh : sw, ih = swap ? sw : sh, ar = R || iw / ih;
+  const th = Math.abs(angle) * Math.PI / 180, k = Math.cos(th) + Math.max(iw / ih, ih / iw) * Math.sin(th);
+  let bw, bh; if (ar > iw / ih) { bw = iw; bh = iw / ar; } else { bh = ih; bw = ih * ar; }
+  const cw = bw / zoom, ch = bh / zoom, px = clamp(cx * iw, cw / 2, iw - cw / 2), py = clamp(cy * ih, ch / 2, ih - ch / 2);
+  return { iw, ih, k, cw, ch, x0: px - cw / 2, y0: py - ch / 2, outW: Math.round(outW), outH: Math.max(1, Math.round(outW / ar)), m: outW / cw, ar };
+}
+/* kleur- en scherpte-bewerkingen op ruwe pixels (RGBA) */
+function adjustPixels(d, w, h, v) {
+  if (!v.b && !v.c && !v.s && !v.w && !v.sh && !v.v) return;
+  const gain = Math.pow(2, v.b / 100 * 1.2), c255 = v.c * 1.28, cf = (259 * (c255 + 255)) / (255 * (259 - c255));
+  const mr = 1 + .18 * v.w / 100, mg = 1 + .02 * v.w / 100, mb = 1 - .18 * v.w / 100, lut = [new Uint8ClampedArray(256), new Uint8ClampedArray(256), new Uint8ClampedArray(256)];
+  for (let i = 0; i < 256; i++) { let x = Math.pow(Math.pow(i / 255, 2.2) * gain, 1 / 2.2) * 255; x = cf * (x - 128) + 128; lut[0][i] = x * mr; lut[1][i] = x * mg; lut[2][i] = x * mb; }
+  const sat = 1 + v.s / 100, n = w * h * 4;
+  for (let i = 0; i < n; i += 4) {
+    let r = lut[0][d[i]], g = lut[1][d[i + 1]], b = lut[2][d[i + 2]];
+    if (v.s) { const l = .299 * r + .587 * g + .114 * b; r = l + (r - l) * sat; g = l + (g - l) * sat; b = l + (b - l) * sat; }
+    d[i] = r; d[i + 1] = g; d[i + 2] = b;
+  }
+  if (v.sh > 0) {
+    const src = new Uint8ClampedArray(d), bl = new Uint8ClampedArray(d), amt = v.sh / 100 * 1.6;
+    blurRGBA(bl, w, h, Math.max(1, Math.round(w / 1000 * 1.5)));
+    for (let i = 0; i < n; i += 4) { d[i] = src[i] + amt * (src[i] - bl[i]); d[i + 1] = src[i + 1] + amt * (src[i + 1] - bl[i + 1]); d[i + 2] = src[i + 2] + amt * (src[i + 2] - bl[i + 2]); }
+  }
+  if (v.v > 0) {
+    const st = v.v / 100 * .85;
+    for (let y = 0; y < h; y++) { const ny = (y - h / 2) / (h / 2); for (let x = 0; x < w; x++) { const nx = (x - w / 2) / (w / 2), f = 1 - st * Math.pow((nx * nx + ny * ny) / 2, 1.2), i = (y * w + x) * 4; d[i] *= f; d[i + 1] *= f; d[i + 2] *= f; } }
+  }
+}
+function editRatio() { const v = $('edit-ratio').value; if (v === 'orig') return 0; const p = v.split(':').map(Number); return p[0] / p[1]; }
+function renderCrop(src, p) {
+  const c = mk(p.outW, p.outH), x = c.getContext('2d'), s = E.flip ? -1 : 1; smooth(x);
+  x.scale(p.m, p.m); x.translate(-p.x0, -p.y0); x.translate(p.iw / 2, p.ih / 2);
+  if (E.flip) x.scale(-1, 1);
+  x.rotate(s * (E.rot * Math.PI / 2 + E.angle * Math.PI / 180)); x.scale(p.k, p.k); x.drawImage(src, -src.width / 2, -src.height / 2);
+  return c;
+}
+function loadEditImage(e) {
+  const f = e.target.files[0]; if (!f) return;
+  loadImageFile(f, 4096).then(c => {
+    E.full = c; E.prev = Math.max(c.width, c.height) > 1600 ? shrink(c, Math.round(c.width * 1600 / Math.max(c.width, c.height)), Math.round(c.height * 1600 / Math.max(c.width, c.height))) : c; E.name = fileBase(f);
+    setDefaultName('edit-name', E.name + '-' + tr('bewerkt'), true); editReset(true); toast('Foto geladen: sleep om de uitsnede te kiezen.');
+  }).catch(err => toast(err.message));
+  e.target.value = '';
+}
+function editSyncLabels() {
+  EDIT_KEYS.forEach(k => { $('edit-' + k + '-val').textContent = E.vals[k]; });
+  $('edit-angle-val').textContent = nlNum(E.angle, 1) + '°'; $('edit-zoom-val').textContent = nlNum(E.zoom, 1) + '×';
+}
+function editReset(keepFile) {
+  E.rot = 0; E.flip = false; E.angle = 0; E.zoom = 1; E.cx = .5; E.cy = .5; E.compare = false;
+  $('edit-ratio').value = 'orig'; $('edit-angle').value = 0; $('edit-zoom').value = 1; editPreset('none', true);
+}
+function editPreset(name, silent) {
+  const v = EDIT_PRESETS[name] || EDIT_PRESETS.none;
+  EDIT_KEYS.forEach((k, i) => { E.vals[k] = v[i]; $('edit-' + k).value = v[i]; });
+  document.querySelectorAll('#edit-presets .chip').forEach(b => b.classList.toggle('active', b.dataset.p === name));
+  editSyncLabels(); renderEdit();
+}
+function editChange() {
+  EDIT_KEYS.forEach(k => { E.vals[k] = +$('edit-' + k).value; });
+  document.querySelectorAll('#edit-presets .chip').forEach(b => b.classList.remove('active'));
+  editSyncLabels(); renderEdit();
+}
+function editGeomChange() { E.angle = +$('edit-angle').value; E.zoom = +$('edit-zoom').value; editSyncLabels(); renderEdit(); }
+function editRotate(d) { E.rot = (E.rot + d + 4) % 4; E.cx = E.cy = .5; renderEdit(); }
+function editFlip() { E.flip = !E.flip; renderEdit(); }
+function renderEdit() { if (E.pending) return; E.pending = true; requestAnimationFrame(() => { E.pending = false; drawEdit(); }); }
+function drawEdit() {
+  const c = $('edit-canvas');
+  if (!E.prev) { c.width = 720; c.height = 480; placeholder(c, 'Kies een foto om te beginnen'); return; }
+  const p = editPlan(E.prev.width, E.prev.height, E.rot, E.angle, E.zoom, E.cx, E.cy, editRatio(), 880); E.geo = p;
+  const base = renderCrop(E.prev, p);
+  if (!E.compare) { const x = base.getContext('2d'), id = x.getImageData(0, 0, base.width, base.height); adjustPixels(id.data, base.width, base.height, E.vals); x.putImageData(id, 0, 0); }
+  c.width = base.width; c.height = base.height; c.getContext('2d').drawImage(base, 0, 0);
+  const pan = E.zoom > 1 || (editRatio() && Math.abs(editRatio() - p.iw / p.ih) > .01);
+  c.style.touchAction = pan ? 'none' : 'pan-y'; c.style.cursor = pan ? 'grab' : '';
+}
+async function saveEdit() {
+  if (!E.full) { toast('Kies eerst een foto.'); return; }
+  try {
+    const sel = $('edit-out').value, R = editRatio(), p0 = editPlan(E.full.width, E.full.height, E.rot, E.angle, E.zoom, E.cx, E.cy, R, 1000);
+    let outW = sel === '1080' ? 1080 : sel === '2048' ? 2048 : Math.min(4096, Math.round(p0.cw));
+    const outH = outW / p0.ar; if (outW * outH > 16e6) outW = Math.floor(Math.sqrt(16e6 * p0.ar));
+    const p = editPlan(E.full.width, E.full.height, E.rot, E.angle, E.zoom, E.cx, E.cy, R, outW), base = renderCrop(E.full, p), x = base.getContext('2d'), id = x.getImageData(0, 0, base.width, base.height);
+    adjustPixels(id.data, base.width, base.height, E.vals); x.putImageData(id, 0, 0);
+    await shareOrSave(await canvasBlob(base, 'image/jpeg', .92), outName('edit-name', E.name + '-' + tr('bewerkt')) + '.jpg');
+    toast('Opgeslagen. De foto bevat geen locatie of cameragegevens meer.');
+  } catch (e) { toast(e.message || 'Opslaan is niet gelukt.'); }
+}
+{
+  const cv = $('edit-canvas'), cmp = $('edit-compare');
+  cv.addEventListener('pointerdown', e => { if (!E.prev || !E.geo) return; if (cv.style.touchAction !== 'none') return; e.preventDefault(); try { cv.setPointerCapture(e.pointerId); } catch (_) { } E.drag = { x: e.clientX, y: e.clientY, cx: E.cx, cy: E.cy }; cv.style.cursor = 'grabbing'; });
+  cv.addEventListener('pointermove', e => {
+    if (!E.drag || !E.geo) return; const r = cv.getBoundingClientRect(), g = E.geo, dx = (e.clientX - E.drag.x) / r.width * g.cw, dy = (e.clientY - E.drag.y) / r.height * g.ch;
+    E.cx = clamp(E.drag.cx - dx / g.iw, 0, 1); E.cy = clamp(E.drag.cy - dy / g.ih, 0, 1); renderEdit();
+  });
+  ['pointerup', 'pointercancel'].forEach(t => cv.addEventListener(t, () => { E.drag = null; cv.style.cursor = cv.style.touchAction === 'none' ? 'grab' : ''; }));
+  const on = v => e => { if (e && e.preventDefault) e.preventDefault(); E.compare = v; renderEdit(); };
+  ['pointerdown'].forEach(t => cmp.addEventListener(t, on(true))); ['pointerup', 'pointerleave', 'pointercancel'].forEach(t => cmp.addEventListener(t, () => { if (E.compare) { E.compare = false; renderEdit(); } }));
+}
+
 /* ═════════════ TAB 3 — HANDTEKENING & LOGO ═════════════ */
 const LG = { name: 'foto', photo: null, logo: null, fonts: {} };
 function loadLogoPhoto(e) { const f = e.target.files[0]; if (!f) return; loadImageFile(f, 3000).then(c => { LG.photo = c; LG.name = fileBase(f); setDefaultName('logo-name', LG.name + '-' + tr('handtekening'), true); renderLogoCanvas(); }).catch(err => toast(err.message)); e.target.value = ''; }
@@ -1655,8 +1865,8 @@ try { if (window.ResizeObserver) new ResizeObserver(postHeight).observe(document
 
 /* ───────── Start ───────── */
 { let l = null; try { l = new URLSearchParams(location.search).get('lang'); } catch (_) { } if (l !== 'en' && l !== 'nl') { l = null; try { l = localStorage.getItem('ps-lang'); } catch (_) { } } setLang(l === 'en' ? 'en' : 'nl', true); }
-previewZoomEffect(); drawAI(); renderLogoCanvas();
-{ const h = (location.hash || '').slice(1); if (['zoom', 'ai', 'logo', 'planner', 'exif'].includes(h)) switchTab(h); }
+previewZoomEffect(); drawAI(); drawEdit(); editSyncLabels(); renderLogoCanvas();
+{ const h = (location.hash || '').slice(1); if (['zoom', 'edit', 'ai', 'logo', 'planner', 'exif'].includes(h)) switchTab(h); }
 
 </script>
 </body>
