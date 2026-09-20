@@ -48,6 +48,14 @@
       z-index: 1000;
     }
     header h1 { margin: 0; font-size: 1.05rem; font-weight: 700; color: var(--text-main); }
+    .header-right { display: flex; align-items: center; gap: 8px; }
+    .header-badge { white-space: nowrap; }
+    @media (max-width: 400px) { .hb-date { display: none; } }
+    header h1 { white-space: nowrap; }
+    @media (max-width: 480px) { header { padding: 10px 10px; gap: 6px; } header h1 { font-size: 0.92rem; } .header-badge { font-size: 0.64rem; padding: 4px 8px; } .header-right { gap: 6px; } .lang-btn { padding: 5px 8px; } }
+    .lang { display: flex; border: 1px solid var(--card-border); border-radius: 20px; overflow: hidden; background: #fff; }
+    .lang-btn { border: 0; background: transparent; padding: 5px 10px; font-size: 0.72rem; font-weight: 700; color: var(--text-sub); cursor: pointer; font-family: inherit; }
+    .lang-btn.active { background: var(--dark-btn); color: #fff; }
     .header-badge {
       background: var(--accent-light);
       color: var(--accent);
@@ -287,7 +295,10 @@
 
   <header>
     <h1>PhotoByArno Suite Pro</h1>
-    <span class="header-badge">v1.3 • Sep 2026</span>
+    <div class="header-right">
+      <span class="header-badge">v1.3<span class="hb-date"> • Sep 2026</span></span>
+      <div class="lang" role="group" aria-label="Taal / Language"><button class="lang-btn active" data-lang="nl" onclick="setLang('nl')">NL</button><button class="lang-btn" data-lang="en" onclick="setLang('en')">EN</button></div>
+    </div>
   </header>
 
   <div class="container">
@@ -401,8 +412,8 @@
           <div class="form-group">
             <label for="ai-margin">Rand van het onderwerp (ruimer = meer blijft scherp):</label>
             <div class="range-row">
-              <input type="range" id="ai-margin" min="-6" max="12" value="2" class="form-control" oninput="onAIMargin()">
-              <output id="ai-margin-val">+2</output>
+              <input type="range" id="ai-margin" min="-6" max="12" value="0" class="form-control" oninput="onAIMargin()">
+              <output id="ai-margin-val">0</output>
             </div>
           </div>
           <div class="form-group">
@@ -575,7 +586,7 @@
           <div id="exif-empty" class="hint">Nog geen foto gekozen.</div>
           <div id="exif-out" class="hidden">
             <div class="preview-box" style="min-height:0;"><canvas id="exif-thumb"></canvas></div>
-            <div id="exif-gps-warn" class="warn-box hidden">⚠ Deze foto bevat GPS-coördinaten. Verwijder de metadata voordat je de foto online deelt als je je locatie privé wilt houden.</div>
+            <div id="exif-gps-warn" class="warn-box hidden"></div>
             <div class="form-group" style="margin-top:10px;">
               <label for="exif-name">Bestandsnaam zonder metadata (zonder .jpg):</label>
               <input type="text" id="exif-name" class="form-control" oninput="this.dataset.touched='1'">
@@ -608,6 +619,149 @@
    PhotoByArno Suite Pro v1.2 — alle functies die de knoppen aanroepen
    ════════════════════════════════════════════════════════════════ */
 
+/* ═════════════ TAAL (NL / EN) ═════════════
+   Alle tekst in de code staat in het Nederlands. In EN-modus vertaalt dit blok elke tekst die op de pagina verschijnt
+   (ook meldingen, tabellen en statussen) via de woordenlijst hieronder. {0}, {1} … zijn variabele stukken. */
+const I18N_PAIRS = [
+  ['✨ Onderwerp Scan', '✨ Subject Scan'], ['✍️ Handtekening & Logo', '✍️ Signature & Logo'], ['🌅 Planner & Kaart', '🌅 Planner & Map'],
+  ['📁 Kies of sleep een foto', '📁 Choose or drop a photo'], ['Tik daarna op het onderwerp waar de zoom naartoe moet', 'Then tap the subject the zoom should go to'],
+  ['Tik op de foto om het onderwerp te kiezen. Blijf op dit tabblad tijdens het maken van een video.', 'Tap the photo to choose the subject. Stay on this tab while a video is being made.'],
+  ['Formaat:', 'Format:'], ['Origineel', 'Original'], ['4:5 Portret', '4:5 Portrait'], ['1:1 Vierkant', '1:1 Square'], ['Zoom Richting:', 'Zoom direction:'],
+  ['Omgeving ➔ Detail (Inzoomen op onderwerp)', 'Surroundings ➔ Detail (zoom in on subject)'], ['Detail ➔ Omgeving (Reveal van het landschap)', 'Detail ➔ Surroundings (reveal the landscape)'],
+  ['Zoom Sterkte (Factor):', 'Zoom strength (factor):'], ['Duur van de beweging (seconden):', 'Duration of the movement (seconds):'],
+  ['Bestandsnaam video (zonder .mp4):', 'Video file name (without .mp4):'], ['bijv. koplamp-zoom', 'e.g. headlight-zoom'],
+  ['▶ Speel animatie af', '▶ Play animation'], ['🎬 Maak video (MP4/WebM)', '🎬 Make video (MP4/WebM)'],
+  ['📁 Kies foto voor de onderwerp-scan', '📁 Choose a photo for the subject scan'], ['Werkt het best als het onderwerp scherp is en de achtergrond rustiger', 'Works best when the subject is sharp and the background calmer'],
+  ['Rood = wat als onderwerp wordt gezien en scherp blijft. Klopt het niet? Gebruik de gereedschappen bij “Gereedschap op de foto”.', 'Red = what is seen as the subject and stays sharp. Not right? Use the tools under “Tools on the photo”.'],
+  ['🪄 Automatisch onderwerp scannen', '🪄 Scan subject automatically'], ['Gereedschap op de foto:', 'Tools on the photo:'], ['☝ Onderwerp aantikken', '☝ Tap subject'], ['🖌 Bijschilderen', '🖌 Paint in'], ['🧽 Wegvegen', '🧽 Erase'],
+  ['Penseelgrootte:', 'Brush size:'], ['↺ Wis penseel', '↺ Clear brush'], ['Rand van het onderwerp (ruimer = meer blijft scherp):', 'Subject edge (wider = more stays sharp):'],
+  ['Achtergrond vervagen (onderwerp blijft scherp):', 'Blur background (subject stays sharp):'], ['Toon gevonden onderwerp (rood)', 'Show detected subject (red)'],
+  ['Bestandsnaam (zonder .jpg):', 'File name (without .jpg):'], ['bijv. koplamp-onderwerp', 'e.g. headlight-subject'], ['⬇ Foto opslaan (JPG)', '⬇ Save photo (JPG)'],
+  ['📁 Kies achtergrondfoto', '📁 Choose background photo'], ['Zonder foto zie je alvast een voorbeeld van je handtekening', 'Without a photo you already see a preview of your signature'],
+  ['Tekst / Handtekening:', 'Text / Signature:'], ['Lettertype stijl (Calligraphy & Modern):', 'Font style (Calligraphy & Modern):'],
+  ['Dancing Script (Handgeschreven Sfeer)', 'Dancing Script (Handwritten feel)'], ['Satisfy (Elegante Pen)', 'Satisfy (Elegant pen)'], ['Pacifico (Vlot Handschrift)', 'Pacifico (Casual handwriting)'],
+  ['Playfair Display (Klassiek Sjiek)', 'Playfair Display (Classic & chic)'], ['Montserrat (Strak & Modern)', 'Montserrat (Sleek & modern)'],
+  ['Grootte:', 'Size:'], ['Kleur:', 'Color:'], ['Positie / Locatie:', 'Position:'], ['Rechtsonder', 'Bottom right'], ['Linksonder', 'Bottom left'], ['Rechtsboven', 'Top right'], ['Linksboven', 'Top left'], ['Midden', 'Center'],
+  ['Upload eigen logo (PNG met transparante achtergrond werkt het best):', 'Upload your own logo (PNG with transparent background works best):'], ['✖ Logo verwijderen', '✖ Remove logo'], ['bijv. foto-handtekening', 'e.g. photo-signature'],
+  ['Datum:', 'Date:'], ['Breedtegraad (Lat):', 'Latitude (Lat):'], ['Lengtegraad (Lng):', 'Longitude (Lng):'], ['📍 Mijn GPS locatie gebruiken', '📍 Use my GPS location'], ['Kaart wordt geladen…', 'Loading map…'],
+  ['Tik op de kaart om een andere plek te kiezen. Beweeg met je muis over een gekleurde stip (of tik erop) om te zien welk dier daar is gespot.', 'Tap the map to pick another spot. Hover over a colored dot (or tap it) to see which animal was spotted there.'],
+  ['☁️ Live Weer & Mist', '☁️ Live Weather & Fog'], ['Temperatuur', 'Temperature'], ['Windsnelheid', 'Wind speed'], ['Mistverwachting', 'Fog forecast'], ['🌅 Zon, Gouden Uur & Rode Gloed', '🌅 Sun, Golden Hour & Red Glow'],
+  ['Zonsopkomst', 'Sunrise'], ['Gouden Uur (Ochtend)', 'Golden hour (morning)'], ['Gouden Uur (Avond)', 'Golden hour (evening)'], ['Zonsondergang', 'Sunset'], ['Kans op Rode Gloed', 'Chance of red glow'], ['Fotografie Score', 'Photography score'],
+  ['🌿 Live Gespotte Soorten rond deze Datum', '🌿 Live Species Spotted Around This Date'], ['Alle groepen', 'All groups'], ['🐦 Vogels', '🐦 Birds'], ['🦊 Zoogdieren', '🦊 Mammals'], ['🦋 Insecten', '🦋 Insects'], ['🌿 Planten', '🌿 Plants'], ['🍄 Paddenstoelen', '🍄 Fungi'], ['🦎 Reptielen & amfibieën', '🦎 Reptiles & amphibians'],
+  ['Straal {0} km', 'Radius {0} km'], ['Laden van actuele waarnemingen...', 'Loading recent observations...'], ['📁 Kies een foto', '📁 Choose a photo'],
+  ['JPG geeft de meeste informatie. Alles blijft op je eigen apparaat.', 'JPG gives the most information. Everything stays on your own device.'], ['Nog geen foto gekozen.', 'No photo chosen yet.'],
+  ['⚠ Deze foto bevat privé-gegevens: {0}. Verwijder de metadata voordat je de foto deelt (e-mail, WhatsApp als bestand, je website) als je die informatie privé wilt houden.', '⚠ This photo contains private data: {0}. Remove the metadata before sharing the photo (email, WhatsApp as a file, your website) if you want to keep that information private.'],
+  ['Bestandsnaam zonder metadata (zonder .jpg):', 'File name without metadata (without .jpg):'], ['📍 Locatie gebruiken in planner', '📍 Use location in planner'], ['📋 Gegevens kopiëren', '📋 Copy data'], ['🧹 Metadata verwijderen & opslaan', '🧹 Remove metadata & save'],
+  ['Bij JPG-bestanden wordt de metadata (EXIF, XMP, IPTC) zonder kwaliteitsverlies verwijderd; de beeldrichting blijft behouden.', 'For JPG files the metadata (EXIF, XMP, IPTC) is removed without quality loss; the image orientation is kept.'],
+  ["Foto's worden lokaal in je browser verwerkt en nergens naartoe gestuurd. Weer komt van Open-Meteo, soortenwaarnemingen van iNaturalist en de kaart van OpenStreetMap; zonnetijden worden lokaal berekend.", 'Photos are processed locally in your browser and never sent anywhere. Weather comes from Open-Meteo, species observations from iNaturalist and the map from OpenStreetMap; sun times are calculated locally.'],
+  /* meldingen en statussen */
+  ['Afbeelding maken is mislukt. Probeer een kleinere foto.', 'Creating the image failed. Try a smaller photo.'], ['Geen bestand gekozen.', 'No file chosen.'],
+  ['Deze foto kon niet worden geopend. Zet HEIC eventueel om naar JPG.', 'This photo could not be opened. Convert HEIC to JPG if needed.'], ['Deze foto kon niet worden geopend.', 'This photo could not be opened.'],
+  ['Foto geladen: tik op het onderwerp.', 'Photo loaded: tap the subject.'], ['Kies een foto om te beginnen', 'Choose a photo to get started'], ['Tik op de foto zelf.', 'Tap the photo itself.'], ['Kies eerst een foto.', 'Choose a photo first.'],
+  ['Deze browser kan geen video maken. Gebruik Safari op een recente iPhone of Chrome.', 'This browser cannot make video. Use Safari on a recent iPhone or Chrome.'], ['Op dit apparaat is geen geschikte video-export beschikbaar.', 'No suitable video export is available on this device.'],
+  ['Video maken is mislukt.', 'Making the video failed.'], ['De opname werd onderbroken doordat je de pagina verliet. Blijf tijdens het maken op deze pagina en probeer opnieuw.', 'The recording was interrupted because you left the page. Stay on this page while it is being made and try again.'],
+  ['Voorbereiden…', 'Preparing…'], ['Opnemen… {0}%', 'Recording… {0}%'], ['⬇ Video opslaan ({0})', '⬇ Save video ({0})'],
+  ['Foto geladen. Kies “Automatisch onderwerp scannen”, of schuif direct de vervaging.', 'Photo loaded. Choose “Scan subject automatically”, or move the blur slider right away.'], ['Bezig met scannen…', 'Scanning…'],
+  ['Geen duidelijk onderwerp gevonden: ik gebruikte een ovaal rond je aangetikte punt. Tik op het onderwerp, of schilder het bij met het penseel.', 'No clear subject found: I used an oval around the point you tapped. Tap the subject, or paint it in with the brush.'],
+  ['Geen duidelijk onderwerp gevonden: ik gebruikte een ovaal in het midden. Tik op het onderwerp, of schilder het bij met het penseel.', 'No clear subject found: I used an oval in the center. Tap the subject, or paint it in with the brush.'],
+  ['✓ Onderwerp gevonden ({0}% van de foto). Zie je nog onscherpe stukken? Zet “Toon gevonden onderwerp” aan en pas de rand aan of schilder bij.', '✓ Subject found ({0}% of the photo). Still see blurry parts? Turn on “Show detected subject” and adjust the edge or paint them in.'],
+  ['Scannen is mislukt: {0}', 'Scanning failed: {0}'], ['Scannen is mislukt.', 'Scanning failed.'], ['Tik op het onderwerp dat scherp moet blijven.', 'Tap the subject that should stay sharp.'],
+  ['Schilder over de delen die nog wazig worden maar scherp moeten blijven.', 'Paint over the parts that still turn blurry but should stay sharp.'], ['Veeg delen weg die scherp blijven maar wazig moeten worden.', 'Erase parts that stay sharp but should become blurry.'],
+  ['Penseelwerk gewist.', 'Brush work cleared.'], ['Logo geladen.', 'Logo loaded.'], ['Kies eerst een achtergrondfoto.', 'Choose a background photo first.'],
+  ['De kaart kon niet worden geladen (controleer je internetverbinding). Weer, zon en soorten werken wel: vul de coördinaten in.', 'The map could not be loaded (check your internet connection). Weather, sun and species still work: enter the coordinates.'],
+  ['© OpenStreetMap-bijdragers', '© OpenStreetMap contributors'], ['GPS wordt door deze browser niet ondersteund.', 'GPS is not supported by this browser.'], ['Locatie bepalen…', 'Determining location…'],
+  ['Toegang tot je locatie is geweigerd. Sta locatie toe in je browser.', 'Access to your location was denied. Allow location in your browser.'], ['Je locatie kon niet worden bepaald.', 'Your location could not be determined.'],
+  ['Hoog', 'High'], ['Matig', 'Moderate'], ['Laag', 'Low'], ['Zeer laag', 'Very low'], ['Zeer hoog', 'Very high'], ['Uitstekend', 'Excellent'], ['Goed', 'Good'], ['Redelijk', 'Fair'], ['Zwak', 'Poor'],
+  ['{0} (RV {1}%, wind {2} km/h)', '{0} (RH {1}%, wind {2} km/h)'], ['{0} (RV {1}%)', '{0} (RH {1}%)'], ['{0} / 10 · {1}', '{0} / 10 · {1}'],
+  ['{0} · tijden in {1}', '{0} · times in {1}'], ['jouw tijdzone', 'your time zone'], ['{0} · op deze plek en datum is er geen normale zonsopkomst/-ondergang (poolzomer of -winter).', '{0} · at this place and date there is no normal sunrise/sunset (polar summer or winter).'],
+  ['Actuele waarden (nu)', 'Current values (now)'], ['Waarden rond zonsopkomst (verwachting)', 'Values around sunrise (forecast)'], ['Geen gegevens', 'No data'], ['Ochtend: {0} · Avond: {1}', 'Morning: {0} · Evening: {1}'],
+  ['Vul geldige coördinaten in, bijvoorbeeld 51,3887 en 5,7070.', 'Enter valid coordinates, for example 51.3887 and 5.7070.'], ['Weer laden…', 'Loading weather…'],
+  ['Een weersverwachting is maximaal 16 dagen vooruit beschikbaar. De zonnetijden hieronder kloppen wel.', 'A weather forecast is only available up to 16 days ahead. The sun times below are still correct.'],
+  ['Het weer kon niet worden geladen (controleer je internetverbinding). De zonnetijden hieronder kloppen wel.', 'The weather could not be loaded (check your internet connection). The sun times below are still correct.'],
+  ['{0} · bron: iNaturalist', '{0} · source: iNaturalist'], ['Waarnemingen van {0} t/m {1} binnen {2} km', 'Observations from {0} to {1} within {2} km'], ['Verwacht in {0}: waarnemingen uit eerdere jaren binnen {1} km', 'Expected in {0}: observations from earlier years within {1} km'],
+  ['Geen waarnemingen gevonden voor deze keuze. Probeer een grotere straal of “Alle groepen”.', 'No observations found for this choice. Try a larger radius or “All groups”.'],
+  ['Waarnemingen konden niet worden geladen (controleer je internetverbinding en probeer het opnieuw).', 'Observations could not be loaded (check your internet connection and try again).'],
+  ['Vogels', 'Birds'], ['Zoogdieren', 'Mammals'], ['Insecten', 'Insects'], ['Planten', 'Plants'], ['Paddenstoelen', 'Fungi'], ['Reptielen', 'Reptiles'], ['Amfibieën', 'Amphibians'], ['Spinachtigen', 'Arachnids'], ['Weekdieren', 'Molluscs'], ['Vissen', 'Fish'], ['Overig', 'Other'],
+  ['· {0} recente waarnemingen op de kaart', '· {0} recent observations on the map'], ['· locatie bij benadering', '· approximate location'], ['+ {0} meer op deze plek', '+ {0} more at this spot'],
+  ['januari', 'January'], ['februari', 'February'], ['maart', 'March'], ['april', 'April'], ['mei', 'May'], ['juni', 'June'], ['juli', 'July'], ['augustus', 'August'], ['september', 'September'], ['oktober', 'October'], ['november', 'November'], ['december', 'December'],
+  /* EXIF */
+  ['Merk', 'Make'], ['Objectief', 'Lens'], ['Eigenaar 🔒', 'Owner 🔒'], ['Serienummer camera 🔒', 'Camera serial number 🔒'], ['⚙️ Opname', '⚙️ Shot'], ['Datum & tijd', 'Date & time'], ['Sluitertijd', 'Shutter speed'], ['Diafragma', 'Aperture'],
+  ['Brandpuntsafstand', 'Focal length'], ['{0} mm (≈ {1} mm kleinbeeld)', '{0} mm (≈ {1} mm 35mm equiv.)'], ['Belichtingscorrectie', 'Exposure compensation'], ['Lichtmeting', 'Metering'], ['Opnameprogramma', 'Exposure program'],
+  ['Flits', 'Flash'], ['Flits afgegaan', 'Flash fired'], ['Geen flits', 'No flash'], ['Witbalans', 'White balance'], ['Automatisch', 'Automatic'], ['Handmatig', 'Manual'],
+  ['🖼 Bestand', '🖼 File'], ['Bestandsnaam', 'File name'], ['Grootte', 'Size'], ['Afmetingen', 'Dimensions'], ['Richting (EXIF)', 'Orientation (EXIF)'], ['📍 Locatie', '📍 Location'], ['Breedtegraad', 'Latitude'], ['Lengtegraad', 'Longitude'], ['Hoogte', 'Altitude'], ['Kaart', 'Map'], ['Openen op OpenStreetMap', 'Open on OpenStreetMap'],
+  ['Normaal', 'Normal'], ['Gespiegeld', 'Mirrored'], ['180° gedraaid', 'Rotated 180°'], ['Verticaal gespiegeld', 'Flipped vertically'], ['Gespiegeld en 90° linksom', 'Mirrored and 90° counter-clockwise'], ['90° rechtsom gedraaid', 'Rotated 90° clockwise'], ['Gespiegeld en 90° rechtsom', 'Mirrored and 90° clockwise'], ['90° linksom gedraaid', 'Rotated 90° counter-clockwise'],
+  ['Onbekend', 'Unknown'], ['Gemiddeld', 'Average'], ['Centrum-gewogen', 'Center-weighted'], ['Deel', 'Partial'], ['Programma-automaat', 'Program auto'], ['Diafragmavoorkeuze', 'Aperture priority'], ['Sluitertijdvoorkeuze', 'Shutter priority'], ['Creatief', 'Creative'], ['Actie', 'Action'], ['Portret', 'Portrait'], ['Landschap', 'Landscape'],
+  ['ℹ️ Geen EXIF-gegevens gevonden', 'ℹ️ No EXIF data found'], ['Deze foto bevat geen (leesbare) camera-informatie. Bij JPG-bestanden rechtstreeks uit de camera is die er meestal wel. Sociale media en WhatsApp verwijderen ze vaak.', 'This photo contains no (readable) camera information. JPG files straight from the camera usually have it. Social media and WhatsApp often remove it.'],
+  ['Deze foto kon niet worden gelezen.', 'This photo could not be read.'], ['Locatie uit de foto overgenomen in de planner.', 'Location from the photo copied into the planner.'], ['Gegevens gekopieerd.', 'Data copied.'], ['Kopiëren is niet gelukt.', 'Copying failed.'],
+  ['Metadata verwijderd (zonder kwaliteitsverlies).', 'Metadata removed (without quality loss).'], ['Metadata verwijderd (foto opnieuw opgeslagen).', 'Metadata removed (photo re-saved).'], ['Opslaan is niet gelukt.', 'Saving failed.'],
+  ['GPS-coördinaten', 'GPS coordinates'], ['serienummer van je camera', 'serial number of your camera'], ['naam van de eigenaar', 'name of the owner'], ['Artiest/maker 🔒', 'Artist / creator 🔒'], ['Serienummer objectief 🔒', 'Lens serial number 🔒'],
+  /* bestandsnaam-toevoegingen */
+  ['onderwerp', 'subject'], ['handtekening', 'signature'], ['zonder-metadata', 'no-metadata'],
+  /* algemeen patroon: "Naam (aantal)" – vertaalt alleen het bekende deel */
+  ['{0} ({1})', '{0} ({1})']
+];
+let LANG = 'nl';
+const I18N_EXACT = new Map(), I18N_PATTERNS = [];
+for (const [nl, en] of I18N_PAIRS) {
+  if (/\{\d\}/.test(nl)) I18N_PATTERNS.push({ re: new RegExp('^' + nl.replace(/[.*+?^$()|[\]\\]/g, '\\$&').replace(/\{(\d)\}/g, '(.+?)') + '$'), en });
+  else I18N_EXACT.set(nl, en);
+}
+const normWs = s => String(s).replace(/\s+/g, ' ').trim();
+function tr(s) {
+  if (LANG !== 'en' || s == null) return s;
+  const k = normWs(s); if (!k) return s;
+  const e = I18N_EXACT.get(k); if (e !== undefined) return e;
+  for (const p of I18N_PATTERNS) { const m = k.match(p.re); if (m) return p.en.replace(/\{(\d)\}/g, (x, i) => tr(m[+i + 1])); }
+  return s;
+}
+const LOC = () => LANG === 'en' ? 'en-GB' : 'nl-NL';
+const TR_ATTRS = ['placeholder', 'title'];
+function trText(node) {
+  if (LANG !== 'en' || !node || node.nodeType !== 3) return;
+  const p = node.parentNode; if (p && (p.nodeName === 'SCRIPT' || p.nodeName === 'STYLE')) return;
+  const raw = node.data, k = normWs(raw); if (!k) return; const res = tr(k);
+  if (res !== k) { node.__nl = raw; node.data = raw.match(/^\s*/)[0] + res + raw.match(/\s*$/)[0]; }
+}
+function trEl(el) { if (LANG !== 'en' || !el.getAttribute) return; TR_ATTRS.forEach(a => { const v = el.getAttribute(a); if (v) { const res = tr(v); if (res !== v) { (el.__nla = el.__nla || {})[a] = v; el.setAttribute(a, res); } } }); }
+function trTree(root) {
+  if (!root || !document.createTreeWalker) return;
+  if (root.nodeType === 3) { trText(root); return; }
+  const w = document.createTreeWalker(root, 5 /* tekst + elementen */); let n = w.currentNode;
+  if (n.nodeType === 1) trEl(n);
+  while ((n = w.nextNode())) { if (n.nodeType === 3) trText(n); else trEl(n); }
+}
+function restoreTree(root) {
+  if (!root || !document.createTreeWalker) return;
+  const w = document.createTreeWalker(root, 5); let n = w.currentNode;
+  const fix = x => { if (x.nodeType === 3 && x.__nl !== undefined) { x.data = x.__nl; x.__nl = undefined; } else if (x.nodeType === 1 && x.__nla) { for (const a in x.__nla) x.setAttribute(a, x.__nla[a]); x.__nla = null; } };
+  fix(n); while ((n = w.nextNode())) fix(n);
+}
+function setLang(l, initial) {
+  if (l !== 'en' && l !== 'nl') l = 'nl';
+  LANG = l; document.documentElement.lang = l;
+  try { localStorage.setItem('ps-lang', l); } catch (_) { }
+  document.querySelectorAll('.lang-btn').forEach(b => b.classList.toggle('active', b.dataset.lang === l));
+  if (l === 'en') trTree(document.body); else restoreTree(document.body);
+  if (!initial) refreshDynamic();
+}
+/* dynamische onderdelen opnieuw opbouwen in de gekozen taal */
+function refreshDynamic() {
+  try { previewZoomEffect(); drawAI(); renderLogoCanvas(); } catch (_) { }
+  try { if (P.wx) renderWeather(P.wx.json, P.wx.t, P.wx.dateStr); else if (P.inited) renderSun(sunTimesFor($('planner-date').value || todayStr(), (readCoords() || { lat: 51.4 }).lat, (readCoords() || { lng: 5.7 }).lng), null, $('planner-date').value || todayStr()); } catch (_) { }
+  try { if (P.inited) updateSpecies(); } catch (_) { }
+  try { if (X.model) renderExifView(); } catch (_) { }
+}
+try {
+  if (window.MutationObserver) new MutationObserver(recs => {
+    if (LANG !== 'en') return;
+    for (const r of recs) {
+      if (r.type === 'characterData') trText(r.target);
+      else if (r.type === 'attributes') trEl(r.target);
+      else r.addedNodes.forEach(n => trTree(n));
+    }
+  }).observe(document.body, { childList: true, subtree: true, characterData: true, attributes: true, attributeFilter: TR_ATTRS });
+} catch (_) { }
+
 /* ───────── Hulpfuncties ───────── */
 const $ = id => document.getElementById(id);
 const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
@@ -616,7 +770,7 @@ const mk = (w, h) => { const c = document.createElement('canvas'); c.width = Mat
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 const smooth = x => { x.imageSmoothingEnabled = true; x.imageSmoothingQuality = 'high'; return x; };
 const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
-const nlNum = (v, d = 0) => (v == null || isNaN(v)) ? '--' : Number(v).toLocaleString('nl-NL', { minimumFractionDigits: d, maximumFractionDigits: d });
+const nlNum = (v, d = 0) => (v == null || isNaN(v)) ? '--' : Number(v).toLocaleString(LOC(), { minimumFractionDigits: d, maximumFractionDigits: d });
 let toastTimer;
 function toast(m) { const t = $('toast'); t.textContent = m; t.classList.add('show'); clearTimeout(toastTimer); toastTimer = setTimeout(() => t.classList.remove('show'), 4200); }
 function cover(iw, ih, ow, oh, fx = .5, fy = .5) { const s = Math.max(ow / iw, oh / ih), sw = ow / s, sh = oh / s; return { sx: Math.max(0, Math.min(iw - sw, fx * iw - sw / 2)), sy: Math.max(0, Math.min(ih - sh, fy * ih - sh / 2)), sw, sh }; }
@@ -631,7 +785,7 @@ async function shareOrSave(blob, name) {
   }
   saveBlob(blob, name);
 }
-function placeholder(c, text) { const x = c.getContext('2d'); x.fillStyle = '#1c1a18'; x.fillRect(0, 0, c.width, c.height); x.fillStyle = '#8d857a'; x.font = `${Math.max(14, c.width / 30)}px system-ui,sans-serif`; x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillText(text, c.width / 2, c.height / 2); x.textAlign = 'left'; }
+function placeholder(c, text) { const x = c.getContext('2d'); x.fillStyle = '#1c1a18'; x.fillRect(0, 0, c.width, c.height); x.fillStyle = '#8d857a'; x.font = `${Math.max(14, c.width / 30)}px system-ui,sans-serif`; x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillText(tr(text), c.width / 2, c.height / 2); x.textAlign = 'left'; }
 
 /* Bestandsnamen: standaardnaam voorstellen zodat het origineel nooit wordt overschreven; gebruiker mag hem aanpassen */
 const fileBase = f => String(f && f.name || 'foto').replace(/\.[^.]+$/, '') || 'foto';
@@ -820,7 +974,7 @@ async function recordVideo({ w, h, duration, bitrate, paint, onProgress }) {
 async function recordZoomVideo() {
   if (!Z.img) { toast('Kies eerst een foto.'); return; }
   if (Z.playing) stopZoom();
-  const btn = $('zoom-record'), old = btn.textContent; btn.disabled = true;
+  const btn = $('zoom-record'); btn.disabled = true;
   try {
     const o = zoomOptions(), [cw, ch] = zoomOutDims();
     btn.textContent = 'Voorbereiden…'; await sleep(30);
@@ -829,7 +983,7 @@ async function recordZoomVideo() {
     const { blob, ext } = await recordVideo({ w: cw, h: ch, duration: total, bitrate: 9e6, paint: (x, el) => paintZoomFrame(x, s, o, el), onProgress: p => { btn.textContent = 'Opnemen… ' + Math.round(p * 100) + '%'; } });
     showZoomResult(blob, ext);
   } catch (e) { toast(e.message || 'Video maken is mislukt.'); }
-  finally { btn.disabled = false; btn.textContent = old; previewZoomEffect(); }
+  finally { btn.disabled = false; btn.textContent = '🎬 Maak video (MP4/WebM)'; previewZoomEffect(); }
 }
 function showZoomResult(blob, ext) {
   if (Z.url) URL.revokeObjectURL(Z.url); Z.url = URL.createObjectURL(blob);
@@ -865,34 +1019,37 @@ function otsu(a) {
   for (let i = 0; i < 256; i++) { wB += hist[i]; if (!wB) continue; const wF = total - wB; if (!wF) break; sB += i * hist[i]; const mB = sB / wB, mF = (sum - sB) / wF, between = wB * wF * (mB - mF) * (mB - mF); if (between > max) { max = between; th = i; } }
   return (th + 1) / 255;
 }
-/* data = RGBA-pixels van de analysefoto (W5×H5, max. 512 px). Geeft een masker op de helft van die resolutie terug. */
+/* data = RGBA-pixels van de analysefoto (W5×H5, max. 512 px). Geeft een masker op de helft van die resolutie terug.
+   Hoofdsignaal is SCHERPTE (fijn detail): een onderwerp dat scherp is en een achtergrond die wazig is, vallen zo goed uit elkaar.
+   Kleurcontrast en positie helpen alleen mee. */
 function detectSubject(data, W5, H5, seed) {
   const w = W5 >> 1, h = H5 >> 1, n = w * h;
   const lum = new Float32Array(W5 * H5);
   for (let i = 0; i < W5 * H5; i++) lum[i] = .299 * data[i * 4] + .587 * data[i * 4 + 1] + .114 * data[i * 4 + 2];
-  const G = new Float32Array(n), cl = new Float32Array(n), ca = new Float32Array(n), cb = new Float32Array(n);
+  const hp = new Float32Array(n), cl = new Float32Array(n), ca = new Float32Array(n), cb = new Float32Array(n);
   for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
     let g = 0, r = 0, gg = 0, b = 0;
     for (let dy = 0; dy < 2; dy++) for (let dx = 0; dx < 2; dx++) {
-      const x5 = 2 * x + dx, y5 = 2 * y + dy, gx = lum[y5 * W5 + Math.min(W5 - 1, x5 + 1)] - lum[y5 * W5 + Math.max(0, x5 - 1)], gy = lum[Math.min(H5 - 1, y5 + 1) * W5 + x5] - lum[Math.max(0, y5 - 1) * W5 + x5];
-      g += Math.abs(gx) + Math.abs(gy); const p = (y5 * W5 + x5) * 4; r += data[p]; gg += data[p + 1]; b += data[p + 2];
+      const x5 = 2 * x + dx, y5 = 2 * y + dy, c = lum[y5 * W5 + x5];
+      g += Math.abs(4 * c - lum[y5 * W5 + Math.max(0, x5 - 1)] - lum[y5 * W5 + Math.min(W5 - 1, x5 + 1)] - lum[Math.max(0, y5 - 1) * W5 + x5] - lum[Math.min(H5 - 1, y5 + 1) * W5 + x5]);
+      const p = (y5 * W5 + x5) * 4; r += data[p]; gg += data[p + 1]; b += data[p + 2];
     }
-    const i = y * w + x, lab = rgb2lab(r / 4, gg / 4, b / 4); G[i] = g / 4; cl[i] = lab[0]; ca[i] = lab[1]; cb[i] = lab[2];
+    const i = y * w + x, lab = rgb2lab(r / 4, gg / 4, b / 4); hp[i] = g / 4; cl[i] = lab[0]; ca[i] = lab[1]; cb[i] = lab[2];
   }
   let ml = 0, ma = 0, mb = 0; for (let i = 0; i < n; i++) { ml += cl[i]; ma += ca[i]; mb += cb[i]; } ml /= n; ma /= n; mb /= n;
   boxBlurF(cl, w, h, 1, 1); boxBlurF(ca, w, h, 1, 1); boxBlurF(cb, w, h, 1, 1);
   const C = new Float32Array(n); for (let i = 0; i < n; i++) C[i] = Math.hypot(cl[i] - ml, ca[i] - ma, cb[i] - mb);
-  const E = boxBlurF(G, w, h, Math.max(3, Math.round(w * .025)), 2);
-  normalize01(E); normalize01(C);
+  const E = boxBlurF(hp, w, h, Math.max(2, Math.round(w * .012)), 2);
+  { const s = Float32Array.from(E).sort(), lo = s[(n * .2) | 0], hi = s[Math.min(n - 1, (n * .99) | 0)], d = Math.max(1e-6, hi - lo); for (let i = 0; i < n; i++) E[i] = Math.sqrt(clamp((E[i] - lo) / d, 0, 1)); }
+  normalize01(C);
   const sx = (seed ? seed.x : .5) * w, sy = (seed ? seed.y : .5) * h, sgx = (seed ? .2 : .32) * w, sgy = (seed ? .2 : .32) * h;
-  const S = new Float32Array(n), wE = seed ? .4 : .5, wC = seed ? .25 : .3, wP = seed ? .35 : .2;
+  const S = new Float32Array(n), wE = seed ? .55 : .7, wC = .1, wP = seed ? .35 : .2;
   for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) { const dx = (x - sx) / sgx, dy = (y - sy) / sgy, P = Math.exp(-(dx * dx + dy * dy) / 2), i = y * w + x; S[i] = wE * E[i] + wC * C[i] + wP * P; }
-  boxBlurF(S, w, h, 3, 2);
+  boxBlurF(S, w, h, 2, 2);
   const seedIdx = seed ? clamp(Math.round(seed.y * (h - 1)), 0, h - 1) * w + clamp(Math.round(seed.x * (w - 1)), 0, w - 1) : -1;
-  const Sn = normalize01(Float32Array.from(S)); let th = otsu(Sn);
-  th *= .85; if (seed) th = Math.min(th, Sn[seedIdx] * .85);
+  const Sn = normalize01(Float32Array.from(S)); let th = otsu(Sn); if (seed) th = Math.min(th, Sn[seedIdx] * .85);
   let B = new Uint8Array(n); for (let i = 0; i < n; i++) B[i] = Sn[i] >= th ? 1 : 0;
-  for (let pass = 0; pass < 2; pass++) { const f = Float32Array.from(B); boxBlurF(f, w, h, 3, 1); for (let i = 0; i < n; i++) B[i] = f[i] > .5 ? 1 : 0; }
+  for (let pass = 0; pass < 2; pass++) { const f = Float32Array.from(B); boxBlurF(f, w, h, 2, 1); for (let i = 0; i < n; i++) B[i] = f[i] > .5 ? 1 : 0; }
   /* samenhangende gebieden */
   const lab = new Int32Array(n), stack = new Int32Array(n), comps = [];
   for (let i = 0; i < n; i++) {
@@ -940,32 +1097,44 @@ function bilinear(m, w, h, W2, H2) {
   for (let y = 0; y < H2; y++) { const fy = clamp((y + .5) * h / H2 - .5, 0, h - 1), y0 = Math.floor(fy), y1 = Math.min(h - 1, y0 + 1), ty = fy - y0; for (let x = 0; x < W2; x++) { const fx = clamp((x + .5) * w / W2 - .5, 0, w - 1), x0 = Math.floor(fx), x1 = Math.min(w - 1, x0 + 1), tx = fx - x0; o[y * W2 + x] = (m[y0 * w + x0] * (1 - tx) + m[y0 * w + x1] * tx) * (1 - ty) + (m[y1 * w + x0] * (1 - tx) + m[y1 * w + x1] * tx) * ty; } }
   return o;
 }
-function guidedColor(I0, I1, I2, p, w, h, r, eps) {
-  const n = w * h, box = a => boxBlurF(a, w, h, r, 1), cp = a => Float32Array.from(a), mul = (a, b) => { const o = new Float32Array(n); for (let i = 0; i < n; i++) o[i] = a[i] * b[i]; return o; };
-  const m0 = box(cp(I0)), m1 = box(cp(I1)), m2 = box(cp(I2)), mp = box(cp(p));
-  const m0p = box(mul(I0, p)), m1p = box(mul(I1, p)), m2p = box(mul(I2, p));
-  const v00 = box(mul(I0, I0)), v01 = box(mul(I0, I1)), v02 = box(mul(I0, I2)), v11 = box(mul(I1, I1)), v12 = box(mul(I1, I2)), v22 = box(mul(I2, I2));
-  const a0 = new Float32Array(n), a1 = new Float32Array(n), a2 = new Float32Array(n), bb = new Float32Array(n);
-  for (let i = 0; i < n; i++) {
-    const s00 = v00[i] - m0[i] * m0[i] + eps, s01 = v01[i] - m0[i] * m1[i], s02 = v02[i] - m0[i] * m2[i], s11 = v11[i] - m1[i] * m1[i] + eps, s12 = v12[i] - m1[i] * m2[i], s22 = v22[i] - m2[i] * m2[i] + eps;
-    const c0 = m0p[i] - m0[i] * mp[i], c1 = m1p[i] - m1[i] * mp[i], c2 = m2p[i] - m2[i] * mp[i];
-    const i00 = s11 * s22 - s12 * s12, i01 = s02 * s12 - s01 * s22, i02 = s01 * s12 - s02 * s11, i11 = s00 * s22 - s02 * s02, i12 = s02 * s01 - s00 * s12, i22 = s00 * s11 - s01 * s01;
-    const det = (s00 * i00 + s01 * i01 + s02 * i02) || 1e-9;
-    const A0 = (i00 * c0 + i01 * c1 + i02 * c2) / det, A1 = (i01 * c0 + i11 * c1 + i12 * c2) / det, A2 = (i02 * c0 + i12 * c1 + i22 * c2) / det;
-    a0[i] = A0; a1[i] = A1; a2[i] = A2; bb[i] = mp[i] - A0 * m0[i] - A1 * m1[i] - A2 * m2[i];
-  }
-  box(a0); box(a1); box(a2); box(bb);
-  const q = new Float32Array(n); for (let i = 0; i < n; i++) q[i] = a0[i] * I0[i] + a1[i] * I1[i] + a2[i] * I2[i] + bb[i];
-  return q;
-}
-/* grof masker (scan-resolutie) + foto (rw×rh RGBA) → nauwkeurig alfamasker (0–255) op rw×rh */
+/* Grof masker → nauwkeurig masker: "binnen zeker onderwerp" en "buiten zeker achtergrond" worden als markeringen gebruikt en de rand
+   wordt daartussen op de sterkste echte contour in de foto gelegd (marker-watershed). Zo blijft er geen halo hangen. */
 function refineAlpha(mask, w, h, rgba, rw, rh, margin) {
-  const n = rw * rh, I0 = new Float32Array(n), I1 = new Float32Array(n), I2 = new Float32Array(n);
-  for (let i = 0; i < n; i++) { I0[i] = rgba[i * 4] / 255; I1[i] = rgba[i * 4 + 1] / 255; I2[i] = rgba[i * 4 + 2] / 255; }
-  const p = bilinear(morph(mask, w, h, margin), w, h, rw, rh);
-  boxBlurF(p, rw, rh, Math.max(2, Math.round(rw * .012)), 2);
-  const q = guidedColor(I0, I1, I2, p, rw, rh, Math.max(3, Math.round(rw * .016)), 1e-3), out = new Uint8ClampedArray(n);
-  for (let i = 0; i < n; i++) out[i] = Math.round(clamp((clamp(q[i], 0, 1) - .5) * 4 + .5, 0, 1) * 255);
+  const n = rw * rh, m = bilinear(morph(mask, w, h, margin), w, h, rw, rh);
+  for (let i = 0; i < n; i++) m[i] = m[i] > .5 ? 1 : 0;
+  const box = (a, r) => { const f = Float32Array.from(a); boxBlurF(f, rw, rh, r, 1); return f; };
+  const inner = Math.max(2, Math.round(rw * .022)), outer = Math.max(2, Math.round(rw * .03));
+  const fgm = box(m, inner), bgm = box(m, outer), lab = new Uint8Array(n); let fgN = 0, bgN = 0;
+  for (let i = 0; i < n; i++) { if (fgm[i] > .999) { lab[i] = 1; fgN++; } else if (bgm[i] < .001) { lab[i] = 2; bgN++; } }
+  const out = new Uint8ClampedArray(n);
+  if (fgN < n * .002 || bgN < n * .01) { /* geen bruikbare markeringen: grof masker met zachte rand */ const f = Float32Array.from(m); boxBlurF(f, rw, rh, 2, 1); for (let i = 0; i < n; i++) out[i] = Math.round(f[i] * 255); return out; }
+  /* kleurgradiënt (licht gladgestreken) = hoogte van het "gebergte" waar het water over moet */
+  const ch = [0, 1, 2].map(c => { const f = new Float32Array(n); for (let i = 0; i < n; i++) f[i] = rgba[i * 4 + c]; boxBlurF(f, rw, rh, 1, 1); return f; });
+  const g = new Float32Array(n); let gmax = 1e-6;
+  for (let y = 0; y < rh; y++) for (let x = 0; x < rw; x++) {
+    const i = y * rw + x, xl = x > 0 ? i - 1 : i, xr = x < rw - 1 ? i + 1 : i, yu = y > 0 ? i - rw : i, yd = y < rh - 1 ? i + rw : i; let sum = 0;
+    for (let c = 0; c < 3; c++) { const dx = ch[c][xr] - ch[c][xl], dy = ch[c][yd] - ch[c][yu]; sum += dx * dx + dy * dy; }
+    g[i] = Math.sqrt(sum); if (g[i] > gmax) gmax = g[i];
+  }
+  const NB = 1024, head = new Int32Array(NB).fill(-1), next = new Int32Array(n).fill(-1);
+  const lvl = i => Math.min(NB - 1, Math.floor(Math.sqrt(g[i] / gmax) * (NB - 1))), push = (i, b) => { next[i] = head[b]; head[b] = i; };
+  for (let i = 0; i < n; i++) if (lab[i]) { const x = i % rw, y = (i / rw) | 0; if ((x > 0 && !lab[i - 1]) || (x < rw - 1 && !lab[i + 1]) || (y > 0 && !lab[i - rw]) || (y < rh - 1 && !lab[i + rw])) push(i, lvl(i)); }
+  for (let cur = 0; cur < NB;) {
+    const i = head[cur]; if (i < 0) { cur++; continue; } head[cur] = next[i];
+    const x = i % rw, y = (i / rw) | 0, L = lab[i];
+    if (x > 0 && !lab[i - 1]) { lab[i - 1] = L; push(i - 1, Math.max(cur, lvl(i - 1))); }
+    if (x < rw - 1 && !lab[i + 1]) { lab[i + 1] = L; push(i + 1, Math.max(cur, lvl(i + 1))); }
+    if (y > 0 && !lab[i - rw]) { lab[i - rw] = L; push(i - rw, Math.max(cur, lvl(i - rw))); }
+    if (y < rh - 1 && !lab[i + rw]) { lab[i + rw] = L; push(i + rw, Math.max(cur, lvl(i + rw))); }
+  }
+  const a = new Float32Array(n); for (let i = 0; i < n; i++) a[i] = lab[i] === 1 ? 1 : 0;
+  /* dunne uitsteeksels (bijv. een strook achtergrond die meeliep) weghalen, daarna de rand zacht maken */
+  const orad = Math.max(2, Math.round(rw * .0065)), e = Float32Array.from(a); boxBlurF(e, rw, rh, orad, 1);
+  for (let i = 0; i < n; i++) e[i] = e[i] > .999 ? 1 : 0;
+  const d = Float32Array.from(e); boxBlurF(d, rw, rh, orad + 1, 1);
+  for (let i = 0; i < n; i++) a[i] = (d[i] > .001 && a[i] > 0) ? 1 : 0;
+  boxBlurF(a, rw, rh, 1, 1);
+  for (let i = 0; i < n; i++) out[i] = Math.round(clamp((a[i] - .35) * 2 + .5, 0, 1) * 255); /* iets naar buiten: liever een randje te veel scherp dan een randje van het onderwerp wazig */
   return out;
 }
 
@@ -976,7 +1145,7 @@ function loadAIImage(e) {
     A.work = c; A.name = fileBase(f); A.det = null; A.seed = null; A.subject = null; A.base = null; A.maskC = null; A.subC = null; A.guide = null; A.blur = { key: '', c: null };
     const s = Math.min(1, 640 / Math.max(c.width, c.height)); A.rw = Math.max(16, Math.round(c.width * s)); A.rh = Math.max(16, Math.round(c.height * s));
     A.add = mk(A.rw, A.rh); A.sub = mk(A.rw, A.rh);
-    setDefaultName('ai-name', A.name + '-onderwerp', true);
+    setDefaultName('ai-name', A.name + '-' + tr('onderwerp'), true);
     $('ai-status').textContent = 'Foto geladen. Kies “Automatisch onderwerp scannen”, of schuif direct de vervaging.'; drawAI();
   }).catch(err => toast(err.message));
   e.target.value = '';
@@ -1074,13 +1243,13 @@ function drawAI() {
 async function saveAIPhoto() {
   if (!A.work) { toast('Kies eerst een foto.'); return; }
   const showBox = $('ai-show-box').checked; if (showBox) { $('ai-show-box').checked = false; drawAI(); }
-  try { await shareOrSave(await canvasBlob($('ai-canvas'), 'image/jpeg', .94), outName('ai-name', A.name + '-onderwerp') + '.jpg'); } catch (e) { toast(e.message); }
+  try { await shareOrSave(await canvasBlob($('ai-canvas'), 'image/jpeg', .94), outName('ai-name', A.name + '-' + tr('onderwerp')) + '.jpg'); } catch (e) { toast(e.message); }
   if (showBox) { $('ai-show-box').checked = true; drawAI(); }
 }
 
 /* ═════════════ TAB 3 — HANDTEKENING & LOGO ═════════════ */
 const LG = { name: 'foto', photo: null, logo: null, fonts: {} };
-function loadLogoPhoto(e) { const f = e.target.files[0]; if (!f) return; loadImageFile(f, 3000).then(c => { LG.photo = c; LG.name = fileBase(f); setDefaultName('logo-name', LG.name + '-handtekening', true); renderLogoCanvas(); }).catch(err => toast(err.message)); e.target.value = ''; }
+function loadLogoPhoto(e) { const f = e.target.files[0]; if (!f) return; loadImageFile(f, 3000).then(c => { LG.photo = c; LG.name = fileBase(f); setDefaultName('logo-name', LG.name + '-' + tr('handtekening'), true); renderLogoCanvas(); }).catch(err => toast(err.message)); e.target.value = ''; }
 function loadLogoPNG(e) { const f = e.target.files[0]; if (!f) return; loadImageFile(f, 1400).then(c => { LG.logo = c; $('logo-clear').classList.remove('hidden'); renderLogoCanvas(); toast('Logo geladen.'); }).catch(err => toast(err.message)); e.target.value = ''; }
 function clearLogo() { LG.logo = null; $('logo-clear').classList.add('hidden'); renderLogoCanvas(); }
 function renderLogoCanvas() {
@@ -1106,7 +1275,7 @@ function renderLogoCanvas() {
 }
 async function saveLogoPhoto() {
   if (!LG.photo) { toast('Kies eerst een achtergrondfoto.'); return; }
-  try { await shareOrSave(await canvasBlob($('logo-canvas'), 'image/jpeg', .95), outName('logo-name', LG.name + '-handtekening') + '.jpg'); } catch (e) { toast(e.message); }
+  try { await shareOrSave(await canvasBlob($('logo-canvas'), 'image/jpeg', .95), outName('logo-name', LG.name + '-' + tr('handtekening')) + '.jpg'); } catch (e) { toast(e.message); }
 }
 
 /* ═════════════ TAB 4 — PLANNER, KAART, WEER & SOORTEN ═════════════ */
@@ -1128,7 +1297,7 @@ const sunTimesFor = (dateStr, lat, lng) => { const [y, m, d] = dateStr.split('-'
 function fmtTime(date, tz) {
   if (!date || isNaN(date)) return '—';
   const o = { hour: '2-digit', minute: '2-digit', hourCycle: 'h23' };
-  try { return new Intl.DateTimeFormat('nl-NL', tz ? { ...o, timeZone: tz } : o).format(date); } catch (_) { return new Intl.DateTimeFormat('nl-NL', o).format(date); }
+  try { return new Intl.DateTimeFormat(LOC(), tz ? { ...o, timeZone: tz } : o).format(date); } catch (_) { return new Intl.DateTimeFormat(LOC(), o).format(date); }
 }
 function localKey(date, tz) {
   const d = new Date(date.getTime() + 30 * 60000), o = { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', hourCycle: 'h23' };
@@ -1229,7 +1398,7 @@ function photoScore(fog, glowMax, wSr, wSs) {
     if (w.cloud != null) { if (w.cloud < 20) s += .5; if (w.cloud > 90 && w.low != null && w.low > 80) s -= 1; }
   }
   s = clamp(Math.round(s * 2) / 2, 1, 10);
-  return { s, text: `${nlNum(s, 1)} / 10 · ${s >= 8 ? 'Uitstekend' : s >= 6.5 ? 'Goed' : s >= 5 ? 'Redelijk' : 'Matig'}` };
+  return { s, text: `${nlNum(s, 1)} / 10 · ${s >= 8 ? 'Uitstekend' : s >= 6.5 ? 'Goed' : s >= 5 ? 'Redelijk' : 'Zwak'}` };
 }
 function setText(id, v) { $(id).textContent = v; }
 function renderSun(t, tz, dateStr) {
@@ -1241,6 +1410,7 @@ function renderSun(t, tz, dateStr) {
   if (isNaN(t.sunRise) || isNaN(t.sunSet)) setText('sun-caption', `${fmtDate(dateStr)} · op deze plek en datum is er geen normale zonsopkomst/-ondergang (poolzomer of -winter).`);
 }
 function renderWeather(json, t, dateStr) {
+  P.wx = { json, t, dateStr };
   const tz = json.timezone, srKey = isNaN(t.sunRise) ? null : localKey(t.sunRise, tz), ssKey = isNaN(t.sunSet) ? null : localKey(t.sunSet, tz);
   renderSun(t, tz, dateStr);
   const wSr = srKey ? pickHour(json, srKey) : null, wSs = ssKey ? pickHour(json, ssKey) : null, cur = json.current, wNow = cur && cur.time ? pickHour(json, cur.time.slice(0, 13)) : null;
@@ -1261,7 +1431,7 @@ async function runPlanner() {
   if (!c) { st.textContent = 'Vul geldige coördinaten in, bijvoorbeeld 51,3887 en 5,7070.'; return; }
   const dateStr = $('planner-date').value || todayStr();
   if (P.marker && P.map) { P.marker.setLatLng([c.lat, c.lng]); }
-  const t = sunTimesFor(dateStr, c.lat, c.lng); renderSun(t, null, dateStr);
+  P.wx = null; const t = sunTimesFor(dateStr, c.lat, c.lng); renderSun(t, null, dateStr);
   ['weather-temp', 'weather-wind', 'weather-fog', 'weather-red-glow', 'weather-score'].forEach(id => setText(id, '…')); setText('weather-caption', '');
   const id = ++P.reqId; if (P.ctrl) P.ctrl.abort(); P.ctrl = new AbortController();
   st.textContent = 'Weer laden…'; updateSpecies();
@@ -1280,7 +1450,7 @@ async function runPlanner() {
 const S = { reqId: 0, ctrl: null };
 const GROUP_ICON = { Aves: '🐦', Mammalia: '🦊', Insecta: '🦋', Plantae: '🌿', Fungi: '🍄', Reptilia: '🦎', Amphibia: '🐸', Arachnida: '🕷️', Mollusca: '🐌', Actinopterygii: '🐟' };
 async function inatSpecies(c, radius, group, extra, signal) {
-  const url = `https://api.inaturalist.org/v1/observations/species_counts?lat=${c.lat.toFixed(4)}&lng=${c.lng.toFixed(4)}&radius=${radius}&per_page=60&locale=nl&rank=species&verifiable=true${group ? '&iconic_taxa=' + encodeURIComponent(group) : ''}${extra}`;
+  const url = `https://api.inaturalist.org/v1/observations/species_counts?lat=${c.lat.toFixed(4)}&lng=${c.lng.toFixed(4)}&radius=${radius}&per_page=60&locale=${LANG === 'en' ? 'en' : 'nl'}&rank=species&verifiable=true${group ? '&iconic_taxa=' + encodeURIComponent(group) : ''}${extra}`;
   const r = await fetch(url, { signal }); if (!r.ok) throw new Error('iNaturalist antwoordde met status ' + r.status);
   const j = await r.json(); return (j.results || []).filter(x => x && x.taxon).map(x => ({ latin: x.taxon.name, common: x.taxon.preferred_common_name || '', count: x.count, group: x.taxon.iconic_taxon_name }));
 }
@@ -1299,12 +1469,12 @@ function parseObs(o) {
   return { lat, lng, latin: o.taxon.name || '', common: o.taxon.preferred_common_name || '', group: o.taxon.iconic_taxon_name || '', date: o.observed_on || (o.time_observed_at ? String(o.time_observed_at).slice(0, 10) : ''), obscured: !!o.obscured, url: /^https:\/\/(www\.)?inaturalist\.org\//.test(uri) ? uri : '' };
 }
 async function inatObservations(c, radius, group, extra, signal) {
-  const url = `https://api.inaturalist.org/v1/observations?lat=${c.lat.toFixed(4)}&lng=${c.lng.toFixed(4)}&radius=${radius}&per_page=100&order_by=observed_on&order=desc&locale=nl&verifiable=true&geo=true${group ? '&iconic_taxa=' + encodeURIComponent(group) : ''}${extra}`;
+  const url = `https://api.inaturalist.org/v1/observations?lat=${c.lat.toFixed(4)}&lng=${c.lng.toFixed(4)}&radius=${radius}&per_page=100&order_by=observed_on&order=desc&locale=${LANG === 'en' ? 'en' : 'nl'}&verifiable=true&geo=true${group ? '&iconic_taxa=' + encodeURIComponent(group) : ''}${extra}`;
   const r = await fetch(url, { signal }); if (!r.ok) throw new Error('iNaturalist antwoordde met status ' + r.status);
   const j = await r.json(); return (j.results || []).map(parseObs).filter(Boolean);
 }
 function obsHtml(list, popup) {
-  const one = o => `<b>${esc(o.common || o.latin)}</b>${o.common ? ` <i>${esc(o.latin)}</i>` : ''}<br><small>${esc(o.date ? fmtDate(o.date) : '')}${o.obscured ? ' · locatie bij benadering' : ''}${popup && o.url ? ` · <a href="${esc(o.url)}" target="_blank" rel="noopener">iNaturalist</a>` : ''}</small>`;
+  const one = o => `<b>${esc(o.common || o.latin)}</b>${o.common ? ` <i>${esc(o.latin)}</i>` : ''}<br><small>${esc(o.date ? fmtDate(o.date) : '')}${o.obscured ? '<span> · locatie bij benadering</span>' : ''}${popup && o.url ? ` · <a href="${esc(o.url)}" target="_blank" rel="noopener">iNaturalist</a>` : ''}</small>`;
   return list.slice(0, 6).map(one).join('<hr style="margin:4px 0;border:0;border-top:1px solid #ddd">') + (list.length > 6 ? `<br><small>+ ${list.length - 6} meer op deze plek</small>` : '');
 }
 function updateRadiusCircle(fit) {
@@ -1403,7 +1573,7 @@ const PROGS = { 0: 'Onbekend', 1: 'Handmatig', 2: 'Programma-automaat', 3: 'Diaf
 function exifModel(ex, file, dims) {
   const t0 = ex ? ex.ifd0 : {}, t1 = ex ? ex.exif : {}, g = ex ? ex.gps : {}, groups = [], f = (a, b) => { const r = { title: a, rows: [] }; groups.push(r); return r; };
   const add = (grp, label, val) => { if (val != null && val !== '' && !(typeof val === 'number' && isNaN(val))) grp.rows.push([label, String(val)]); };
-  const cam = f('📷 Camera'); add(cam, 'Merk', t0[0x010F]); add(cam, 'Model', t0[0x0110]); add(cam, 'Objectief', t1[0xA434]); add(cam, 'Software', t0[0x0131]); add(cam, 'Eigenaar', t1[0xA430]); add(cam, 'Serienummer camera', t1[0xA431]);
+  const cam = f('📷 Camera'); add(cam, 'Merk', t0[0x010F]); add(cam, 'Model', t0[0x0110]); add(cam, 'Objectief', t1[0xA434]); add(cam, 'Software', t0[0x0131]); add(cam, 'Artiest/maker 🔒', t0[0x013B]); add(cam, 'Eigenaar 🔒', t1[0xA430]); add(cam, 'Serienummer camera 🔒', t1[0xA431]); add(cam, 'Serienummer objectief 🔒', t1[0xA435]);
   const sh = f('⚙️ Opname');
   const dt = t1[0x9003] || t0[0x0132]; add(sh, 'Datum & tijd', typeof dt === 'string' ? dt.replace(/^(\d{4}):(\d{2}):(\d{2})/, '$3-$2-$1') : null);
   const ex_ = t1[0x829A]; add(sh, 'Sluitertijd', ex_ ? (ex_ < 1 ? `1/${Math.round(1 / ex_)} s` : `${nlNum(ex_, 1)} s`) : null);
@@ -1424,25 +1594,32 @@ function exifModel(ex, file, dims) {
     if (g[6] != null && !Array.isArray(g[6])) add(lo, 'Hoogte', nlNum(g[6], 0) + ' m');
     lo.link = `https://www.openstreetmap.org/?mlat=${lat.toFixed(5)}&mlon=${lng.toFixed(5)}#map=15/${lat.toFixed(5)}/${lng.toFixed(5)}`;
   }
-  return { groups: groups.filter(x => x.rows.length), gps, orientation: t0[0x0112] || 1, hasExif: !!ex };
+  const priv = []; if (gps) priv.push('GPS-coördinaten'); if (t1[0xA431] || t1[0xA435]) priv.push('serienummer van je camera'); if (t1[0xA430] || t0[0x013B]) priv.push('naam van de eigenaar');
+  return { groups: groups.filter(x => x.rows.length), gps, priv, orientation: t0[0x0112] || 1, hasExif: !!ex };
 }
-const X = { file: null, buf: null, model: null };
+const X = { file: null, buf: null, ex: null, dims: null, thumb: null, model: null };
+function renderExifView() {
+  X.model = exifModel(X.ex, X.file, X.dims);
+  const tc = $('exif-thumb'); tc.width = X.thumb.width; tc.height = X.thumb.height; tc.getContext('2d').drawImage(X.thumb, 0, 0);
+  $('exif-empty').classList.add('hidden'); $('exif-out').classList.remove('hidden');
+  const pv = X.model.priv;
+  $('exif-gps-warn').classList.toggle('hidden', !pv.length);
+  if (pv.length) $('exif-gps-warn').textContent = `⚠ Deze foto bevat privé-gegevens: ${pv.map(tr).join(', ')}. Verwijder de metadata voordat je de foto deelt (e-mail, WhatsApp als bestand, je website) als je die informatie privé wilt houden.`;
+  $('exif-to-planner').classList.toggle('hidden', !X.model.gps);
+  const html = X.model.groups.map(g => `<div class="weather-card"><h4>${g.title}</h4><table class="weather-table">${g.rows.map(r => `<tr><td>${esc(r[0])}</td><td>${esc(r[1])}</td></tr>`).join('')}${g.link ? `<tr><td>Kaart</td><td><a href="${g.link}" target="_blank" rel="noopener">Openen op OpenStreetMap</a></td></tr>` : ''}</table></div>`).join('');
+  $('exif-tables').innerHTML = html + (X.model.hasExif ? '' : '<div class="weather-card"><h4>ℹ️ Geen EXIF-gegevens gevonden</h4><p class="hint">Deze foto bevat geen (leesbare) camera-informatie. Bij JPG-bestanden rechtstreeks uit de camera is die er meestal wel. Sociale media en WhatsApp verwijderen ze vaak.</p></div>');
+}
 async function loadExif(e) {
   const f = e.target.files[0]; if (!f) return; e.target.value = '';
   try {
-    X.file = f; X.buf = await f.arrayBuffer(); setDefaultName('exif-name', fileBase(f) + '-zonder-metadata', true);
-    const ex = parseExif(X.buf), thumb = await loadImageFile(f, 900), dims = { w: thumb.origW, h: thumb.origH };
-    X.model = exifModel(ex, f, dims);
-    const tc = $('exif-thumb'); tc.width = thumb.width; tc.height = thumb.height; tc.getContext('2d').drawImage(thumb, 0, 0);
-    $('exif-empty').classList.add('hidden'); $('exif-out').classList.remove('hidden');
-    $('exif-gps-warn').classList.toggle('hidden', !X.model.gps); $('exif-to-planner').classList.toggle('hidden', !X.model.gps);
-    const html = X.model.groups.map(g => `<div class="weather-card"><h4>${g.title}</h4><table class="weather-table">${g.rows.map(r => `<tr><td>${esc(r[0])}</td><td>${esc(r[1])}</td></tr>`).join('')}${g.link ? `<tr><td>Kaart</td><td><a href="${g.link}" target="_blank" rel="noopener">Openen op OpenStreetMap</a></td></tr>` : ''}</table></div>`).join('');
-    $('exif-tables').innerHTML = html + (X.model.hasExif ? '' : '<div class="weather-card"><h4>ℹ️ Geen EXIF-gegevens gevonden</h4><p class="hint">Deze foto bevat geen (leesbare) camera-informatie. Bij JPG-bestanden rechtstreeks uit de camera is die er meestal wel. Sociale media en WhatsApp verwijderen ze vaak.</p></div>');
+    X.file = f; X.buf = await f.arrayBuffer(); setDefaultName('exif-name', fileBase(f) + '-' + tr('zonder-metadata'), true);
+    X.ex = parseExif(X.buf); X.thumb = await loadImageFile(f, 900); X.dims = { w: X.thumb.origW, h: X.thumb.origH };
+    renderExifView();
   } catch (err) { toast(err.message || 'Deze foto kon niet worden gelezen.'); }
 }
 function exifToPlanner() { if (!X.model || !X.model.gps) return; switchTab('planner'); setCoords(X.model.gps.lat, X.model.gps.lng); toast('Locatie uit de foto overgenomen in de planner.'); }
 async function copyExif() {
-  if (!X.model) return; const text = X.model.groups.map(g => g.title + '\n' + g.rows.map(r => `${r[0]}: ${r[1]}`).join('\n')).join('\n\n');
+  if (!X.model) return; const text = X.model.groups.map(g => tr(g.title) + '\n' + g.rows.map(r => `${tr(r[0])}: ${tr(r[1])}`).join('\n')).join('\n\n');
   try { await navigator.clipboard.writeText(text); toast('Gegevens gekopieerd.'); } catch (_) { const t = document.createElement('textarea'); t.value = text; document.body.appendChild(t); t.select(); try { document.execCommand('copy'); toast('Gegevens gekopieerd.'); } catch (e2) { toast('Kopiëren is niet gelukt.'); } t.remove(); }
 }
 /* Lossless: EXIF/XMP/IPTC-segmenten weghalen, kleurprofiel behouden, beeldrichting bewaren */
@@ -1463,7 +1640,7 @@ function stripJpeg(buf, orientation) {
 }
 async function stripExifSave() {
   if (!X.file) { toast('Kies eerst een foto.'); return; }
-  const base = outName('exif-name', fileBase(X.file) + '-zonder-metadata');
+  const base = outName('exif-name', fileBase(X.file) + '-' + tr('zonder-metadata'));
   try {
     const jpg = stripJpeg(X.buf, X.model ? X.model.orientation : 1);
     if (jpg) { await shareOrSave(jpg, base + '.jpg'); toast('Metadata verwijderd (zonder kwaliteitsverlies).'); return; }
@@ -1477,6 +1654,7 @@ function postHeight() { try { if (window.parent && window.parent !== window) win
 try { if (window.ResizeObserver) new ResizeObserver(postHeight).observe(document.body); window.addEventListener('load', postHeight); } catch (_) { }
 
 /* ───────── Start ───────── */
+{ let l = null; try { l = new URLSearchParams(location.search).get('lang'); } catch (_) { } if (l !== 'en' && l !== 'nl') { l = null; try { l = localStorage.getItem('ps-lang'); } catch (_) { } } setLang(l === 'en' ? 'en' : 'nl', true); }
 previewZoomEffect(); drawAI(); renderLogoCanvas();
 { const h = (location.hash || '').slice(1); if (['zoom', 'ai', 'logo', 'planner', 'exif'].includes(h)) switchTab(h); }
 
