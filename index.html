@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>PhotoByArno Photography Suite Pro v1.5</title>
+  <title>PhotoByArno Photography Suite v1.6</title>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600&family=Great+Vibes&family=Montserrat:wght@400;600&family=Pacifico&family=Playfair+Display:ital@0;1&family=Satisfy&display=swap" rel="stylesheet">
@@ -232,7 +232,8 @@
     /* WEER & EXIF TABELLEN */
     .weather-info-group { display: flex; flex-direction: column; gap: 12px; margin-top: 12px; }
     .weather-card { background: white; border: 1px solid var(--card-border); border-radius: 10px; padding: 12px; }
-    .weather-card h4 { margin: 0 0 8px 0; font-size: 0.85rem; color: var(--text-main); display: flex; align-items: center; gap: 6px; }
+    .weather-card h4 { margin: 0 0 8px 0; font-size: 0.85rem; color: var(--text-main); display: flex; align-items: baseline; flex-wrap: wrap; justify-content: space-between; gap: 2px 8px; }
+    .weather-card h4 .caption { font-weight: 400; font-size: 0.7rem; color: var(--text-sub); }
     .weather-card .caption { font-size: .72rem; color: var(--text-sub); margin: -4px 0 6px; }
     .weather-table { width: 100%; border-collapse: collapse; font-size: 0.8rem; }
     .weather-table td { padding: 5px 0; border-bottom: 1px solid #f1f5f9; vertical-align: top; }
@@ -263,6 +264,8 @@
       .tool-grid.exif { display: flex; flex-direction: column; }
       #exif-tables { order: 5; } #exif-actions { order: 4; }
     }
+    .aurora summary { cursor: pointer; font-weight: 700; font-size: 0.85rem; color: var(--text-main); list-style-position: inside; }
+    .aurora.good summary { color: #2f7d4a; }
     .info-box { background: #eef5ee; border: 1px solid #b7cfb7; border-left: 5px solid #6f9c6f; color: #2f4a2f; border-radius: 9px; padding: 9px 12px; font-size: 0.78rem; font-weight: 600; margin: -6px 0 12px; }
     .linkbtn { background: none; border: 0; color: var(--accent); font: inherit; font-weight: 600; text-decoration: underline; cursor: pointer; padding: 0; }
     .chips { display: flex; gap: 6px; flex-wrap: wrap; }
@@ -296,9 +299,12 @@
       .coord-row { grid-template-columns: 1.1fr 1fr 1fr; }
       .coord-row > .form-group:first-child { grid-column: auto; }
       #planner-map { height: 320px; }
-      .weather-table td { padding: 3px 0; }
+      .weather-table td { padding: 2px 0; }
+      .weather-card h4 { margin-bottom: 4px; }
+      .species-list li { padding: 3px 0; }
+      #species-note { font-size: 0.7rem; margin: 4px 0 0; }
       .weather-info-group { margin-top: 0; gap: 10px; }
-      .species-list { max-height: 190px; }
+      .species-list { max-height: 96px; }
       .exif-cols { column-count: 2; column-gap: 12px; }
       #exif-thumb { max-height: 170px; }
       .exif-actions { grid-column: 1 / -1; display: grid; grid-template-columns: minmax(200px, 1fr) 2fr; gap: 4px 14px; align-items: end; border-top: 1px solid var(--card-border); padding-top: 10px; }
@@ -312,9 +318,9 @@
 <body>
 
   <header>
-    <h1>PhotoByArno Suite Pro</h1>
+    <h1>PhotoByArno Suite</h1>
     <div class="header-right">
-      <span class="header-badge">v1.5<span class="hb-date"> • Sep 2026</span></span>
+      <span class="header-badge">v1.6<span class="hb-date"> • Sep 2026</span></span>
       <div class="lang" role="group" aria-label="Taal / Language"><button class="lang-btn active" data-lang="nl" onclick="setLang('nl')">NL</button><button class="lang-btn" data-lang="en" onclick="setLang('en')">EN</button></div>
     </div>
   </header>
@@ -472,11 +478,22 @@
               </select>
             </div>
           </div>
+          <div class="two-col">
+            <div class="form-group">
+              <label for="edit-fmt">Opslaan als:</label>
+              <select id="edit-fmt" class="form-control" onchange="editFmtChange()">
+                <option value="jpg">JPG (klein, overal bruikbaar)</option>
+                <option value="png">PNG (zonder kwaliteitsverlies)</option>
+                <option value="webp">WebP (klein, modern)</option>
+              </select>
+            </div>
+            <div class="sl" id="edit-q-wrap" style="align-self:end; margin-bottom:9px;"><label for="edit-q">Kwaliteit <output id="edit-q-val">92</output></label><input type="range" id="edit-q" min="50" max="100" value="92" oninput="editFmtChange()"></div>
+          </div>
           <div class="btn-row">
             <button class="btn-secondary" id="edit-compare">👁 Voor / na</button>
             <button class="btn-secondary" onclick="editReset()">↺ Alles herstellen</button>
           </div>
-          <div class="btn-row"><button class="btn-main" onclick="saveEdit()">⬇ Foto opslaan (JPG)</button></div>
+          <div class="btn-row"><button class="btn-main" onclick="saveEdit()">⬇ Foto opslaan</button></div>
         </div>
       </div></div>
     </div>
@@ -487,7 +504,7 @@
         <div class="tool-left">
           <label class="upload-box" for="ai-file">
             <strong>📁 Kies foto voor de onderwerp-scan</strong>
-            <span>Werkt het best als het onderwerp scherp is en de achtergrond rustiger</span>
+            <span>Tik op het onderwerp: de AI tekent de contour, daarna kun je het bijwerken</span>
             <input type="file" id="ai-file" accept="image/*" onchange="loadAIImage(event)">
           </label>
           <div class="preview-box sticky">
@@ -496,7 +513,11 @@
           <p class="hint" style="margin:8px 0 14px;">Rood = wat als onderwerp wordt gezien en scherp blijft. Klopt het niet? Gebruik de gereedschappen bij “Gereedschap op de foto”.</p>
         </div>
         <div class="tool-right">
-          <button class="btn-secondary" onclick="scanAISubject()">🪄 Automatisch onderwerp scannen</button>
+          <button class="btn-main" style="margin-top:0" onclick="scanAISubject()">🪄 Onderwerp herkennen (AI)</button>
+          <div class="btn-row" style="margin-top:6px;">
+            <button class="btn-secondary" onclick="scanAISubject(false)">Zonder AI scannen</button>
+            <button class="btn-secondary" onclick="startManualMask()">✍ Zelf schilderen</button>
+          </div>
           <div id="ai-status" class="status"></div>
           <div class="form-group">
             <label>Gereedschap op de foto:</label>
@@ -630,17 +651,17 @@
         <div class="tool-right">
           <div class="weather-info-group" id="weather-results" style="display:none;">
             <div class="weather-card">
-              <h4>☁️ Live Weer &amp; Mist</h4>
-              <p class="caption" id="weather-caption"></p>
+              <h4><span>☁️ Live Weer &amp; Mist</span><span class="caption" id="weather-caption"></span></h4>
               <table class="weather-table">
                 <tr><td>Temperatuur</td><td id="weather-temp">-- °C</td></tr>
                 <tr><td>Windsnelheid</td><td id="weather-wind">-- km/h</td></tr>
                 <tr><td>Mistverwachting</td><td id="weather-fog">--</td></tr>
+                <tr><td>Regen nu</td><td id="weather-rain-now">--</td></tr>
+                <tr><td>Regen verwacht</td><td id="weather-rain-next">--</td></tr>
               </table>
             </div>
             <div class="weather-card">
-              <h4>🌅 Zon, Gouden Uur &amp; Rode Gloed</h4>
-              <p class="caption" id="sun-caption"></p>
+              <h4><span>🌅 Zon, Gouden Uur &amp; Rode Gloed</span><span class="caption" id="sun-caption"></span></h4>
               <table class="weather-table">
                 <tr><td>Zonsopkomst</td><td id="weather-sunrise">--:--</td></tr>
                 <tr><td>Gouden Uur (Ochtend)</td><td id="weather-golden-am">--:--</td></tr>
@@ -653,6 +674,19 @@
               </table>
             </div>
           </div>
+
+          <details class="step-card aurora" id="aurora-card">
+            <summary id="aurora-summary">🌌 Noorderlicht</summary>
+            <table class="weather-table" style="margin-top:6px;">
+              <tr><td>Geomagnetische breedte</td><td id="aurora-geo">--</td></tr>
+              <tr><td>Kp nodig voor zicht</td><td id="aurora-need">--</td></tr>
+              <tr><td>Kp nu</td><td id="aurora-kpnow">--</td></tr>
+              <tr><td>Kp-verwachting (nacht)</td><td id="aurora-kpfc">--</td></tr>
+              <tr><td>Donker (zon lager dan −12°)</td><td id="aurora-dark">--</td></tr>
+              <tr><td>Bewolking rond middernacht</td><td id="aurora-cloud">--</td></tr>
+            </table>
+            <p class="hint" id="aurora-note">Kp (0–9) meet de geomagnetische activiteit, bron: NOAA. Dit blijft een schatting: kijk naar het noorden, ver van stadslicht.</p>
+          </details>
 
           <div class="step-card">
             <h3>🌿 Live Gespotte Soorten rond deze Datum</h3>
@@ -718,7 +752,7 @@
     </div>
 
     <footer>
-      Foto's worden lokaal in je browser verwerkt en nergens naartoe gestuurd. Weer komt van Open-Meteo, soortenwaarnemingen van iNaturalist en de kaart van OpenStreetMap; zonnetijden worden lokaal berekend.<br>
+      Foto's worden lokaal in je browser verwerkt en nergens naartoe gestuurd. Weer komt van Open-Meteo, noorderlicht-gegevens van NOAA, soortenwaarnemingen van iNaturalist en de kaart van OpenStreetMap; zonnetijden worden lokaal berekend. De AI-functie laadt eenmalig een model van Google (MediaPipe).<br>
       <span>Je instellingen worden alleen in deze browser onthouden.</span> <button class="linkbtn" onclick="clearSettings()">🧽 Onthouden instellingen wissen</button>
     </footer>
   </div>
@@ -729,7 +763,7 @@
 'use strict';
 
 /* ════════════════════════════════════════════════════════════════
-   PhotoByArno Suite Pro v1.2 — alle functies die de knoppen aanroepen
+   PhotoByArno Suite — alle functies die de knoppen aanroepen
    ════════════════════════════════════════════════════════════════ */
 
 /* ═════════════ TAAL (NL / EN) ═════════════
@@ -766,7 +800,7 @@ const I18N_PAIRS = [
   ['⚠ Deze foto bevat privé-gegevens: {0}. Verwijder de metadata voordat je de foto deelt (e-mail, WhatsApp als bestand, je website) als je die informatie privé wilt houden.', '⚠ This photo contains private data: {0}. Remove the metadata before sharing the photo (email, WhatsApp as a file, your website) if you want to keep that information private.'],
   ['Eigen bestandsnaam (leeg = automatisch, zonder .jpg):', 'Own file name (empty = automatic, without .jpg):'], ['bijv. mijn-foto', 'e.g. my-photo'], ['📍 Locatie gebruiken in planner', '📍 Use location in planner'], ['📋 Gegevens kopiëren', '📋 Copy data'], ['🧹 Metadata verwijderen & opslaan', '🧹 Remove metadata & save'],
   ['Bij JPG-bestanden wordt de metadata (EXIF, XMP, IPTC) zonder kwaliteitsverlies verwijderd; de beeldrichting blijft behouden.', 'For JPG files the metadata (EXIF, XMP, IPTC) is removed without quality loss; the image orientation is kept.'],
-  ["Foto's worden lokaal in je browser verwerkt en nergens naartoe gestuurd. Weer komt van Open-Meteo, soortenwaarnemingen van iNaturalist en de kaart van OpenStreetMap; zonnetijden worden lokaal berekend.", 'Photos are processed locally in your browser and never sent anywhere. Weather comes from Open-Meteo, species observations from iNaturalist and the map from OpenStreetMap; sun times are calculated locally.'],
+  ["Foto's worden lokaal in je browser verwerkt en nergens naartoe gestuurd. Weer komt van Open-Meteo, noorderlicht-gegevens van NOAA, soortenwaarnemingen van iNaturalist en de kaart van OpenStreetMap; zonnetijden worden lokaal berekend. De AI-functie laadt eenmalig een model van Google (MediaPipe).", 'Photos are processed locally in your browser and never sent anywhere. Weather comes from Open-Meteo, northern lights data from NOAA, species observations from iNaturalist and the map from OpenStreetMap; sun times are calculated locally. The AI feature loads a model from Google (MediaPipe) once.'],
   /* meldingen en statussen */
   ['Afbeelding maken is mislukt. Probeer een kleinere foto.', 'Creating the image failed. Try a smaller photo.'], ['Geen bestand gekozen.', 'No file chosen.'],
   ['Deze foto kon niet worden geopend. Zet HEIC eventueel om naar JPG.', 'This photo could not be opened. Convert HEIC to JPG if needed.'], ['Deze foto kon niet worden geopend.', 'This photo could not be opened.'],
@@ -774,7 +808,7 @@ const I18N_PAIRS = [
   ['Deze browser kan geen video maken. Gebruik Safari op een recente iPhone of Chrome.', 'This browser cannot make video. Use Safari on a recent iPhone or Chrome.'], ['Op dit apparaat is geen geschikte video-export beschikbaar.', 'No suitable video export is available on this device.'],
   ['Video maken is mislukt.', 'Making the video failed.'], ['De opname werd onderbroken doordat je de pagina verliet. Blijf tijdens het maken op deze pagina en probeer opnieuw.', 'The recording was interrupted because you left the page. Stay on this page while it is being made and try again.'],
   ['Voorbereiden…', 'Preparing…'], ['Opnemen… {0}%', 'Recording… {0}%'], ['⬇ Video opslaan ({0})', '⬇ Save video ({0})'],
-  ['Foto geladen. Kies “Automatisch onderwerp scannen”, of schuif direct de vervaging.', 'Photo loaded. Choose “Scan subject automatically”, or move the blur slider right away.'], ['Bezig met scannen…', 'Scanning…'],
+  ['Foto geladen. Kies “Onderwerp herkennen (AI)”, of schuif direct de vervaging.', 'Photo loaded. Choose “Recognize subject (AI)”, or move the blur slider right away.'], ['Bezig met scannen…', 'Scanning…'],
   ['Geen duidelijk onderwerp gevonden: ik gebruikte een ovaal rond je aangetikte punt. Tik op het onderwerp, of schilder het bij met het penseel.', 'No clear subject found: I used an oval around the point you tapped. Tap the subject, or paint it in with the brush.'],
   ['Geen duidelijk onderwerp gevonden: ik gebruikte een ovaal in het midden. Tik op het onderwerp, of schilder het bij met het penseel.', 'No clear subject found: I used an oval in the center. Tap the subject, or paint it in with the brush.'],
   ['✓ Onderwerp gevonden ({0}% van de foto). Zie je nog onscherpe stukken? Zet “Toon gevonden onderwerp” aan en pas de rand aan of schilder bij.', '✓ Subject found ({0}% of the photo). Still see blurry parts? Turn on “Show detected subject” and adjust the edge or paint them in.'],
@@ -825,6 +859,28 @@ const I18N_PAIRS = [
   ['🔒 Alleen privé-gegevens verwijderen & opslaan', '🔒 Remove private data only & save'], ['Alleen privé-gegevens: houdt camera, lens en belichting, verwijdert locatie, serienummers, eigenaar, opmerkingen, miniatuur, XMP en IPTC.', 'Private data only: keeps camera, lens and exposure, removes location, serial numbers, owner, comments, thumbnail, XMP and IPTC.'],
   ['Privé-gegevens verwijderd; camera- en belichtingsgegevens zijn behouden.', 'Private data removed; camera and exposure data kept.'], ['Kon de privé-gegevens niet veilig los verwijderen; alle metadata is verwijderd.', 'Could not safely remove just the private data; all metadata was removed.'],
   ['Richting zonsopkomst', 'Sunrise direction'], ['Richting zonsondergang', 'Sunset direction'], ['Je instellingen worden alleen in deze browser onthouden.', 'Your settings are only remembered in this browser.'], ['🧽 Onthouden instellingen wissen', '🧽 Clear remembered settings'], ['Instellingen gewist.', 'Settings cleared.'],
+  ['Opslaan als:', 'Save as:'], ['JPG (klein, overal bruikbaar)', 'JPG (small, works everywhere)'], ['PNG (zonder kwaliteitsverlies)', 'PNG (lossless)'], ['WebP (klein, modern)', 'WebP (small, modern)'], ['Kwaliteit', 'Quality'], ['⬇ Foto opslaan', '⬇ Save photo'],
+  ['Deze browser kan geen {0} maken; opgeslagen als {1}.', 'This browser cannot make {0}; saved as {1}.'],
+  ['RAW-bestand: je bewerkt de ingebouwde voorvertoning ({0} × {1} px), niet de RAW-data zelf.', 'RAW file: you are editing the built-in preview ({0} × {1} px), not the RAW data itself.'],
+  ['In dit RAW-bestand is geen bruikbare voorvertoning gevonden. Zet het eerst om naar JPG.', 'No usable preview was found in this RAW file. Convert it to JPG first.'],
+  ['Deze HEIC-foto kon hier niet worden geopend (de HEIC-lezer kon niet worden geladen). Zet hem om naar JPG.', 'This HEIC photo could not be opened here (the HEIC reader could not be loaded). Convert it to JPG.'], ['Afmetingen (voorvertoning)', 'Dimensions (preview)'],
+  ['🪄 Onderwerp herkennen (AI)', '🪄 Recognize subject (AI)'], ['Zonder AI scannen', 'Scan without AI'], ['✍ Zelf schilderen', '✍ Paint it myself'], ['Tik op het onderwerp: de AI tekent de contour, daarna kun je het bijwerken', 'Tap the subject: the AI draws the outline, then you can refine it'],
+  ['AI-model laden (eenmalig, enkele MB)…', 'Loading AI model (one time, a few MB)…'], ['AI herkent het onderwerp…', 'AI is recognizing the subject…'],
+  ['✓ Onderwerp herkend met AI ({0}% van de foto). Klopt het niet? Tik op het onderwerp, of verbeter het met het penseel.', '✓ Subject recognized with AI ({0}% of the photo). Not right? Tap the subject, or refine it with the brush.'],
+  ['⚠ AI kon niet worden geladen (internet nodig); gewone scan gebruikt ({0}% van de foto). Verbeter met het penseel.', '⚠ AI could not be loaded (internet needed); used the regular scan ({0}% of the photo). Refine with the brush.'],
+  ['Leeg masker: schilder het onderwerp met je vinger of muis.', 'Empty mask: paint the subject with your finger or mouse.'],
+  ['Regen nu', 'Rain now'], ['Regen verwacht', 'Rain expected'], ['Nee, droog', 'No, dry'], ['Ja: {0} ({1} mm/u)', 'Yes: {0} ({1} mm/h)'], ['Ja: {0}', 'Yes: {0}'],
+  ['lichte regen', 'light rain'], ['matige regen', 'moderate rain'], ['flinke regen', 'heavy rain'], ['zware regen', 'very heavy rain'], ['sneeuw', 'snow'], ['onweer', 'thunderstorm'],
+  ['Droog (komende 2 uur)', 'Dry (next 2 hours)'], ['Regen verwacht rond {0} (tot {1} mm/u)', 'Rain expected around {0} (up to {1} mm/h)'], ['Blijft regenen (komende 2 uur)', 'Keeps raining (next 2 hours)'], ['Regen tot ca. {0}, daarna droog', 'Rain until about {0}, then dry'],
+  ['Kans {0}% · {1} mm/u', 'Chance {0}% · {1} mm/h'], ['{0} mm/u', '{0} mm/h'],
+  ['🌌 Noorderlicht', '🌌 Northern lights'], ['🌌 Noorderlicht: {0}', '🌌 Northern lights: {0}'], ['Geomagnetische breedte', 'Geomagnetic latitude'], ['Kp nodig voor zicht', 'Kp needed to see it'], ['Kp nu', 'Kp now'], ['Kp-verwachting (nacht)', 'Kp forecast (night)'],
+  ['Donker (zon lager dan −12°)', 'Dark (sun lower than −12°)'], ['Bewolking rond middernacht', 'Cloud cover around midnight'],
+  ['Bij vrijwel elke donkere nacht', 'On almost any dark night'], ['Zelfs bij Kp 9 nauwelijks zichtbaar', 'Barely visible even at Kp 9'], ['Kp ≥ {0} (laag) · Kp ≥ {1} (hoog)', 'Kp ≥ {0} (low) · Kp ≥ {1} (high)'],
+  ['{0} (max) rond {1}', '{0} (max) around {1}'], ['Alleen voor de komende 3 dagen', 'Only for the next 3 days'], ['Niet beschikbaar', 'Not available'], ['Geen echte nacht (te licht)', 'No real night (too light)'],
+  ['Te licht (geen echte nacht)', 'Too light (no real night)'], ['Onwaarschijnlijk (te zuidelijk)', 'Unlikely (too far south)'], ['Verwachting alleen voor de komende 3 dagen', 'Forecast only for the next 3 days'], ['Bezig…', 'Working…'],
+  ['Onbekend (Kp-verwachting niet beschikbaar)', 'Unknown (Kp forecast not available)'], ['Goede kans (ook hoog aan de hemel)', 'Good chance (also high in the sky)'], ['Mogelijk (laag in het noorden)', 'Possible (low in the north)'], ['Kleine kans', 'Small chance'], ['Onwaarschijnlijk', 'Unlikely'],
+  ['{0} — maar zwaar bewolkt', '{0} — but heavily overcast'],
+  ['Kp (0–9) meet de geomagnetische activiteit, bron: NOAA. Dit blijft een schatting: kijk naar het noorden, ver van stadslicht.', 'Kp (0–9) measures geomagnetic activity, source: NOAA. This remains an estimate: look north, away from city lights.'],
   /* algemeen patroon: "Naam (aantal)" – vertaalt alleen het bekende deel */
   ['{0} ({1})', '{0} ({1})']
 ];
@@ -877,6 +933,7 @@ function refreshDynamic() {
   try { previewZoomEffect(); drawAI(); drawEdit(); editSyncLabels(); renderLogoCanvas(); } catch (_) { }
   try { if (P.wx) renderWeather(P.wx.json, P.wx.t, P.wx.dateStr); else if (P.inited) renderSun(sunTimesFor($('planner-date').value || todayStr(), (readCoords() || { lat: 51.4 }).lat, (readCoords() || { lng: 5.7 }).lng), null, $('planner-date').value || todayStr()); } catch (_) { }
   try { if (P.inited) updateSpecies(); } catch (_) { }
+  try { renderAurora(); } catch (_) { }
   try { if (X.model) renderExifView(); } catch (_) { }
 }
 try {
@@ -918,21 +975,85 @@ function placeholder(c, text) { const x = c.getContext('2d'); x.fillStyle = '#1c
 /* Bestandsnamen: standaardnaam voorstellen zodat het origineel nooit wordt overschreven; gebruiker mag hem aanpassen */
 const fileBase = f => String(f && f.name || 'foto').replace(/\.[^.]+$/, '') || 'foto';
 function setDefaultName(id, v, reset) { const el = $(id); if (!el) return; if (reset) el.dataset.touched = ''; if (el.dataset.touched !== '1') el.value = v; }
-function outName(id, fb) { const v = String($(id).value || '').trim().replace(/[\\/:*?"<>|]+/g, '').replace(/\.(jpe?g|png|mp4|webm|zip)$/i, '').replace(/[. ]+$/, '').trim(); return v || fb; }
+function outName(id, fb) { const v = String($(id).value || '').trim().replace(/[\\/:*?"<>|]+/g, '').replace(/\.(jpe?g|png|webp|mp4|webm|zip)$/i, '').replace(/[. ]+$/, '').trim(); return v || fb; }
 
+/* RAW-bestanden (Nikon NEF, Sony ARW, Canon CR2/CR3, DNG, …) kan een browser niet lezen. Wel zit er in vrijwel elk RAW-bestand een
+   volledige JPEG-voorvertoning van de camera. Die zoeken we op en gebruiken we; de echte RAW-data blijft ongemoeid. */
+const RAW_RE = /\.(nef|nrw|arw|srf|sr2|cr2|cr3|crw|dng|orf|rw2|raf|pef|srw|3fr|erf|kdc|mrw|x3f|iiq|rwl)$/i, HEIC_RE = /\.(heic|heif|hif)$/i;
+const RAW_ACCEPT = '.nef,.nrw,.arw,.srf,.sr2,.cr2,.cr3,.crw,.dng,.orf,.rw2,.raf,.pef,.srw,.3fr,.erf,.kdc,.mrw,.x3f,.iiq,.rwl,.heic,.heif,.hif';
+/* einde van een JPEG vinden door de segmenten te volgen (zo tellen ingebedde miniaturen niet mee) */
+function jpegEnd(u, s) {
+  const n = u.length; let p = s + 2;
+  while (p + 3 < n) {
+    if (u[p] !== 0xFF) return -1; while (p < n && u[p + 1] === 0xFF) p++;
+    const m = u[p + 1];
+    if (m === 0xD9) return p + 2;
+    if (m === 0x01 || (m >= 0xD0 && m <= 0xD7)) { p += 2; continue; }
+    if (m === 0xDA) {
+      p += 2 + ((u[p + 2] << 8) | u[p + 3]);
+      while (p + 1 < n) { if (u[p] === 0xFF && u[p + 1] !== 0 && !(u[p + 1] >= 0xD0 && u[p + 1] <= 0xD7) && u[p + 1] !== 0xFF) break; p++; }
+      continue;
+    }
+    p += 2 + ((u[p + 2] << 8) | u[p + 3]);
+  }
+  return -1;
+}
+function findJpegs(u) {
+  const out = [], n = u.length - 3;
+  for (let i = 0; i < n; i++) {
+    if (u[i] === 0xFF && u[i + 1] === 0xD8 && u[i + 2] === 0xFF) { const e = jpegEnd(u, i); if (e > i + 2000) { out.push({ start: i, end: e, len: e - i }); i = e - 1; } }
+  }
+  return out;
+}
+function rawOrientation(u) {
+  try {
+    if (u.length < 16 || !((u[0] === 0x49 && u[1] === 0x49) || (u[0] === 0x4D && u[1] === 0x4D))) return 1;
+    const v = new DataView(u.buffer, u.byteOffset, u.byteLength), le = u[0] === 0x49, o = v.getUint32(4, le), n = v.getUint16(o, le);
+    for (let i = 0; i < n; i++) { const e = o + 2 + i * 12; if (v.getUint16(e, le) === 0x0112) return v.getUint16(e + 8, le) || 1; }
+  } catch (_) { }
+  return 1;
+}
+function decodeBlob(blob, errMsg) {
+  const url = URL.createObjectURL(blob);
+  return new Promise((res, rej) => { const n = new Image(); n.onload = () => { n.__url = url; res(n); }; n.onerror = () => { URL.revokeObjectURL(url); rej(new Error(errMsg || 'Deze foto kon niet worden geopend. Zet HEIC eventueel om naar JPG.')); }; n.src = url; });
+}
+async function rawToImage(file) {
+  const u = new Uint8Array(await file.arrayBuffer()), cands = findJpegs(u).sort((a, b) => b.len - a.len).slice(0, 8);
+  for (const c of cands) {
+    try {
+      const im = await decodeBlob(new Blob([u.subarray(c.start, c.end)], { type: 'image/jpeg' }));
+      if (Math.min(im.naturalWidth, im.naturalHeight) < 200) { URL.revokeObjectURL(im.__url); continue; }
+      let pre = 1; try { const ex = parseExif(u.slice(c.start, Math.min(c.end, c.start + 70000)).buffer); pre = (ex && ex.ifd0[0x0112]) || 1; } catch (_) { }
+      return { im, ori: rawOrientation(u), pre };
+    } catch (_) { }
+  }
+  throw new Error('In dit RAW-bestand is geen bruikbare voorvertoning gevonden. Zet het eerst om naar JPG.');
+}
+function loadScriptOnce(src) { return new Promise((res, rej) => { const s = document.createElement('script'); s.src = src; s.onload = res; s.onerror = () => rej(new Error('script')); document.head.appendChild(s); }); }
+async function heicToImage(file) {
+  const msg = 'Deze HEIC-foto kon hier niet worden geopend (de HEIC-lezer kon niet worden geladen). Zet hem om naar JPG.';
+  try { if (!window.heic2any) await loadScriptOnce('https://cdn.jsdelivr.net/npm/heic2any@0.0.4/dist/heic2any.min.js'); let out = await window.heic2any({ blob: file, toType: 'image/jpeg', quality: .95 }); if (Array.isArray(out)) out = out[0]; return await decodeBlob(out, msg); }
+  catch (_) { throw new Error(msg); }
+}
+function orientCanvas(c, o) {
+  if (o < 2 || o > 8) return c; const sw = o >= 5, r = mk(sw ? c.height : c.width, sw ? c.width : c.height), x = r.getContext('2d'), W = c.width, H = c.height;
+  const T = { 2: [-1, 0, 0, 1, W, 0], 3: [-1, 0, 0, -1, W, H], 4: [1, 0, 0, -1, 0, H], 5: [0, 1, 1, 0, 0, 0], 6: [0, 1, -1, 0, H, 0], 7: [0, -1, -1, 0, H, W], 8: [0, -1, 1, 0, 0, W] }[o];
+  x.setTransform(...T); x.drawImage(c, 0, 0); r.origW = sw ? c.origH : c.origW; r.origH = sw ? c.origW : c.origH; r.isRaw = c.isRaw; return r;
+}
 /* Foto laden: werkkopie (max. cap px), EXIF-rotatie is dan meteen verwerkt en tekenen gaat snel. */
 async function loadImageFile(file, cap) {
   if (!file) throw new Error('Geen bestand gekozen.');
-  const url = URL.createObjectURL(file);
+  const name = file.name || '', raw = RAW_RE.test(name); let im, extra = 1;
+  if (raw) { const r = await rawToImage(file); im = r.im; if (r.ori > 1 && r.pre <= 1) extra = r.ori; }
+  else { try { im = await decodeBlob(file); } catch (e) { if (HEIC_RE.test(name) || /hei[cf]/i.test(file.type || '')) im = await heicToImage(file); else throw e; } }
   try {
-    const im = await new Promise((res, rej) => { const n = new Image(); n.onload = () => res(n); n.onerror = () => rej(new Error('Deze foto kon niet worden geopend. Zet HEIC eventueel om naar JPG.')); n.src = url; });
     const iw = im.naturalWidth, ih = im.naturalHeight;
     if (!iw || !ih) throw new Error('Deze foto kon niet worden geopend.');
-    const s = Math.min(1, cap / Math.max(iw, ih)), c = mk(iw * s, ih * s);
+    const s = Math.min(1, cap / Math.max(iw, ih)); let c = mk(iw * s, ih * s);
     smooth(c.getContext('2d')).drawImage(im, 0, 0, c.width, c.height);
-    c.origW = iw; c.origH = ih;
-    return c;
-  } finally { URL.revokeObjectURL(url); }
+    c.origW = iw; c.origH = ih; c.isRaw = raw;
+    return extra > 1 ? orientCanvas(c, extra) : c;
+  } finally { if (im.__url) URL.revokeObjectURL(im.__url); }
 }
 
 /* ───────── Eigen blur (werkt in élke browser en is snel) ───────── */
@@ -1276,17 +1397,59 @@ function loadAIImage(e) {
     const s = Math.min(1, 640 / Math.max(c.width, c.height)); A.rw = Math.max(16, Math.round(c.width * s)); A.rh = Math.max(16, Math.round(c.height * s));
     A.add = mk(A.rw, A.rh); A.sub = mk(A.rw, A.rh);
     setDefaultName('ai-name', A.name + '-' + tr('onderwerp'), true);
-    $('ai-status').textContent = 'Foto geladen. Kies “Automatisch onderwerp scannen”, of schuif direct de vervaging.'; drawAI();
+    $('ai-status').textContent = 'Foto geladen. Kies “Onderwerp herkennen (AI)”, of schuif direct de vervaging.'; drawAI();
   }).catch(err => toast(err.message));
   e.target.value = '';
 }
-function runDetection() {
-  const long = 512, s = Math.min(1, long / Math.max(A.work.width, A.work.height)), w5 = Math.max(32, Math.round(A.work.width * s)), h5 = Math.max(32, Math.round(A.work.height * s));
-  const c = shrink(A.work, w5, h5), d = c.getContext('2d').getImageData(0, 0, w5, h5);
-  A.det = detectSubject(d.data, w5, h5, A.seed);
+function analysisDims() { const s = Math.min(1, 512 / Math.max(A.work.width, A.work.height)), w5 = Math.max(32, Math.round(A.work.width * s)), h5 = Math.max(32, Math.round(A.work.height * s)); return { w5, h5, cw: w5 >> 1, ch: h5 >> 1 }; }
+function maskBBox(mask, w, h) { let x0 = w, y0 = h, x1 = 0, y1 = 0; for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) if (mask[y * w + x]) { if (x < x0) x0 = x; if (x > x1) x1 = x; if (y < y0) y0 = y; if (y > y1) y1 = y; } return { x0: x0 / w, y0: y0 / h, x1: (x1 + 1) / w, y1: (y1 + 1) / h }; }
+function finishDetection() {
   if (!A.guide) { const g = shrink(A.work, A.rw, A.rh); A.guide = g.getContext('2d').getImageData(0, 0, A.rw, A.rh).data; }
   A.add.getContext('2d').clearRect(0, 0, A.rw, A.rh); A.sub.getContext('2d').clearRect(0, 0, A.rw, A.rh);
-  rebuildBase(); composeMask(); return A.det;
+  rebuildBase(); composeMask();
+}
+function runDetection() {
+  const { w5, h5 } = analysisDims(), c = shrink(A.work, w5, h5), d = c.getContext('2d').getImageData(0, 0, w5, h5);
+  A.det = detectSubject(d.data, w5, h5, A.seed); finishDetection(); return A.det;
+}
+/* ── AI: Google MediaPipe "Interactive Segmenter". Je tikt op het onderwerp, het model tekent de contour. Het draait in je eigen browser
+      (WebAssembly); alleen het model zelf wordt eenmalig gedownload. Je foto wordt niet verstuurd. ── */
+const AI = { seg: null, p: null, mod: null };
+const MP_BUNDLE = 'https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision/vision_bundle.mjs', MP_WASM = 'https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision/wasm';
+const MP_MODEL = 'https://storage.googleapis.com/mediapipe-models/interactive_segmenter_v2/magic_touch/int8/latest/interactive_segmentation.task';
+function withTimeout(p, ms, msg) { let t; return Promise.race([p, new Promise((_, rej) => { t = setTimeout(() => rej(new Error(msg)), ms); })]).finally(() => clearTimeout(t)); }
+function getAiSegmenter() {
+  if (AI.seg) return Promise.resolve(AI.seg);
+  if (!AI.p) AI.p = withTimeout((async () => {
+    const mod = await import(MP_BUNDLE), vision = await mod.FilesetResolver.forVisionTasks(MP_WASM);
+    const seg = await mod.InteractiveSegmenter.createFromOptions(vision, { baseOptions: { modelAssetPath: MP_MODEL } }); AI.mod = mod; AI.seg = seg; return seg;
+  })(), 120000, 'timeout').catch(e => { AI.p = null; throw e; });
+  return AI.p;
+}
+function readMask(res) {
+  const m = res && (res.getAsFloat32Array || res.getAsUint8Array ? res : (res.confidenceMasks && res.confidenceMasks[0]) || res.categoryMask);
+  if (!m) throw new Error('geen masker');
+  const arr = m.getAsFloat32Array ? m.getAsFloat32Array() : m.getAsUint8Array(), w = m.width, h = m.height, out = new Float32Array(w * h); let mx = 0;
+  for (let i = 0; i < out.length; i++) { const v = arr[i]; out[i] = v; if (v > mx) mx = v; }
+  if (mx > 1.5) for (let i = 0; i < out.length; i++) out[i] /= 255;
+  try { if (m.close) m.close(); } catch (_) { }
+  return { conf: out, w, h };
+}
+async function aiDetect(seed) {
+  const seg = await getAiSegmenter(), s = Math.min(1, 1024 / Math.max(A.work.width, A.work.height));
+  const src = s < 1 ? shrink(A.work, Math.round(A.work.width * s), Math.round(A.work.height * s)) : A.work, pt = { x: clamp(seed.x, .001, .999), y: clamp(seed.y, .001, .999) };
+  let res;
+  try { seg.setImage(src); res = seg.segment([{ brushMode: (AI.mod.BrushMode && AI.mod.BrushMode.POSITIVE != null) ? AI.mod.BrushMode.POSITIVE : 1, point: [pt], isCompleted: true }]); }
+  catch (e1) { res = await new Promise((ok, no) => { try { const r = seg.segment(src, { keypoint: pt }, ok); if (r) ok(r); } catch (e2) { no(e2); } }); }
+  const m = readMask(res), { cw, ch } = analysisDims(), cc = bilinear(m.conf, m.w, m.h, cw, ch), mask = new Uint8Array(cw * ch); let area = 0;
+  for (let i = 0; i < mask.length; i++) { mask[i] = cc[i] > .5 ? 1 : 0; area += mask[i]; } area /= mask.length;
+  if (area < .005 || area > .92) throw new Error('onbruikbaar masker');
+  return { mask, w: cw, h: ch, area, fallback: false, bbox: maskBBox(mask, cw, ch), ai: true };
+}
+function startManualMask() {
+  if (!A.work) { toast('Kies eerst een foto.'); return; }
+  const { cw, ch } = analysisDims(); A.det = { mask: new Uint8Array(cw * ch), w: cw, h: ch, area: 0, fallback: false, bbox: { x0: 0, y0: 0, x1: 1, y1: 1 } };
+  finishDetection(); if (+$('ai-blur-slider').value === 0) $('ai-blur-slider').value = 8; setAIMode('add'); $('ai-status').textContent = 'Leeg masker: schilder het onderwerp met je vinger of muis.'; drawAI();
 }
 function rebuildBase() {
   if (!A.det || !A.guide) return;
@@ -1306,17 +1469,22 @@ function composeMask() {
   s.globalCompositeOperation = 'destination-in'; smooth(s).drawImage(A.maskC, 0, 0, w, h); s.globalCompositeOperation = 'source-over';
   A.subject = A.subC; A.dirty = false;
 }
-function scanAISubject() {
+async function scanAISubject(mode) {
   if (!A.work) { toast('Kies eerst een foto.'); return; }
-  $('ai-status').textContent = 'Bezig met scannen…';
-  setTimeout(() => {
-    try {
-      const det = runDetection(), pct = Math.round(det.area * 100);
-      $('ai-status').textContent = det.fallback ? `Geen duidelijk onderwerp gevonden: ik gebruikte een ovaal ${A.seed ? 'rond je aangetikte punt' : 'in het midden'}. Tik op het onderwerp, of schilder het bij met het penseel.` : `✓ Onderwerp gevonden (${pct}% van de foto). Zie je nog onscherpe stukken? Zet “Toon gevonden onderwerp” aan en pas de rand aan of schilder bij.`;
-      if (+$('ai-blur-slider').value === 0) $('ai-blur-slider').value = 8;
-      drawAI();
-    } catch (e) { $('ai-status').textContent = ''; toast('Scannen is mislukt: ' + (e.message || e)); }
-  }, 30);
+  const st = $('ai-status'); let det = null, aiFail = false;
+  if (mode !== false) { try { st.textContent = AI.seg ? 'AI herkent het onderwerp…' : 'AI-model laden (eenmalig, enkele MB)…'; det = await aiDetect(A.seed || { x: .5, y: .5 }); } catch (e) { aiFail = true; } }
+  try {
+    if (det) { A.det = det; finishDetection(); st.textContent = `✓ Onderwerp herkend met AI (${Math.round(det.area * 100)}% van de foto). Klopt het niet? Tik op het onderwerp, of verbeter het met het penseel.`; }
+    else {
+      st.textContent = 'Bezig met scannen…'; await sleep(30);
+      const d = runDetection(), pct = Math.round(d.area * 100);
+      st.textContent = d.fallback ? `Geen duidelijk onderwerp gevonden: ik gebruikte een ovaal ${A.seed ? 'rond je aangetikte punt' : 'in het midden'}. Tik op het onderwerp, of schilder het bij met het penseel.`
+        : aiFail ? `⚠ AI kon niet worden geladen (internet nodig); gewone scan gebruikt (${pct}% van de foto). Verbeter met het penseel.`
+        : `✓ Onderwerp gevonden (${pct}% van de foto). Zie je nog onscherpe stukken? Zet “Toon gevonden onderwerp” aan en pas de rand aan of schilder bij.`;
+    }
+    if (+$('ai-blur-slider').value === 0) $('ai-blur-slider').value = 8;
+    drawAI();
+  } catch (e) { st.textContent = ''; toast('Scannen is mislukt: ' + (e.message || e)); }
 }
 function onAIMargin() {
   $('ai-margin-val').textContent = ($('ai-margin').value > 0 ? '+' : '') + $('ai-margin').value;
@@ -1423,7 +1591,7 @@ function loadEditImage(e) {
   const f = e.target.files[0]; if (!f) return;
   loadImageFile(f, 4096).then(c => {
     E.full = c; E.prev = Math.max(c.width, c.height) > 1600 ? shrink(c, Math.round(c.width * 1600 / Math.max(c.width, c.height)), Math.round(c.height * 1600 / Math.max(c.width, c.height))) : c; E.name = fileBase(f);
-    setDefaultName('edit-name', E.name + '-' + tr('bewerkt'), true); editReset(true); toast('Foto geladen: sleep om de uitsnede te kiezen.');
+    setDefaultName('edit-name', E.name + '-' + tr('bewerkt'), true); editReset(true); toast(c.isRaw ? `RAW-bestand: je bewerkt de ingebouwde voorvertoning (${c.origW} × ${c.origH} px), niet de RAW-data zelf.` : 'Foto geladen: sleep om de uitsnede te kiezen.');
   }).catch(err => toast(err.message));
   e.target.value = '';
 }
@@ -1460,6 +1628,7 @@ function drawEdit() {
   const pan = E.zoom > 1 || (editRatio() && Math.abs(editRatio() - p.iw / p.ih) > .01);
   c.style.touchAction = pan ? 'none' : 'pan-y'; c.style.cursor = pan ? 'grab' : '';
 }
+function editFmtChange() { const f = $('edit-fmt').value; $('edit-q-val').textContent = $('edit-q').value; $('edit-q-wrap').style.visibility = f === 'png' ? 'hidden' : 'visible'; }
 async function saveEdit() {
   if (!E.full) { toast('Kies eerst een foto.'); return; }
   try {
@@ -1468,8 +1637,10 @@ async function saveEdit() {
     const outH = outW / p0.ar; if (outW * outH > 16e6) outW = Math.floor(Math.sqrt(16e6 * p0.ar));
     const p = editPlan(E.full.width, E.full.height, E.rot, E.angle, E.zoom, E.cx, E.cy, R, outW), base = renderCrop(E.full, p), x = base.getContext('2d'), id = x.getImageData(0, 0, base.width, base.height);
     adjustPixels(id.data, base.width, base.height, E.vals); x.putImageData(id, 0, 0);
-    await shareOrSave(await canvasBlob(base, 'image/jpeg', .92), outName('edit-name', E.name + '-' + tr('bewerkt')) + '.jpg');
-    toast('Opgeslagen. De foto bevat geen locatie of cameragegevens meer.');
+    const fmt = $('edit-fmt').value, mime = { jpg: 'image/jpeg', png: 'image/png', webp: 'image/webp' }[fmt] || 'image/jpeg', blob = await canvasBlob(base, mime, (+$('edit-q').value || 92) / 100);
+    let ext = fmt; if (blob.type && blob.type !== mime) { ext = blob.type === 'image/png' ? 'png' : blob.type === 'image/webp' ? 'webp' : 'jpg'; toast(`Deze browser kan geen ${{ jpg: 'JPG', png: 'PNG', webp: 'WebP' }[fmt]} maken; opgeslagen als ${{ jpg: 'JPG', png: 'PNG', webp: 'WebP' }[ext]}.`); }
+    await shareOrSave(blob, outName('edit-name', E.name + '-' + tr('bewerkt')) + '.' + ext);
+    if (ext === fmt) toast('Opgeslagen. De foto bevat geen locatie of cameragegevens meer.');
   } catch (e) { toast(e.message || 'Opslaan is niet gelukt.'); }
 }
 {
@@ -1580,7 +1751,7 @@ function sunTimes(date, lat, lng) {
   const M = meanAnom(ds), L = eclLon(M), dc = decl(L), Jnoon = J2000 + ds + .0053 * Math.sin(M) - .0069 * Math.sin(2 * L);
   const setJ = h => { const w = Math.acos((Math.sin(h) - Math.sin(phi) * Math.sin(dc)) / (Math.cos(phi) * Math.cos(dc))), a = .0009 + (w + lw) / (2 * Math.PI) + n; return J2000 + a + .0053 * Math.sin(M) - .0069 * Math.sin(2 * L); };
   const res = { noon: fromJ(Jnoon) };
-  for (const [k, ang] of [['sun', -.833], ['golden', 6], ['civil', -6]]) { const Js = setJ(ang * RAD), Jr = Jnoon - (Js - Jnoon); res[k + 'Rise'] = fromJ(Jr); res[k + 'Set'] = fromJ(Js); }
+  for (const [k, ang] of [['sun', -.833], ['golden', 6], ['civil', -6], ['naut', -12]]) { const Js = setJ(ang * RAD), Jr = Jnoon - (Js - Jnoon); res[k + 'Rise'] = fromJ(Jr); res[k + 'Set'] = fromJ(Js); }
   return res;
 }
 const rightAsc = l => Math.atan2(Math.sin(l) * Math.cos(OBL), Math.cos(l));
@@ -1611,7 +1782,7 @@ const addDays = (s, n) => { const [y, m, d] = s.split('-').map(Number), t = new 
 const fmtDate = s => s.slice(8, 10) + '-' + s.slice(5, 7) + '-' + s.slice(0, 4);
 const MONTHS = ['januari', 'februari', 'maart', 'april', 'mei', 'juni', 'juli', 'augustus', 'september', 'oktober', 'november', 'december'];
 
-const P = { sunAz: null, sunLayer: null, obs: [], spLayer: null, map: null, marker: null, circle: null, inited: false, reqId: 0, ctrl: null, timer: 0 };
+const P = { kp: undefined, kpReq: 0, sunAz: null, sunLayer: null, obs: [], spLayer: null, map: null, marker: null, circle: null, inited: false, reqId: 0, ctrl: null, timer: 0 };
 function ensureLeaflet() {
   return new Promise((res, rej) => {
     if (window.L) return res();
@@ -1656,19 +1827,22 @@ const WX_BASE = ['temperature_2m', 'relative_humidity_2m', 'dew_point_2m', 'wind
 async function fetchWeather(lat, lng, dateStr, signal) {
   const diff = Math.round((Date.parse(dateStr + 'T00:00:00Z') - Date.parse(todayStr() + 'T00:00:00Z')) / 864e5);
   if (diff > 15) return { unavailable: true };
-  const archive = diff < -90, root = archive ? 'https://archive-api.open-meteo.com/v1/archive' : 'https://api.open-meteo.com/v1/forecast';
-  const extra = (diff === 0 && !archive) ? '&current=temperature_2m,wind_speed_10m,relative_humidity_2m,dew_point_2m' : '';
-  const url = vars => `${root}?latitude=${lat.toFixed(4)}&longitude=${lng.toFixed(4)}&hourly=${vars.join(',')}${extra}&start_date=${dateStr}&end_date=${dateStr}&timezone=auto`;
-  let r = await fetch(url(archive ? WX_BASE : WX_BASE.concat(['visibility', 'precipitation_probability'])), { signal });
-  if (!r.ok && !archive) r = await fetch(url(WX_BASE), { signal });
-  if (!r.ok) throw new Error('Open-Meteo antwoordde met status ' + r.status);
+  const archive = diff < -90, root = archive ? 'https://archive-api.open-meteo.com/v1/archive' : 'https://api.open-meteo.com/v1/forecast', today = diff === 0 && !archive;
+  const extraNew = today ? '&current=temperature_2m,wind_speed_10m,relative_humidity_2m,dew_point_2m,precipitation,weather_code&minutely_15=precipitation&forecast_minutely_15=8' : '';
+  const extraOld = today ? '&current=temperature_2m,wind_speed_10m,relative_humidity_2m,dew_point_2m' : '';
+  const url = (vars, extra) => `${root}?latitude=${lat.toFixed(4)}&longitude=${lng.toFixed(4)}&hourly=${vars.join(',')}${extra}&start_date=${dateStr}&end_date=${dateStr}&timezone=auto`;
+  const full = archive ? WX_BASE.concat(['precipitation']) : WX_BASE.concat(['visibility', 'precipitation_probability', 'precipitation']);
+  const tries = archive ? [[full, ''], [WX_BASE, '']] : [[full, extraNew], [full, extraOld], [WX_BASE, extraOld]];
+  let r = null;
+  for (const [vars, extra] of tries) { r = await fetch(url(vars, extra), { signal }); if (r.ok) break; }
+  if (!r || !r.ok) throw new Error('Open-Meteo antwoordde met status ' + (r && r.status));
   return r.json();
 }
 function pickHour(json, key) {
   const H = json && json.hourly; if (!H || !H.time) return null;
   const i = H.time.findIndex(t => t.startsWith(key)); if (i < 0) return null;
   const g = k => H[k] ? H[k][i] : null;
-  return { temp: g('temperature_2m'), rh: g('relative_humidity_2m'), dew: g('dew_point_2m'), wind: g('wind_speed_10m'), cloud: g('cloud_cover'), low: g('cloud_cover_low'), mid: g('cloud_cover_mid'), high: g('cloud_cover_high'), vis: g('visibility'), pp: g('precipitation_probability') };
+  return { temp: g('temperature_2m'), rh: g('relative_humidity_2m'), dew: g('dew_point_2m'), wind: g('wind_speed_10m'), cloud: g('cloud_cover'), low: g('cloud_cover_low'), mid: g('cloud_cover_mid'), high: g('cloud_cover_high'), vis: g('visibility'), pp: g('precipitation_probability'), pr: g('precipitation') };
 }
 function fogAssess(w) {
   if (!w || w.rh == null) return null;
@@ -1715,6 +1889,29 @@ function renderSun(t, tz, dateStr) {
   try { drawSunLines(); } catch (_) { }
   if (isNaN(t.sunRise) || isNaN(t.sunSet)) setText('sun-caption', `${fmtDate(dateStr)} · op deze plek en datum is er geen normale zonsopkomst/-ondergang (poolzomer of -winter).`);
 }
+const WX_IDS = ['weather-temp', 'weather-wind', 'weather-fog', 'weather-rain-now', 'weather-rain-next', 'weather-red-glow', 'weather-score'];
+const RAIN_DESC = mm => mm < 2.5 ? 'lichte regen' : mm < 7.6 ? 'matige regen' : mm < 15 ? 'flinke regen' : 'zware regen';
+/* Regent het nu, en de komende 2 uur? (Open-Meteo: 15-minutendata; per uur als reserve) */
+function rainRows(json, dateStr, wSr) {
+  const isToday = dateStr === todayStr(), cur = json.current, mi = json.minutely_15;
+  if (!isToday) {
+    const txt = wSr && (wSr.pp != null || wSr.pr != null) ? (wSr.pp != null ? `Kans ${nlNum(wSr.pp)}% · ${nlNum(wSr.pr == null ? 0 : wSr.pr, 1)} mm/u` : `${nlNum(wSr.pr, 1)} mm/u`) : '--';
+    return { now: '—', next: txt };
+  }
+  const steps = mi && mi.precipitation && mi.time ? mi.precipitation.map(v => (v == null ? 0 : v) * 4) : null;   /* mm per 15 min → mm per uur */
+  let rate = null; if (cur && cur.precipitation != null) rate = cur.precipitation * 3600 / (cur.interval || 900); else if (steps) rate = steps[0];
+  const code = cur ? cur.weather_code : null, snow = code != null && ((code >= 71 && code <= 77) || code === 85 || code === 86), thunder = code != null && code >= 95, rainCode = code != null && ((code >= 51 && code <= 67) || (code >= 80 && code <= 82));
+  if (rate == null && code == null) return { now: '--', next: '--' };
+  const raining = (rate != null && rate >= .1) || rainCode || snow || thunder, kind = thunder ? 'onweer' : snow ? 'sneeuw' : RAIN_DESC(rate == null ? 1 : rate);
+  const now = !raining ? 'Nee, droog' : (rate != null && rate >= .1 ? `Ja: ${kind} (${nlNum(rate, 1)} mm/u)` : `Ja: ${kind}`);
+  let next = '--';
+  if (steps) {
+    const hm = i => String(mi.time[i]).slice(11, 16);
+    if (!raining) { const k = steps.findIndex((v, i) => i >= 1 && v >= .1); next = k < 0 ? 'Droog (komende 2 uur)' : `Regen verwacht rond ${hm(k)} (tot ${nlNum(Math.max(...steps.slice(k)), 1)} mm/u)`; }
+    else { const k = steps.findIndex((v, i) => i >= 1 && v < .1); next = k < 0 ? 'Blijft regenen (komende 2 uur)' : `Regen tot ca. ${hm(k)}, daarna droog`; }
+  } else if (cur && cur.time) { const h = pickHour(json, cur.time.slice(0, 13)); if (h && (h.pp != null || h.pr != null)) next = h.pp != null ? `Kans ${nlNum(h.pp)}% · ${nlNum(h.pr == null ? 0 : h.pr, 1)} mm/u` : `${nlNum(h.pr, 1)} mm/u`; }
+  return { now, next };
+}
 function renderWeather(json, t, dateStr) {
   P.wx = { json, t, dateStr };
   const tz = json.timezone, srKey = isNaN(t.sunRise) ? null : localKey(t.sunRise, tz), ssKey = isNaN(t.sunSet) ? null : localKey(t.sunSet, tz);
@@ -1722,7 +1919,8 @@ function renderWeather(json, t, dateStr) {
   const wSr = srKey ? pickHour(json, srKey) : null, wSs = ssKey ? pickHour(json, ssKey) : null, cur = json.current, wNow = cur && cur.time ? pickHour(json, cur.time.slice(0, 13)) : null;
   const base = (cur && dateStr === todayStr()) ? { temp: cur.temperature_2m, wind: cur.wind_speed_10m, rh: cur.relative_humidity_2m, dew: cur.dew_point_2m, vis: wNow ? wNow.vis : null } : wSr;
   setText('weather-caption', cur && dateStr === todayStr() ? 'Actuele waarden (nu)' : 'Waarden rond zonsopkomst (verwachting)');
-  if (!base) { setText('weather-temp', '--'); setText('weather-wind', '--'); setText('weather-fog', 'Geen gegevens'); setText('weather-red-glow', '--'); setText('weather-score', '--'); return; }
+  { const rr = rainRows(json, dateStr, wSr); setText('weather-rain-now', rr.now); setText('weather-rain-next', rr.next); }
+  if (!base) { setText('weather-temp', '--'); setText('weather-wind', '--'); setText('weather-fog', 'Geen gegevens'); setText('weather-red-glow', '--'); setText('weather-score', '--'); renderAurora(); return; }
   setText('weather-temp', base.temp != null ? nlNum(base.temp, 1) + ' °C' : '--');
   setText('weather-wind', base.wind != null ? nlNum(base.wind) + ' km/h' : '--');
   const fogW = (cur && dateStr === todayStr()) ? base : wSr, fog = fogAssess(fogW);
@@ -1730,7 +1928,7 @@ function renderWeather(json, t, dateStr) {
   const gA = glowScore(wSr), gP = glowScore(wSs);
   setText('weather-red-glow', gA == null && gP == null ? '--' : `Ochtend: ${glowLabel(gA)} · Avond: ${glowLabel(gP)}`);
   const ps = photoScore(fog, Math.max(gA == null ? 0 : gA, gP == null ? 0 : gP), wSr, wSs);
-  setText('weather-score', ps.text);
+  setText('weather-score', ps.text); renderAurora();
 }
 async function runPlanner() {
   const c = readCoords(), st = $('planner-status');
@@ -1738,18 +1936,63 @@ async function runPlanner() {
   const dateStr = $('planner-date').value || todayStr();
   if (P.marker && P.map) { P.marker.setLatLng([c.lat, c.lng]); }
   P.wx = null; const t = sunTimesFor(dateStr, c.lat, c.lng); renderSun(t, null, dateStr);
-  ['weather-temp', 'weather-wind', 'weather-fog', 'weather-red-glow', 'weather-score'].forEach(id => setText(id, '…')); setText('weather-caption', '');
+  WX_IDS.forEach(id => setText(id, '…')); setText('weather-caption', '');
   const id = ++P.reqId; if (P.ctrl) P.ctrl.abort(); P.ctrl = new AbortController();
-  st.textContent = 'Weer laden…'; updateSpecies();
+  st.textContent = 'Weer laden…'; updateSpecies(); renderAurora(); loadKp();
   try {
     const wj = await fetchWeather(c.lat, c.lng, dateStr, P.ctrl.signal); if (id !== P.reqId) return;
-    if (wj.unavailable) { st.textContent = 'Een weersverwachting is maximaal 16 dagen vooruit beschikbaar. De zonnetijden hieronder kloppen wel.'; ['weather-temp', 'weather-wind', 'weather-fog', 'weather-red-glow', 'weather-score'].forEach(i => setText(i, '--')); return; }
+    if (wj.unavailable) { st.textContent = 'Een weersverwachting is maximaal 16 dagen vooruit beschikbaar. De zonnetijden hieronder kloppen wel.'; WX_IDS.forEach(i => setText(i, '--')); return; }
     renderWeather(wj, t, dateStr); st.textContent = '';
   } catch (e) {
     if (e.name === 'AbortError' || id !== P.reqId) return;
     st.textContent = 'Het weer kon niet worden geladen (controleer je internetverbinding). De zonnetijden hieronder kloppen wel.';
-    ['weather-temp', 'weather-wind', 'weather-fog', 'weather-red-glow', 'weather-score'].forEach(i => setText(i, '--'));
+    WX_IDS.forEach(i => setText(i, '--'));
   }
+}
+
+/* ── Noorderlicht: geomagnetische breedte van jouw plek + Kp-verwachting van NOAA + duisternis + bewolking ── */
+const KP_URLS = ['https://services.swpc.noaa.gov/products/noaa-planetary-k-index-forecast.json', 'https://services.swpc.noaa.gov/products/noaa-planetary-k-index.json'];
+function geomagLat(lat, lng) { const p = 80.7 * RAD, pl = -72.7 * RAD, f = lat * RAD, l = lng * RAD; return Math.asin(clamp(Math.sin(f) * Math.sin(p) + Math.cos(f) * Math.cos(p) * Math.cos(l - pl), -1, 1)) / RAD; }
+/* rand van de noorderlichtzone: ± 66,5° − 2,05° per Kp; laag aan de horizon zie je het al als die rand ~4° ten noorden van je ligt */
+const kpNeed = gl => ({ horizon: (66.5 - (gl + 4)) / 2.05, zenith: (66.5 - gl) / 2.05 });
+const parseUtc = v => { if (!v) return null; v = String(v); const d = new Date(/[zZ]$|[+-]\d\d:?\d\d$/.test(v) ? v : v.replace(' ', 'T') + 'Z'); return isNaN(d) ? null : d; };
+function parseKp(j) {
+  if (!Array.isArray(j) || !j.length) return [];
+  let rows;
+  if (Array.isArray(j[0])) { const h = j[0].map(x => String(x).toLowerCase()), ti = h.indexOf('time_tag'), ki = h.indexOf('kp') >= 0 ? h.indexOf('kp') : h.indexOf('kp_index'); rows = j.slice(1).map(r => ({ t: r[ti], kp: r[ki] })); }
+  else rows = j.map(o => ({ t: o.time_tag || o.time, kp: o.kp != null ? o.kp : (o.Kp != null ? o.Kp : o.kp_index) }));
+  return rows.map(r => ({ t: parseUtc(r.t), kp: parseFloat(r.kp) })).filter(r => r.t && isFinite(r.kp)).sort((a, b) => a.t - b.t);
+}
+async function fetchKp(signal) {
+  for (const u of KP_URLS) { try { const r = await fetch(u, { signal }); if (!r.ok) continue; const rows = parseKp(await r.json()); if (rows.length) return rows; } catch (e) { if (e.name === 'AbortError') throw e; } }
+  return null;
+}
+async function loadKp() {
+  if (P.kp && Date.now() - P.kp.at < 600000) return;
+  const id = ++P.kpReq; let rows = null; try { rows = await fetchKp(); } catch (_) { }
+  if (id !== P.kpReq) return; P.kp = { rows, at: Date.now() }; renderAurora();
+}
+function renderAurora() {
+  const c = readCoords(); if (!c || !$('aurora-geo')) return;
+  const dateStr = $('planner-date').value || todayStr(), gl = geomagLat(c.lat, c.lng), need = kpNeed(gl);
+  const t1 = sunTimesFor(dateStr, c.lat, c.lng), t2 = sunTimesFor(addDays(dateStr, 1), c.lat, c.lng), ds = t1.nautSet, de = t2.nautRise, dark = !isNaN(ds) && !isNaN(de);
+  const tz = P.wx && P.wx.json ? P.wx.json.timezone : null, rows = P.kp ? P.kp.rows : undefined, fk = v => nlNum(Math.max(0, v), 1);
+  setText('aurora-geo', nlNum(gl, 1) + '°');
+  setText('aurora-need', need.horizon <= .5 ? 'Bij vrijwel elke donkere nacht' : need.horizon > 9 ? 'Zelfs bij Kp 9 nauwelijks zichtbaar' : `Kp ≥ ${fk(need.horizon)} (laag) · Kp ≥ ${need.zenith > 9 ? '9+' : fk(need.zenith)} (hoog)`);
+  const now = rows ? rows.filter(r => r.t <= new Date()).pop() : null; setText('aurora-kpnow', rows === undefined ? '…' : now ? nlNum(now.kp, 1) : '--');
+  setText('aurora-dark', dark ? `${fmtTime(ds, tz)} – ${fmtTime(de, tz)}` : 'Geen echte nacht (te licht)');
+  let maxKp = null, kpTxt;
+  if (rows === undefined) kpTxt = '…'; else if (!rows) kpTxt = 'Niet beschikbaar'; else if (!dark) kpTxt = '—';
+  else { const win = rows.filter(r => r.t.getTime() + 3 * 3600e3 > ds.getTime() && r.t.getTime() < de.getTime()); if (win.length) { const m = win.reduce((a, b) => b.kp > a.kp ? b : a); maxKp = m.kp; kpTxt = `${nlNum(m.kp, 1)} (max) rond ${fmtTime(m.t, tz)}`; } else kpTxt = 'Alleen voor de komende 3 dagen'; }
+  setText('aurora-kpfc', kpTxt);
+  const h = P.wx && P.wx.json && P.wx.dateStr === dateStr ? pickHour(P.wx.json, dateStr + 'T23') : null, cloud = h && h.cloud != null ? h.cloud : null;
+  setText('aurora-cloud', cloud != null ? nlNum(cloud) + '%' : '--');
+  let v, good = false;
+  if (!dark) v = 'Te licht (geen echte nacht)'; else if (need.horizon > 9) v = 'Onwaarschijnlijk (te zuidelijk)';
+  else if (maxKp == null) v = rows ? 'Verwachting alleen voor de komende 3 dagen' : rows === undefined ? 'Bezig…' : 'Onbekend (Kp-verwachting niet beschikbaar)';
+  else if (maxKp >= need.zenith) { v = 'Goede kans (ook hoog aan de hemel)'; good = true; } else if (maxKp >= need.horizon) { v = 'Mogelijk (laag in het noorden)'; good = true; } else if (maxKp >= need.horizon - 1) v = 'Kleine kans'; else v = 'Onwaarschijnlijk';
+  if (good && cloud != null && cloud > 75) v += ' — maar zwaar bewolkt';
+  setText('aurora-summary', `🌌 Noorderlicht: ${v}`); $('aurora-card').classList.toggle('good', good && !(cloud != null && cloud > 75));
 }
 
 /* Soorten (iNaturalist) */
@@ -1866,9 +2109,15 @@ function readIFD(v, tiff, off, le) {
   }
   return out;
 }
+function tiffExif(v, tiff, lenient) {
+  const le = v.getUint16(tiff) === 0x4949; if (!le && v.getUint16(tiff) !== 0x4D4D) return null; if (!lenient && v.getUint16(tiff + 2, le) !== 42) return null;
+  const ifd0 = readIFD(v, tiff, v.getUint32(tiff + 4, le), le);
+  return { ifd0, exif: ifd0[0x8769] != null ? readIFD(v, tiff, ifd0[0x8769], le) : {}, gps: ifd0[0x8825] != null ? readIFD(v, tiff, ifd0[0x8825], le) : {} };
+}
 function parseExif(buf) {
   try {
-    const v = new DataView(buf); if (v.byteLength < 12 || v.getUint16(0) !== 0xFFD8) return null;
+    const v = new DataView(buf); if (v.byteLength >= 16 && (v.getUint16(0) === 0x4949 || v.getUint16(0) === 0x4D4D)) return tiffExif(v, 0, true); /* RAW (NEF, ARW, CR2, DNG, …) */
+    if (v.byteLength < 12 || v.getUint16(0) !== 0xFFD8) return null;
     let off = 2;
     while (off + 4 < v.byteLength) {
       if (v.getUint8(off) !== 0xFF) break; const marker = v.getUint8(off + 1), len = v.getUint16(off + 2);
@@ -1901,7 +2150,7 @@ function exifModel(ex, file, dims) {
   add(sh, 'Flits', t1[0x9209] != null ? (t1[0x9209] & 1 ? 'Flits afgegaan' : 'Geen flits') : null);
   add(sh, 'Witbalans', t1[0xA403] != null ? (t1[0xA403] === 0 ? 'Automatisch' : 'Handmatig') : null);
   const fi = f('🖼 Bestand'); add(fi, 'Bestandsnaam', file.name); add(fi, 'Type', file.type || null); add(fi, 'Grootte', file.size > 1e6 ? nlNum(file.size / 1e6, 1) + ' MB' : nlNum(file.size / 1e3) + ' KB');
-  if (dims) add(fi, 'Afmetingen', `${dims.w} × ${dims.h} px (${nlNum(dims.w * dims.h / 1e6, 1)} MP)`);
+  if (dims) add(fi, dims.raw ? 'Afmetingen (voorvertoning)' : 'Afmetingen', `${dims.w} × ${dims.h} px (${nlNum(dims.w * dims.h / 1e6, 1)} MP)`);
   add(fi, 'Richting (EXIF)', t0[0x0112] && t0[0x0112] !== 1 ? (ORI[t0[0x0112]] || String(t0[0x0112])) : null);
   const lat = dms(g[2], g[1]), lng = dms(g[4], g[3]);
   let gps = null;
@@ -1929,7 +2178,7 @@ async function loadExif(e) {
   const f = e.target.files[0]; if (!f) return; e.target.value = '';
   try {
     X.file = f; X.buf = await f.arrayBuffer(); setDefaultName('exif-name', '', true);
-    X.ex = parseExif(X.buf); X.thumb = await loadImageFile(f, 900); X.dims = { w: X.thumb.origW, h: X.thumb.origH };
+    X.ex = parseExif(X.buf); X.thumb = await loadImageFile(f, 900); X.dims = { w: X.thumb.origW, h: X.thumb.origH, raw: !!X.thumb.isRaw };
     renderExifView();
   } catch (err) { toast(err.message || 'Deze foto kon niet worden gelezen.'); }
 }
@@ -2003,7 +2252,7 @@ async function stripExifSave() {
 }
 
 /* ───────── Instellingen onthouden (alleen in deze browser) ───────── */
-const REMEMBER = ['logo-text', 'logo-font', 'logo-size', 'logo-color', 'logo-pos', 'zoom-effect', 'zoom-format', 'zoom-direction', 'zoom-factor', 'zoom-duration', 'edit-ratio', 'edit-out', 'species-group', 'species-radius'], DEFAULTS = {};
+const REMEMBER = ['edit-fmt', 'edit-q', 'logo-text', 'logo-font', 'logo-size', 'logo-color', 'logo-pos', 'zoom-effect', 'zoom-format', 'zoom-direction', 'zoom-factor', 'zoom-duration', 'edit-ratio', 'edit-out', 'species-group', 'species-radius'], DEFAULTS = {};
 REMEMBER.forEach(id => { const el = $(id); if (el) DEFAULTS[id] = el.value; });
 function saveSettings() { try { const j = {}; REMEMBER.forEach(id => { const el = $(id); if (el) j[id] = el.value; }); localStorage.setItem('ps-settings', JSON.stringify(j)); } catch (_) { } }
 function restoreSettings() {
@@ -2026,6 +2275,7 @@ function postHeight() { try { if (window.parent && window.parent !== window) win
 try { if (window.ResizeObserver) new ResizeObserver(postHeight).observe(document.body); window.addEventListener('load', postHeight); } catch (_) { }
 
 /* ───────── Start ───────── */
+document.querySelectorAll('input[type=file]').forEach(i => { if (i.id !== 'logo-png-file') i.accept = 'image/*,' + RAW_ACCEPT; });
 { let l = null; try { l = new URLSearchParams(location.search).get('lang'); } catch (_) { } if (l !== 'en' && l !== 'nl') { l = null; try { l = localStorage.getItem('ps-lang'); } catch (_) { } } setLang(l === 'en' ? 'en' : 'nl', true); }
 previewZoomEffect(); drawAI(); drawEdit(); editSyncLabels(); renderLogoCanvas();
 { const h = (location.hash || '').slice(1); if (['zoom', 'edit', 'ai', 'logo', 'planner', 'exif'].includes(h)) switchTab(h); }
