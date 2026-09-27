@@ -265,6 +265,8 @@
       #exif-tables { order: 5; } #exif-actions { order: 4; }
     }
     .aurora summary { cursor: pointer; font-weight: 700; font-size: 0.85rem; color: var(--text-main); list-style-position: inside; }
+    .tool-right > .step-card.aurora { padding: 9px 14px; }
+    .tool-right > .step-card.aurora + .step-card.aurora { margin-top: 8px !important; }
     .aurora.good summary { color: #2f7d4a; }
     .info-box { background: #eef5ee; border: 1px solid #b7cfb7; border-left: 5px solid #6f9c6f; color: #2f4a2f; border-radius: 9px; padding: 9px 12px; font-size: 0.78rem; font-weight: 600; margin: -6px 0 12px; }
     .linkbtn { background: none; border: 0; color: var(--accent); font: inherit; font-weight: 600; text-decoration: underline; cursor: pointer; padding: 0; }
@@ -475,6 +477,7 @@
                 <option value="hq">Hoge kwaliteit (tot 4096 px)</option>
                 <option value="2048">2048 px breed</option>
                 <option value="1080">1080 px breed (Instagram)</option>
+                <option value="x2">2× vergroten (scherper, voor afdrukken)</option>
               </select>
             </div>
           </div>
@@ -688,6 +691,15 @@
             <p class="hint" id="aurora-note">Kp (0–9) meet de geomagnetische activiteit, bron: NOAA. Dit blijft een schatting: kijk naar het noorden, ver van stadslicht.</p>
           </details>
 
+          <details class="step-card aurora" id="sundir-card">
+            <summary id="sundir-summary">🧭 Zon op een richting plannen</summary>
+            <p class="hint" id="sundir-hint">Kies op de kaart een punt — bijvoorbeeld een molen, boom of gebouw — en zie wanneer de zon de komende tijd precies die kant op staat.</p>
+            <button type="button" class="btn-secondary" id="sundir-pick" onclick="startPickDirection()">📍 Kies een richting op de kaart</button>
+            <div id="sundir-current" class="status" style="display:none;"></div>
+            <div id="sundir-results"></div>
+            <p class="hint" id="sundir-limit" style="display:none;">Voor data verder dan ongeveer 16 dagen is er geen weersverwachting; deze tijden zijn exact, of het dan ook helder is weet je pas dichterbij.</p>
+          </details>
+
           <div class="step-card">
             <h3>🌿 Live Gespotte Soorten rond deze Datum</h3>
             <div class="two-col" style="margin-top:8px;">
@@ -881,6 +893,19 @@ const I18N_PAIRS = [
   ['Onbekend (Kp-verwachting niet beschikbaar)', 'Unknown (Kp forecast not available)'], ['Goede kans (ook hoog aan de hemel)', 'Good chance (also high in the sky)'], ['Mogelijk (laag in het noorden)', 'Possible (low in the north)'], ['Kleine kans', 'Small chance'], ['Onwaarschijnlijk', 'Unlikely'],
   ['{0} — maar zwaar bewolkt', '{0} — but heavily overcast'],
   ['Kp (0–9) meet de geomagnetische activiteit, bron: NOAA. Dit blijft een schatting: kijk naar het noorden, ver van stadslicht.', 'Kp (0–9) measures geomagnetic activity, source: NOAA. This remains an estimate: look north, away from city lights.'],
+  ['2× vergroten (scherper, voor afdrukken)', '2× enlarge (sharper, for prints)'],
+  ['🧭 Zon op een richting plannen', '🧭 Plan the sun in a chosen direction'],
+  ['Kies op de kaart een punt — bijvoorbeeld een molen, boom of gebouw — en zie wanneer de zon de komende tijd precies die kant op staat.', 'Pick a point on the map — a windmill, tree or building, say — and see when the sun will be exactly in that direction in the coming weeks.'],
+  ['📍 Kies een richting op de kaart', '📍 Pick a direction on the map'],
+  ['Voor data verder dan ongeveer 16 dagen is er geen weersverwachting; deze tijden zijn exact, of het dan ook helder is weet je pas dichterbij.', 'No weather forecast is available beyond about 16 days out; these times are exact, but whether it will actually be clear you\'ll only know closer to the date.'],
+  ['Wacht tot de kaart geladen is.', 'Wait until the map has loaded.'],
+  ['Tik nu op de kaart op dat punt', 'Now tap that point on the map'],
+  ['Kies een richting op de kaart', 'Pick a direction on the map'],
+  ['Gekozen richting', 'Chosen direction'],
+  ['Wissen', 'Clear'],
+  ['Deze richting wordt de komende 3 maanden niet door de zon bereikt op deze plek.', 'The sun will not reach this direction here in the coming 3 months.'],
+  ['🌇 Gouden uur', '🌇 Golden hour'],
+  ['☀️ Overdag', '☀️ Daytime'],
   /* algemeen patroon: "Naam (aantal)" – vertaalt alleen het bekende deel */
   ['{0} ({1})', '{0} ({1})']
 ];
@@ -1557,6 +1582,25 @@ function editPlan(sw, sh, rot, angle, zoom, cx, cy, R, outW) {
   const cw = bw / zoom, ch = bh / zoom, px = clamp(cx * iw, cw / 2, iw - cw / 2), py = clamp(cy * ih, ch / 2, ih - ch / 2);
   return { iw, ih, k, cw, ch, x0: px - cw / 2, y0: py - ch / 2, outW: Math.round(outW), outH: Math.max(1, Math.round(outW / ar)), m: outW / cw, ar };
 }
+/* ── Slim vergroten (geen AI): in kleine stappen vergroten geeft een rustiger resultaat dan één grote sprong,
+   en daarna een vaste nabewerking om de vervaging die vergroten geeft grotendeels te herstellen. ── */
+function smartEnlarge(src, tw, th) {
+  const ratio = tw / src.width; if (ratio <= 1.02) { const c = mk(tw, th); smooth(c.getContext('2d')).drawImage(src, 0, 0, tw, th); return c; }
+  const steps = Math.max(1, Math.ceil(Math.log(ratio) / Math.log(1.6))); let cur = src;
+  for (let i = 1; i <= steps; i++) {
+    const last = i === steps, f = Math.pow(ratio, i / steps), w = last ? tw : Math.max(1, Math.round(src.width * f)), h = last ? th : Math.max(1, Math.round(src.height * f));
+    const nc = mk(w, h); smooth(nc.getContext('2d')).drawImage(cur, 0, 0, w, h); cur = nc;
+  }
+  return cur;
+}
+function enlargeSharpen(canvas) {
+  const x = canvas.getContext('2d'), w = canvas.width, h = canvas.height, id = x.getImageData(0, 0, w, h), d = id.data;
+  const src = new Uint8ClampedArray(d), bl = new Uint8ClampedArray(d), amt = .55, n = d.length;
+  blurRGBA(bl, w, h, Math.max(1, Math.round(w / 1000 * 1.1)));
+  for (let i = 0; i < n; i += 4) { d[i] = src[i] + amt * (src[i] - bl[i]); d[i + 1] = src[i + 1] + amt * (src[i + 1] - bl[i + 1]); d[i + 2] = src[i + 2] + amt * (src[i + 2] - bl[i + 2]); }
+  x.putImageData(id, 0, 0);
+}
+
 /* kleur- en scherpte-bewerkingen op ruwe pixels (RGBA) */
 function adjustPixels(d, w, h, v) {
   if (!v.b && !v.c && !v.s && !v.w && !v.sh && !v.v) return;
@@ -1633,10 +1677,14 @@ async function saveEdit() {
   if (!E.full) { toast('Kies eerst een foto.'); return; }
   try {
     const sel = $('edit-out').value, R = editRatio(), p0 = editPlan(E.full.width, E.full.height, E.rot, E.angle, E.zoom, E.cx, E.cy, R, 1000);
-    let outW = sel === '1080' ? 1080 : sel === '2048' ? 2048 : Math.min(4096, Math.round(p0.cw));
+    let outW = sel === '1080' ? 1080 : sel === '2048' ? 2048 : sel === 'x2' ? Math.round(p0.cw * 2) : Math.min(4096, Math.round(p0.cw));
     const outH = outW / p0.ar; if (outW * outH > 16e6) outW = Math.floor(Math.sqrt(16e6 * p0.ar));
-    const p = editPlan(E.full.width, E.full.height, E.rot, E.angle, E.zoom, E.cx, E.cy, R, outW), base = renderCrop(E.full, p), x = base.getContext('2d'), id = x.getImageData(0, 0, base.width, base.height);
-    adjustPixels(id.data, base.width, base.height, E.vals); x.putImageData(id, 0, 0);
+    let base;
+    if (sel === 'x2' && outW > p0.cw * 1.02) {
+      const pn = editPlan(E.full.width, E.full.height, E.rot, E.angle, E.zoom, E.cx, E.cy, R, Math.round(p0.cw)), native = renderCrop(E.full, pn);
+      base = smartEnlarge(native, outW, Math.round(outW / p0.ar)); enlargeSharpen(base);
+    } else { const p = editPlan(E.full.width, E.full.height, E.rot, E.angle, E.zoom, E.cx, E.cy, R, outW); base = renderCrop(E.full, p); }
+    { const x = base.getContext('2d'), id = x.getImageData(0, 0, base.width, base.height); adjustPixels(id.data, base.width, base.height, E.vals); x.putImageData(id, 0, 0); }
     const fmt = $('edit-fmt').value, mime = { jpg: 'image/jpeg', png: 'image/png', webp: 'image/webp' }[fmt] || 'image/jpeg', blob = await canvasBlob(base, mime, (+$('edit-q').value || 92) / 100);
     let ext = fmt; if (blob.type && blob.type !== mime) { ext = blob.type === 'image/png' ? 'png' : blob.type === 'image/webp' ? 'webp' : 'jpg'; toast(`Deze browser kan geen ${{ jpg: 'JPG', png: 'PNG', webp: 'WebP' }[fmt]} maken; opgeslagen als ${{ jpg: 'JPG', png: 'PNG', webp: 'WebP' }[ext]}.`); }
     await shareOrSave(blob, outName('edit-name', E.name + '-' + tr('bewerkt')) + '.' + ext);
@@ -1755,6 +1803,37 @@ function sunTimes(date, lat, lng) {
   return res;
 }
 const rightAsc = l => Math.atan2(Math.sin(l) * Math.cos(OBL), Math.cos(l));
+/* richting ÉN hoogte van de zon tegelijk (voortbouwend op dezelfde, al geverifieerde formule als sunAzimuth) */
+function sunAltAz(date, lat, lng) {
+  const lw = RAD * -lng, phi = RAD * lat, d = toDays(date), M = meanAnom(d), L = eclLon(M), dc = decl(L), H = RAD * (280.16 + 360.9856235 * d) - lw - rightAsc(L);
+  const az = (Math.atan2(Math.sin(H), Math.cos(H) * Math.sin(phi) - Math.tan(dc) * Math.cos(phi)) / RAD + 180) % 360;
+  const alt = Math.asin(Math.sin(phi) * Math.sin(dc) + Math.cos(phi) * Math.cos(dc) * Math.cos(H)) / RAD;
+  return { az, alt };
+}
+/* kompasrichting van punt 1 naar punt 2 (great-circle beginrichting) */
+function bearingTo(lat1, lng1, lat2, lng2) {
+  const p1 = lat1 * RAD, p2 = lat2 * RAD, dl = (lng2 - lng1) * RAD;
+  const y = Math.sin(dl) * Math.cos(p2), x = Math.cos(p1) * Math.sin(p2) - Math.sin(p1) * Math.cos(p2) * Math.cos(dl);
+  return (Math.atan2(y, x) / RAD + 360) % 360;
+}
+/* voor elke dag in het venster: het dichtstbijzijnde moment (overdag) waarop de zon de gekozen richting nadert */
+function sunDirDays(target, lat, lng, maxDays) {
+  const out = [];
+  for (let i = 0; i <= maxDays; i++) {
+    const dateStr = addDays(todayStr(), i), t = sunTimesFor(dateStr, lat, lng);
+    if (isNaN(t.civilRise) || isNaN(t.civilSet)) continue;
+    const startMs = t.civilRise.getTime(), endMs = t.civilSet.getTime(), step = 2 * 60000;
+    let best = null;
+    for (let ms = startMs; ms <= endMs; ms += step) {
+      const dt = new Date(ms), pos = sunAltAz(dt, lat, lng);
+      let diff = Math.abs(pos.az - target); if (diff > 180) diff = 360 - diff;
+      if (!best || diff < best.diff) best = { time: dt, az: pos.az, alt: pos.alt, diff };
+    }
+    if (best && best.diff <= 6) out.push({ dateStr, ...best });
+  }
+  return out;
+}
+
 /* richting van de zon in graden vanaf het noorden (90 = oost, 180 = zuid) */
 function sunAzimuth(date, lat, lng) {
   const lw = RAD * -lng, phi = RAD * lat, d = toDays(date), M = meanAnom(d), L = eclLon(M), dc = decl(L), H = RAD * (280.16 + 360.9856235 * d) - lw - rightAsc(L);
@@ -1782,6 +1861,7 @@ const addDays = (s, n) => { const [y, m, d] = s.split('-').map(Number), t = new 
 const fmtDate = s => s.slice(8, 10) + '-' + s.slice(5, 7) + '-' + s.slice(0, 4);
 const MONTHS = ['januari', 'februari', 'maart', 'april', 'mei', 'juni', 'juli', 'augustus', 'september', 'oktober', 'november', 'december'];
 
+const SD = { picking: false, landmark: null, target: null, dirLayer: null };
 const P = { kp: undefined, kpReq: 0, sunAz: null, sunLayer: null, obs: [], spLayer: null, map: null, marker: null, circle: null, inited: false, reqId: 0, ctrl: null, timer: 0 };
 function ensureLeaflet() {
   return new Promise((res, rej) => {
@@ -1806,8 +1886,8 @@ function buildMap() {
   L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19, attribution: '© OpenStreetMap-bijdragers' }).addTo(P.map);
   P.marker = L.marker([c.lat, c.lng], { draggable: true }).addTo(P.map);
   P.marker.on('dragend', () => { const p = P.marker.getLatLng(); setCoords(p.lat, p.lng, true); });
-  P.map.on('click', e => setCoords(e.latlng.lat, e.latlng.lng, true));
-  updateRadiusCircle(false); drawSpeciesMap(); drawSunLines();
+  P.map.on('click', e => { if (SD.picking) { pickDirectionAt(e.latlng.lat, e.latlng.lng); return; } setCoords(e.latlng.lat, e.latlng.lng, true); });
+  updateRadiusCircle(false); drawSpeciesMap(); drawSunLines(); drawSunDirLine();
   setTimeout(() => P.map.invalidateSize(), 100);
 }
 function setCoords(lat, lng, fromMap) {
@@ -1938,7 +2018,7 @@ async function runPlanner() {
   P.wx = null; const t = sunTimesFor(dateStr, c.lat, c.lng); renderSun(t, null, dateStr);
   WX_IDS.forEach(id => setText(id, '…')); setText('weather-caption', '');
   const id = ++P.reqId; if (P.ctrl) P.ctrl.abort(); P.ctrl = new AbortController();
-  st.textContent = 'Weer laden…'; updateSpecies(); renderAurora(); loadKp();
+  st.textContent = 'Weer laden…'; updateSpecies(); renderAurora(); loadKp(); renderSunDir();
   try {
     const wj = await fetchWeather(c.lat, c.lng, dateStr, P.ctrl.signal); if (id !== P.reqId) return;
     if (wj.unavailable) { st.textContent = 'Een weersverwachting is maximaal 16 dagen vooruit beschikbaar. De zonnetijden hieronder kloppen wel.'; WX_IDS.forEach(i => setText(i, '--')); return; }
@@ -1993,6 +2073,41 @@ function renderAurora() {
   else if (maxKp >= need.zenith) { v = 'Goede kans (ook hoog aan de hemel)'; good = true; } else if (maxKp >= need.horizon) { v = 'Mogelijk (laag in het noorden)'; good = true; } else if (maxKp >= need.horizon - 1) v = 'Kleine kans'; else v = 'Onwaarschijnlijk';
   if (good && cloud != null && cloud > 75) v += ' — maar zwaar bewolkt';
   setText('aurora-summary', `🌌 Noorderlicht: ${v}`); $('aurora-card').classList.toggle('good', good && !(cloud != null && cloud > 75));
+}
+
+/* ── Zon op een gekozen richting plannen: je kiest een tweede punt op de kaart (bv. een molen), de tool zoekt de
+   komende tijd naar de datum en het moment waarop de zon vanaf jouw plek precies die kant op staat. ── */
+function startPickDirection() {
+  if (!P.map) { toast(tr('Wacht tot de kaart geladen is.')); return; }
+  SD.picking = true; $('sundir-pick').textContent = '✋ ' + tr('Tik nu op de kaart op dat punt');
+}
+function resetPickButton() { $('sundir-pick').textContent = '📍 ' + tr('Kies een richting op de kaart'); }
+function pickDirectionAt(lat, lng) { SD.picking = false; resetPickButton(); SD.landmark = { lat, lng }; renderSunDir(); }
+function clearSunDir() { SD.landmark = null; SD.target = null; renderSunDir(); }
+function drawSunDirLine() {
+  if (!P.map || !window.L) return;
+  if (!SD.dirLayer) SD.dirLayer = L.layerGroup().addTo(P.map); SD.dirLayer.clearLayers();
+  if (!SD.landmark) return; const c = readCoords(); if (!c) return;
+  L.polyline([[c.lat, c.lng], [SD.landmark.lat, SD.landmark.lng]], { color: '#7b4fae', weight: 3, opacity: .9, dashArray: '4 6', interactive: false }).addTo(SD.dirLayer);
+  L.circleMarker([SD.landmark.lat, SD.landmark.lng], { radius: 6, color: '#fff', weight: 2, fillColor: '#7b4fae', fillOpacity: .95, interactive: false }).addTo(SD.dirLayer);
+}
+function renderSunDir() {
+  const box = $('sundir-current'), res = $('sundir-results'), limitNote = $('sundir-limit');
+  drawSunDirLine();
+  if (!SD.landmark) { box.style.display = 'none'; res.innerHTML = ''; limitNote.style.display = 'none'; return; }
+  const c = readCoords(); if (!c) return;
+  SD.target = bearingTo(c.lat, c.lng, SD.landmark.lat, SD.landmark.lng);
+  box.style.display = 'block';
+  box.innerHTML = `${tr('Gekozen richting')}: <b>${esc(fmtAz(SD.target))}</b> <button type="button" class="btn-secondary" style="margin-left:8px;padding:2px 9px;font-size:11px;" onclick="clearSunDir()">✕ ${tr('Wissen')}</button>`;
+  const matches = sunDirDays(SD.target, c.lat, c.lng, 90);
+  if (!matches.length) {
+    res.innerHTML = `<p class="hint">${tr('Deze richting wordt de komende 3 maanden niet door de zon bereikt op deze plek.')}</p>`;
+    limitNote.style.display = 'none'; return;
+  }
+  const tz = P.wx && P.wx.json ? P.wx.json.timezone : null;
+  const rows = matches.slice(0, 10).map(m => `<tr><td>${esc(fmtDate(m.dateStr))}, ${esc(fmtTime(m.time, tz))}</td><td>${m.alt <= 6 ? tr('🌇 Gouden uur') : tr('☀️ Overdag')}</td></tr>`).join('');
+  res.innerHTML = `<table class="weather-table">${rows}</table>`;
+  limitNote.style.display = 'block';
 }
 
 /* Soorten (iNaturalist) */
