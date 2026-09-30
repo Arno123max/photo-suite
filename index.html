@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>PhotoByArno Photography Suite v1.7</title>
+  <title>PhotoByArno Photography Suite v1.8</title>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600&family=Great+Vibes&family=Montserrat:wght@400;600&family=Pacifico&family=Playfair+Display:ital@0;1&family=Satisfy&display=swap" rel="stylesheet">
@@ -322,7 +322,7 @@
   <header>
     <h1>PhotoByArno Suite</h1>
     <div class="header-right">
-      <span class="header-badge">v1.7<span class="hb-date"> • Sep 2026</span></span>
+      <span class="header-badge">v1.8<span class="hb-date"> • Sep 2026</span></span>
       <div class="lang" role="group" aria-label="Taal / Language"><button class="lang-btn active" data-lang="nl" onclick="setLang('nl')">NL</button><button class="lang-btn" data-lang="en" onclick="setLang('en')">EN</button></div>
     </div>
   </header>
@@ -906,6 +906,10 @@ const I18N_PAIRS = [
   ['Deze richting wordt de komende 3 maanden niet door de zon bereikt op deze plek.', 'The sun will not reach this direction here in the coming 3 months.'],
   ['🌇 Gouden uur', '🌇 Golden hour'],
   ['☀️ Overdag', '☀️ Daytime'],
+  ['Niet de komende 3 maanden. Wel van {0} t/m {1}.', 'Not in the coming 3 months. But from {0} to {1}.'],
+  ['Op deze plek staat de zon het hele jaar alleen tussen {0}° en {1}° (via het zuiden). Deze richting ligt daarbuiten.', 'At this location the sun is only ever between {0}° and {1}° (via the south) all year round. This direction lies outside that.'],
+  ['Deze richting wordt op deze plek door de zon niet bereikt.', 'The sun does not reach this direction at this location.'],
+  ['(≈{0}° ernaast)', '(≈{0}° off)'],
   /* algemeen patroon: "Naam (aantal)" – vertaalt alleen het bekende deel */
   ['{0} ({1})', '{0} ({1})']
 ];
@@ -1821,17 +1825,32 @@ function sunDirDays(target, lat, lng, maxDays) {
   const out = [];
   for (let i = 0; i <= maxDays; i++) {
     const dateStr = addDays(todayStr(), i), t = sunTimesFor(dateStr, lat, lng);
-    if (isNaN(t.civilRise) || isNaN(t.civilSet)) continue;
-    const startMs = t.civilRise.getTime(), endMs = t.civilSet.getTime(), step = 2 * 60000;
+    if (isNaN(t.sunRise) || isNaN(t.sunSet)) continue;
+    const startMs = t.sunRise.getTime(), endMs = t.sunSet.getTime(), step = 2 * 60000;
     let best = null;
     for (let ms = startMs; ms <= endMs; ms += step) {
       const dt = new Date(ms), pos = sunAltAz(dt, lat, lng);
       let diff = Math.abs(pos.az - target); if (diff > 180) diff = 360 - diff;
       if (!best || diff < best.diff) best = { time: dt, az: pos.az, alt: pos.alt, diff };
     }
-    if (best && best.diff <= 6) out.push({ dateStr, ...best });
+    if (best && best.diff <= 3) out.push({ dateStr, ...best });
   }
   return out;
+}
+/* tussen welke twee richtingen beweegt de zon zich op deze plek door het jaar heen? (noordelijk halfrond: opkomst-uiterste tot ondergang-uiterste, via het zuiden) */
+function sunYearRange(lat, lng) {
+  let lo = 360, hi = 0;
+  for (let i = 0; i <= 366; i += 3) {
+    const t = sunTimesFor(addDays(todayStr(), i), lat, lng); if (isNaN(t.sunRise) || isNaN(t.sunSet)) continue;
+    lo = Math.min(lo, sunAltAz(t.sunRise, lat, lng).az); hi = Math.max(hi, sunAltAz(t.sunSet, lat, lng).az);
+  }
+  return lo <= hi ? { lo, hi } : null;
+}
+/* eerste aaneengesloten reeks dagen in een gesorteerde lijst met treffers */
+function firstRun(list) {
+  let end = list[0].dateStr;
+  for (let k = 1; k < list.length; k++) { if (list[k].dateStr === addDays(end, 1)) end = list[k].dateStr; else break; }
+  return { start: list[0].dateStr, end };
 }
 
 /* richting van de zon in graden vanaf het noorden (90 = oost, 180 = zuid) */
@@ -2099,14 +2118,20 @@ function renderSunDir() {
   SD.target = bearingTo(c.lat, c.lng, SD.landmark.lat, SD.landmark.lng);
   box.style.display = 'block';
   box.innerHTML = `${tr('Gekozen richting')}: <b>${esc(fmtAz(SD.target))}</b> <button type="button" class="btn-secondary" style="margin-left:8px;padding:2px 9px;font-size:11px;" onclick="clearSunDir()">✕ ${tr('Wissen')}</button>`;
-  const matches = sunDirDays(SD.target, c.lat, c.lng, 90);
-  if (!matches.length) {
-    res.innerHTML = `<p class="hint">${tr('Deze richting wordt de komende 3 maanden niet door de zon bereikt op deze plek.')}</p>`;
+  const all = sunDirDays(SD.target, c.lat, c.lng, 366), soonEnd = addDays(todayStr(), 90), soon = all.filter(m => m.dateStr <= soonEnd);
+  if (!all.length) {
+    const yr = sunYearRange(c.lat, c.lng);
+    res.innerHTML = `<p class="hint">${c.lat >= 0 && yr ? tr(`Op deze plek staat de zon het hele jaar alleen tussen ${Math.round(yr.lo)}° en ${Math.round(yr.hi)}° (via het zuiden). Deze richting ligt daarbuiten.`) : tr('Deze richting wordt op deze plek door de zon niet bereikt.')}</p>`;
     limitNote.style.display = 'none'; return;
   }
+  let intro = '';
+  if (!soon.length) { const run = firstRun(all); intro = `<p class="hint">${tr(`Niet de komende 3 maanden. Wel van ${fmtDate(run.start)} t/m ${fmtDate(run.end)}.`)}</p>`; }
   const tz = P.wx && P.wx.json ? P.wx.json.timezone : null;
-  const rows = matches.slice(0, 10).map(m => `<tr><td>${esc(fmtDate(m.dateStr))}, ${esc(fmtTime(m.time, tz))}</td><td>${m.alt <= 6 ? tr('🌇 Gouden uur') : tr('☀️ Overdag')}</td></tr>`).join('');
-  res.innerHTML = `<table class="weather-table">${rows}</table>`;
+  const rows = all.slice(0, 10).map(m => {
+    const dv = m.diff >= 1 ? ` <span style="color:var(--text-sub);font-size:.7rem">${tr(`(≈${Math.round(m.diff)}° ernaast)`)}</span>` : '';
+    return `<tr><td>${esc(fmtDate(m.dateStr))}, ${esc(fmtTime(m.time, tz))}${dv}</td><td>${m.alt <= 6 ? tr('🌇 Gouden uur') : tr('☀️ Overdag')}</td></tr>`;
+  }).join('');
+  res.innerHTML = intro + `<table class="weather-table">${rows}</table>`;
   limitNote.style.display = 'block';
 }
 
