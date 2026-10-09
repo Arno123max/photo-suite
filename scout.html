@@ -1,0 +1,981 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PhotoByArno Scout v1.0</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <style>
+    :root {
+      --bg-main: #f5f2eb;
+      --card-bg: #ffffff;
+      --card-border: #e5dfd3;
+      --text-main: #2c2825;
+      --text-sub: #6e675f;
+      --accent: #8c6d46;
+      --accent-light: #f4ede2;
+      --dark-btn: #1a1817;
+      --ok: #55735d;
+      --warn: #b47d20;
+    }
+    * { box-sizing: border-box; }
+    html { overflow-x: hidden; }
+    html, body {
+      margin: 0; padding: 0; width: 100%;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: var(--bg-main); color: var(--text-main);
+      -webkit-tap-highlight-color: transparent;
+    }
+    body { overflow-x: clip; }
+
+    header {
+      background: var(--card-bg); border-bottom: 1px solid var(--card-border);
+      padding: 12px 16px; display: flex; justify-content: space-between; align-items: center;
+      position: sticky; top: 0; z-index: 1000;
+    }
+    header h1 { margin: 0; font-size: 1.05rem; font-weight: 700; color: var(--text-main); white-space: nowrap; }
+    .header-right { display: flex; align-items: center; gap: 8px; }
+    .header-badge { white-space: nowrap; background: var(--accent-light); color: var(--accent); padding: 4px 10px; border-radius: 20px; font-size: 0.72rem; font-weight: 600; }
+    @media (max-width: 400px) { .hb-date { display: none; } }
+    @media (max-width: 480px) { header { padding: 10px 10px; gap: 6px; } header h1 { font-size: 0.92rem; } .header-badge { font-size: 0.64rem; padding: 4px 8px; } .header-right { gap: 6px; } .lang-btn { padding: 5px 8px; } }
+    .lang { display: flex; border: 1px solid var(--card-border); border-radius: 20px; overflow: hidden; background: #fff; }
+    .lang-btn { border: 0; background: transparent; padding: 5px 10px; font-size: 0.72rem; font-weight: 700; color: var(--text-sub); cursor: pointer; font-family: inherit; }
+    .lang-btn.active { background: var(--dark-btn); color: #fff; }
+
+    .container { max-width: 1100px; margin: 0 auto; padding: 12px 12px 24px 12px; }
+
+    .step-card {
+      background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 14px;
+      padding: 14px 16px; margin-bottom: 12px; box-shadow: 0 2px 6px rgba(0,0,0,0.02);
+    }
+    .step-card h3 { margin: 0 0 4px 0; font-size: 0.95rem; color: var(--accent); }
+    .step-card p { margin: 0; font-size: 0.8rem; color: var(--text-sub); }
+    .intro-card h2 { margin: 0 0 4px; font-size: 1.15rem; color: var(--text-main); }
+    .intro-card p { font-size: 0.85rem; }
+
+    .form-group { margin-bottom: 12px; }
+    .form-group > label { display: block; font-size: 0.8rem; font-weight: 600; margin-bottom: 6px; color: var(--text-main); }
+    .form-control {
+      width: 100%; padding: 10px 12px; border: 1px solid var(--card-border); border-radius: 8px;
+      font-size: 0.85rem; background: #ffffff; font-family: inherit; color: var(--text-main);
+    }
+    .btn-main {
+      background: var(--dark-btn); color: white; border: none; padding: 12px; border-radius: 10px;
+      font-size: 0.88rem; font-weight: 600; width: 100%; cursor: pointer; margin-top: 8px; font-family: inherit;
+    }
+    .btn-main:hover { background: var(--accent); }
+    .btn-secondary {
+      background: var(--accent-light); color: var(--accent); border: 1px solid var(--card-border);
+      padding: 10px; border-radius: 8px; font-size: 0.82rem; font-weight: 600; width: 100%; cursor: pointer; font-family: inherit;
+    }
+    .btn-secondary:hover { border-color: var(--accent); }
+    .hidden { display: none !important; }
+
+    .status { font-size: 0.78rem; color: var(--accent); font-weight: 600; margin: 8px 0; min-height: 1em; }
+    .hint { font-size: 0.75rem; color: var(--text-sub); margin: 6px 0 0; }
+    .warn-box { background: #fff4cf; border: 1px solid #d8a84e; border-left: 5px solid var(--warn); color: #5f4214; border-radius: 9px; padding: 10px 12px; font-size: 0.8rem; font-weight: 600; margin: 10px 0; }
+
+    #scout-map { height: 280px; border-radius: 10px; width: 100%; margin-top: 8px; background: #e9e4d8; display: flex; align-items: center; justify-content: center; color: var(--text-sub); font-size: .8rem; text-align: center; padding: 10px; }
+
+    .species-list { max-height: 320px; overflow-y: auto; font-size: 0.8rem; line-height: 1.5; padding-left: 0; margin: 8px 0 0 0; list-style: none; }
+    .species-list li { padding: 5px 0; border-bottom: 1px solid #f1ede4; display: flex; gap: 8px; align-items: baseline; }
+    .species-list .sp-name { font-weight: 600; }
+    .species-list .sp-lat { font-style: italic; color: var(--text-sub); font-size: .75rem; }
+    .species-list .sp-count { margin-left: auto; color: var(--accent); font-weight: 600; white-space: nowrap; }
+    .species-list a { color: var(--accent); font-weight: 700; text-decoration: none; }
+    .two-col { display: flex; gap: 8px; }
+    .two-col > * { flex: 1; min-width: 0; }
+    .coord-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .coord-row > .form-group:first-child { grid-column: 1 / -1; }
+
+    .weather-info-group { display: flex; flex-direction: column; gap: 12px; margin-top: 12px; }
+    .weather-card { background: white; border: 1px solid var(--card-border); border-radius: 10px; padding: 12px; }
+    .weather-card h4 { margin: 0 0 8px 0; font-size: 0.85rem; color: var(--text-main); display: flex; align-items: baseline; flex-wrap: wrap; justify-content: space-between; gap: 2px 8px; }
+    .weather-card h4 .caption { font-weight: 400; font-size: 0.7rem; color: var(--text-sub); }
+    .weather-table { width: 100%; border-collapse: collapse; font-size: 0.8rem; }
+    .weather-table td { padding: 5px 0; border-bottom: 1px solid #f1f5f9; vertical-align: top; }
+    .weather-table td:last-child { text-align: right; font-weight: 600; padding-left: 12px; }
+
+    footer { text-align: center; font-size: 0.75rem; color: var(--text-sub); margin-top: 24px; padding: 0 12px 20px; line-height: 1.5; }
+    .toast { position: fixed; left: 50%; bottom: 22px; transform: translate(-50%, 20px); background: var(--dark-btn); color: #fff; padding: 12px 17px; border-radius: 10px; font-size: 13px; opacity: 0; pointer-events: none; transition: .2s; z-index: 2000; max-width: min(90vw, 520px); text-align: center; }
+    .toast.show { opacity: 1; transform: translate(-50%, 0); }
+
+    .tool-grid { display: block; }
+    .tool-left, .tool-right { display: contents; }
+    .tool-right > * + * { margin-top: 0; }
+    .legend { display: flex; flex-wrap: wrap; gap: 4px 12px; font-size: 0.74rem; color: var(--text-sub); margin: 6px 0 0; }
+    .legend i { display: inline-block; width: 11px; height: 11px; border-radius: 50%; margin-right: 5px; vertical-align: -1px; box-shadow: 0 0 0 1.5px #fff, 0 0 0 2.5px #c9c2b5; }
+    .aurora summary { cursor: pointer; font-weight: 700; font-size: 0.85rem; color: var(--text-main); list-style-position: inside; }
+    .aurora.good summary { color: #2f7d4a; }
+    .linkbtn { background: none; border: 0; color: var(--accent); font: inherit; font-weight: 600; text-decoration: underline; cursor: pointer; padding: 0; }
+    .chips { display: flex; gap: 6px; flex-wrap: wrap; }
+    .chip { padding: 7px 12px; border: 1px solid var(--card-border); background: #fff; border-radius: 16px; font-size: 0.78rem; font-weight: 600; color: var(--text-sub); cursor: pointer; font-family: inherit; }
+    .chip.active { background: var(--dark-btn); color: #fff; border-color: var(--dark-btn); }
+    .leaflet-tooltip { font-family: inherit; font-size: 12px; line-height: 1.35; }
+    .leaflet-tooltip small { color: #6e675f; }
+    .leaflet-popup-content { font-size: 12px; line-height: 1.4; }
+
+    @media (min-width: 860px) {
+      header { padding: 8px 16px; }
+      .container { padding-top: 10px; }
+      .tool-grid { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); gap: 16px; align-items: start; }
+      .tool-left, .tool-right { display: block; min-width: 0; }
+      .tool-right > * + * { margin-top: 12px; }
+      .step-card { padding: 12px 14px; }
+      .tool-grid > .step-card, .tool-grid > .tool-right > .step-card { margin-bottom: 0; }
+      .coord-row { grid-template-columns: 1.1fr 1fr 1fr; }
+      .coord-row > .form-group:first-child { grid-column: auto; }
+      #scout-map { height: 340px; }
+      .weather-table td { padding: 2px 0; }
+      .weather-card h4 { margin-bottom: 4px; }
+      .species-list li { padding: 3px 0; }
+      .weather-info-group { margin-top: 0; gap: 10px; }
+      .species-list { max-height: 220px; }
+      footer { margin-top: 12px; padding-bottom: 8px; }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>PhotoByArno Scout</h1>
+    <div class="header-right">
+      <span class="header-badge">v1.0<span class="hb-date"> • Oct 2026</span></span>
+      <div class="lang" role="group" aria-label="Taal / Language"><button class="lang-btn active" data-lang="nl" onclick="setLang('nl')">NL</button><button class="lang-btn" data-lang="en" onclick="setLang('en')">EN</button></div>
+    </div>
+  </header>
+
+  <div class="container">
+
+    <div class="step-card intro-card">
+      <h2>🧭 Vind fotolocaties bij jou in de buurt</h2>
+      <p>Kies een plek op de kaart en zie uitzichtpunten, watervallen, bezienswaardigheden, architectuur, kunst, natuurgebieden en live gespotte dieren — samen met het weer, zonsopkomst/-ondergang en het gouden uur voor die plek.</p>
+    </div>
+
+    <div class="tool-grid">
+      <div class="tool-left">
+        <div class="step-card">
+          <div class="coord-row">
+            <div class="form-group">
+              <label for="planner-date">Datum:</label>
+              <input type="date" id="planner-date" class="form-control" onchange="scheduleUpdate()">
+            </div>
+            <div class="form-group">
+              <label for="planner-lat">Breedtegraad (Lat):</label>
+              <input type="text" id="planner-lat" value="51.3887" class="form-control" inputmode="decimal" onchange="scheduleUpdate()">
+            </div>
+            <div class="form-group">
+              <label for="planner-lng">Lengtegraad (Lng):</label>
+              <input type="text" id="planner-lng" value="5.7070" class="form-control" inputmode="decimal" onchange="scheduleUpdate()">
+            </div>
+          </div>
+          <button class="btn-secondary" onclick="useGPSLocation()" style="margin-bottom:10px;">📍 Mijn GPS locatie gebruiken</button>
+
+          <label style="display:block;font-size:0.8rem;font-weight:600;margin-bottom:6px;">Straal:</label>
+          <select id="species-radius" class="form-control" onchange="handleRadiusChange()" style="margin-bottom:10px;">
+            <option value="5">Straal 5 km</option>
+            <option value="10" selected>Straal 10 km</option>
+            <option value="25">Straal 25 km</option>
+            <option value="50">Straal 50 km</option>
+          </select>
+
+          <label style="display:block;font-size:0.8rem;font-weight:600;margin-bottom:6px;">Categorieën op de kaart:</label>
+          <div class="chips" id="cat-chips">
+            <button type="button" class="chip active" data-cat="viewpoint" onclick="toggleCat('viewpoint', this)">🌄 Uitzichtpunten</button>
+            <button type="button" class="chip active" data-cat="waterfall" onclick="toggleCat('waterfall', this)">💧 Watervallen</button>
+            <button type="button" class="chip active" data-cat="landmark" onclick="toggleCat('landmark', this)">🏛️ Bezienswaardigheden</button>
+            <button type="button" class="chip active" data-cat="architecture" onclick="toggleCat('architecture', this)">🏙️ Architectuur</button>
+            <button type="button" class="chip active" data-cat="artwork" onclick="toggleCat('artwork', this)">🎨 Kunst &amp; street art</button>
+            <button type="button" class="chip active" data-cat="nature" onclick="toggleCat('nature', this)">🌳 Natuurgebieden</button>
+          </div>
+
+          <div id="scout-map" style="margin-top:12px;">Kaart wordt geladen…</div>
+          <div id="spots-legend" class="legend"></div>
+          <div id="species-legend" class="legend"></div>
+          <div id="sun-legend" class="legend"></div>
+          <p class="hint" id="map-hint" style="margin-top:8px;">Tik op de kaart om een andere plek te kiezen. Beweeg met je muis over een gekleurde stip (of tik erop) om te zien wat daar te vinden is.</p>
+          <div id="planner-status" class="status"></div>
+        </div>
+      </div>
+
+      <div class="tool-right">
+        <div class="weather-info-group" id="weather-results" style="display:none;">
+          <div class="weather-card">
+            <h4><span>☁️ Live Weer &amp; Mist</span><span class="caption" id="weather-caption"></span></h4>
+            <table class="weather-table">
+              <tr><td>Temperatuur</td><td id="weather-temp">-- °C</td></tr>
+              <tr><td>Windsnelheid</td><td id="weather-wind">-- km/h</td></tr>
+              <tr><td>Mistverwachting</td><td id="weather-fog">--</td></tr>
+              <tr><td>Regen nu</td><td id="weather-rain-now">--</td></tr>
+              <tr><td>Regen verwacht</td><td id="weather-rain-next">--</td></tr>
+            </table>
+          </div>
+          <div class="weather-card">
+            <h4><span>🌅 Zon, Gouden Uur &amp; Rode Gloed</span><span class="caption" id="sun-caption"></span></h4>
+            <table class="weather-table">
+              <tr><td>Zonsopkomst</td><td id="weather-sunrise">--:--</td></tr>
+              <tr><td>Gouden Uur (Ochtend)</td><td id="weather-golden-am">--:--</td></tr>
+              <tr><td>Gouden Uur (Avond)</td><td id="weather-golden-pm">--:--</td></tr>
+              <tr><td>Zonsondergang</td><td id="weather-sunset">--:--</td></tr>
+              <tr><td>Richting zonsopkomst</td><td id="weather-az-rise">--</td></tr>
+              <tr><td>Richting zonsondergang</td><td id="weather-az-set">--</td></tr>
+              <tr><td>Kans op Rode Gloed</td><td id="weather-red-glow">--</td></tr>
+              <tr><td>Fotografie Score</td><td id="weather-score">--</td></tr>
+            </table>
+          </div>
+        </div>
+
+        <details class="step-card aurora" id="aurora-card">
+          <summary id="aurora-summary">🌌 Noorderlicht</summary>
+          <table class="weather-table" style="margin-top:6px;">
+            <tr><td>Geomagnetische breedte</td><td id="aurora-geo">--</td></tr>
+            <tr><td>Kp nodig voor zicht</td><td id="aurora-need">--</td></tr>
+            <tr><td>Kp nu</td><td id="aurora-kpnow">--</td></tr>
+            <tr><td>Kp-verwachting (nacht)</td><td id="aurora-kpfc">--</td></tr>
+            <tr><td>Donker (zon lager dan −12°)</td><td id="aurora-dark">--</td></tr>
+            <tr><td>Bewolking rond middernacht</td><td id="aurora-cloud">--</td></tr>
+          </table>
+          <p class="hint" id="aurora-note">Kp (0–9) meet de geomagnetische activiteit, bron: NOAA. Dit blijft een schatting: kijk naar het noorden, ver van stadslicht.</p>
+        </details>
+
+        <details class="step-card aurora" id="sundir-card">
+          <summary id="sundir-summary">🧭 Zon op een richting plannen</summary>
+          <p class="hint" id="sundir-hint">Kies op de kaart een punt — bijvoorbeeld een molen, toren of gebouw — en zie wanneer de zon de komende tijd precies die kant op staat.</p>
+          <button type="button" class="btn-secondary" id="sundir-pick" onclick="startPickDirection()">📍 Kies een richting op de kaart</button>
+          <div id="sundir-current" class="status" style="display:none;"></div>
+          <div id="sundir-results"></div>
+          <p class="hint" id="sundir-limit" style="display:none;">Voor data verder dan ongeveer 16 dagen is er geen weersverwachting; deze tijden zijn exact, of het dan ook helder is weet je pas dichterbij.</p>
+        </details>
+
+        <div class="step-card">
+          <h3>📍 Fotolocaties in de buurt</h3>
+          <p class="hint" id="spots-note"></p>
+          <ul id="spots-list" class="species-list">
+            <li>Plekken zoeken...</li>
+          </ul>
+        </div>
+
+        <div class="step-card">
+          <h3>🌿 Live Gespotte Soorten rond deze Datum</h3>
+          <div class="two-col" style="margin-top:8px;">
+            <select id="species-group" class="form-control" onchange="updateSpecies()">
+              <option value="">Alle groepen</option>
+              <option value="Aves">🐦 Vogels</option>
+              <option value="Mammalia">🦊 Zoogdieren</option>
+              <option value="Insecta">🦋 Insecten</option>
+              <option value="Plantae">🌿 Planten</option>
+              <option value="Fungi">🍄 Paddenstoelen</option>
+              <option value="Reptilia,Amphibia">🦎 Reptielen &amp; amfibieën</option>
+            </select>
+            <div class="hint" style="align-self:center;margin:0;">Straal volgt de instelling hierboven</div>
+          </div>
+          <p class="hint" id="species-note"></p>
+          <ul id="species-list" class="species-list">
+            <li>Laden van actuele waarnemingen...</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <footer>
+      Fotolocaties komen van OpenStreetMap (Overpass), weer van Open-Meteo, noorderlicht-gegevens van NOAA, soortenwaarnemingen van iNaturalist en de kaart van OpenStreetMap; zonnetijden worden lokaal berekend.<br>
+      <span>Alles draait in je browser. Je instellingen worden alleen in deze browser onthouden.</span> <button class="linkbtn" onclick="clearSettings()">🧽 Onthouden instellingen wissen</button>
+    </footer>
+  </div>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+'use strict';
+
+/* ═════════════ TAAL (NL / EN) ═════════════ */
+const I18N_PAIRS = [
+  ['🧭 Vind fotolocaties bij jou in de buurt', '🧭 Find photo spots near you'],
+  ['Kies een plek op de kaart en zie uitzichtpunten, watervallen, bezienswaardigheden, architectuur, kunst, natuurgebieden en live gespotte dieren — samen met het weer, zonsopkomst/-ondergang en het gouden uur voor die plek.', 'Pick a spot on the map and see viewpoints, waterfalls, landmarks, architecture, art, nature reserves and live spotted wildlife — together with the weather, sunrise/sunset and golden hour for that spot.'],
+  ['Datum:', 'Date:'], ['Breedtegraad (Lat):', 'Latitude (Lat):'], ['Lengtegraad (Lng):', 'Longitude (Lng):'],
+  ['📍 Mijn GPS locatie gebruiken', '📍 Use my GPS location'], ['Straal:', 'Radius:'],
+  ['Straal {0} km', 'Radius {0} km'], ['Categorieën op de kaart:', 'Categories on the map:'],
+  ['🌄 Uitzichtpunten', '🌄 Viewpoints'], ['💧 Watervallen', '💧 Waterfalls'], ['🏛️ Bezienswaardigheden', '🏛️ Landmarks'],
+  ['🏙️ Architectuur', '🏙️ Architecture'], ['🎨 Kunst & street art', '🎨 Art & street art'], ['🌳 Natuurgebieden', '🌳 Nature reserves'],
+  ['Kaart wordt geladen…', 'Loading map…'],
+  ['Tik op de kaart om een andere plek te kiezen. Beweeg met je muis over een gekleurde stip (of tik erop) om te zien wat daar te vinden is.', 'Tap the map to pick another spot. Hover over a colored dot (or tap it) to see what is there.'],
+  ['De kaart kon niet worden geladen (controleer je internetverbinding). Weer, zon, plekken en soorten werken wel: vul de coördinaten in.', 'The map could not be loaded (check your internet connection). Weather, sun, spots and species still work: enter the coordinates.'],
+  ['☁️ Live Weer & Mist', '☁️ Live Weather & Fog'], ['Temperatuur', 'Temperature'], ['Windsnelheid', 'Wind speed'], ['Mistverwachting', 'Fog forecast'], ['Regen nu', 'Rain now'], ['Regen verwacht', 'Rain expected'],
+  ['🌅 Zon, Gouden Uur & Rode Gloed', '🌅 Sun, Golden Hour & Red Glow'],
+  ['Zonsopkomst', 'Sunrise'], ['Gouden Uur (Ochtend)', 'Golden hour (morning)'], ['Gouden Uur (Avond)', 'Golden hour (evening)'], ['Zonsondergang', 'Sunset'],
+  ['Richting zonsopkomst', 'Sunrise direction'], ['Richting zonsondergang', 'Sunset direction'], ['Kans op Rode Gloed', 'Chance of red glow'], ['Fotografie Score', 'Photography score'],
+  ['🌌 Noorderlicht', '🌌 Northern Lights'], ['Geomagnetische breedte', 'Geomagnetic latitude'], ['Kp nodig voor zicht', 'Kp needed to see it'], ['Kp nu', 'Kp now'], ['Kp-verwachting (nacht)', 'Kp forecast (night)'],
+  ['Donker (zon lager dan −12°)', 'Dark (sun below −12°)'], ['Bewolking rond middernacht', 'Cloud cover around midnight'],
+  ['Kp (0–9) meet de geomagnetische activiteit, bron: NOAA. Dit blijft een schatting: kijk naar het noorden, ver van stadslicht.', 'Kp (0–9) measures geomagnetic activity, source: NOAA. This remains an estimate: look north, far from city lights.'],
+  ['🧭 Zon op een richting plannen', '🧭 Plan the sun on a direction'],
+  ['Kies op de kaart een punt — bijvoorbeeld een molen, toren of gebouw — en zie wanneer de zon de komende tijd precies die kant op staat.', 'Pick a point on the map — a windmill, tower or building, say — and see when the sun will be exactly in that direction in the coming weeks.'],
+  ['📍 Kies een richting op de kaart', '📍 Pick a direction on the map'],
+  ['Voor data verder dan ongeveer 16 dagen is er geen weersverwachting; deze tijden zijn exact, of het dan ook helder is weet je pas dichterbij.', 'No weather forecast is available beyond about 16 days out; these times are exact, but whether it will actually be clear you\'ll only know closer to the date.'],
+  ['Wacht tot de kaart geladen is.', 'Wait until the map has loaded.'], ['Tik nu op de kaart op dat punt', 'Now tap that point on the map'],
+  ['Gekozen richting', 'Chosen direction'], ['Wissen', 'Clear'],
+  ['🌇 Gouden uur', '🌇 Golden hour'], ['☀️ Overdag', '☀️ Daytime'],
+  ['Niet de komende 3 maanden. Wel van {0} t/m {1}.', 'Not in the coming 3 months. But from {0} to {1}.'],
+  ['Op deze plek staat de zon het hele jaar alleen tussen {0}° en {1}° (via het zuiden). Deze richting ligt daarbuiten.', 'At this location the sun is only ever between {0}° and {1}° (via the south) all year round. This direction lies outside that.'],
+  ['Deze richting wordt op deze plek door de zon niet bereikt.', 'The sun does not reach this direction at this location.'],
+  ['(≈{0}° ernaast)', '(≈{0}° off)'], ['{0} ({1})', '{0} ({1})'],
+  ['📍 Fotolocaties in de buurt', '📍 Photo spots nearby'], ['Plekken zoeken...', 'Looking for spots...'],
+  ['Kies minstens één categorie hierboven.', 'Pick at least one category above.'],
+  ['Geen plekken gevonden in deze straal. Probeer een grotere straal of andere categorieën.', 'No spots found in this radius. Try a larger radius or different categories.'],
+  ['{0} plekken gevonden', '{0} spots found'],
+  ['Plekken konden niet worden geladen (OpenStreetMap/Overpass is misschien druk bezet). Probeer het later opnieuw.', 'Spots could not be loaded (OpenStreetMap/Overpass may be busy). Try again later.'],
+  ['Uitzichtpunt', 'Viewpoint'], ['Waterval', 'Waterfall'], ['Bezienswaardigheid', 'Landmark'], ['Bijzonder gebouw', 'Notable building'], ['Kunstwerk', 'Artwork'], ['Natuurgebied', 'Nature reserve'],
+  ['🌿 Live Gespotte Soorten rond deze Datum', '🌿 Live Species Spotted Around This Date'], ['Alle groepen', 'All groups'], ['🐦 Vogels', '🐦 Birds'], ['🦊 Zoogdieren', '🦊 Mammals'], ['🦋 Insecten', '🦋 Insects'], ['🌿 Planten', '🌿 Plants'], ['🍄 Paddenstoelen', '🍄 Fungi'], ['🦎 Reptielen & amfibieën', '🦎 Reptiles & amphibians'],
+  ['Straal volgt de instelling hierboven', 'Radius follows the setting above'],
+  ['Laden van actuele waarnemingen...', 'Loading recent observations...'],
+  ['Vul geldige coördinaten in, bijvoorbeeld 51,3887 en 5,7070.', 'Enter valid coordinates, e.g. 51.3887 and 5.7070.'],
+  ['Weer laden…', 'Loading weather…'],
+  ['Een weersverwachting is maximaal 16 dagen vooruit beschikbaar. De zonnetijden hieronder kloppen wel.', 'A weather forecast is available up to 16 days ahead. The sun times below are still correct.'],
+  ['Het weer kon niet worden geladen (controleer je internetverbinding). De zonnetijden hieronder kloppen wel.', 'The weather could not be loaded (check your internet connection). The sun times below are still correct.'],
+  ['GPS wordt door deze browser niet ondersteund.', 'GPS is not supported by this browser.'], ['Locatie bepalen…', 'Determining location…'],
+  ['Toegang tot je locatie is geweigerd. Sta locatie toe in je browser.', 'Access to your location was denied. Allow location access in your browser.'], ['Je locatie kon niet worden bepaald.', 'Your location could not be determined.'],
+  ['Waarnemingen konden niet worden geladen (controleer je internetverbinding en probeer het opnieuw).', 'Observations could not be loaded (check your internet connection and try again).'],
+  ['Geen waarnemingen gevonden voor deze keuze. Probeer een grotere straal of “Alle groepen”.', 'No observations found for this choice. Try a larger radius or “All groups”.'],
+  ['Instellingen gewist.', 'Settings cleared.'], ['🧽 Onthouden instellingen wissen', '🧽 Clear remembered settings'],
+  ['Fotolocaties komen van OpenStreetMap (Overpass), weer van Open-Meteo, noorderlicht-gegevens van NOAA, soortenwaarnemingen van iNaturalist en de kaart van OpenStreetMap; zonnetijden worden lokaal berekend.', 'Photo spots come from OpenStreetMap (Overpass), weather from Open-Meteo, northern lights data from NOAA, species observations from iNaturalist and the map from OpenStreetMap; sun times are calculated locally.'],
+  ['Alles draait in je browser. Je instellingen worden alleen in deze browser onthouden.', 'Everything runs in your browser. Your settings are only remembered in this browser.'],
+];
+let LANG = 'nl';
+const I18N_EXACT = new Map(), I18N_PATTERNS = [];
+for (const [nl, en] of I18N_PAIRS) {
+  if (/\{\d\}/.test(nl)) I18N_PATTERNS.push({ re: new RegExp('^' + nl.replace(/[.*+?^$()|[\]\\]/g, '\\$&').replace(/\{(\d)\}/g, '(.+?)') + '$'), en });
+  else I18N_EXACT.set(nl, en);
+}
+const normWs = s => String(s).replace(/\s+/g, ' ').trim();
+function tr(s) {
+  if (LANG !== 'en' || s == null) return s;
+  const k = normWs(s); if (!k) return s;
+  const e = I18N_EXACT.get(k); if (e !== undefined) return e;
+  for (const p of I18N_PATTERNS) { const m = k.match(p.re); if (m) return p.en.replace(/\{(\d)\}/g, (x, i) => tr(m[+i + 1])); }
+  return s;
+}
+const LOC = () => LANG === 'en' ? 'en-GB' : 'nl-NL';
+const TR_ATTRS = ['placeholder', 'title'];
+function trText(node) {
+  if (LANG !== 'en' || !node || node.nodeType !== 3) return;
+  const p = node.parentNode; if (p && (p.nodeName === 'SCRIPT' || p.nodeName === 'STYLE')) return;
+  const raw = node.data, k = normWs(raw); if (!k) return; const res = tr(k);
+  if (res !== k) { node.__nl = raw; node.data = raw.match(/^\s*/)[0] + res + raw.match(/\s*$/)[0]; }
+}
+function trEl(el) { if (LANG !== 'en' || !el.getAttribute) return; TR_ATTRS.forEach(a => { const v = el.getAttribute(a); if (v) { const res = tr(v); if (res !== v) { (el.__nla = el.__nla || {})[a] = v; el.setAttribute(a, res); } } }); }
+function trTree(root) {
+  if (!root || !document.createTreeWalker) return;
+  if (root.nodeType === 3) { trText(root); return; }
+  const w = document.createTreeWalker(root, 5); let n = w.currentNode;
+  if (n.nodeType === 1) trEl(n);
+  while ((n = w.nextNode())) { if (n.nodeType === 3) trText(n); else trEl(n); }
+}
+function restoreTree(root) {
+  if (!root || !document.createTreeWalker) return;
+  const w = document.createTreeWalker(root, 5); let n = w.currentNode;
+  const fix = x => { if (x.nodeType === 3 && x.__nl !== undefined) { x.data = x.__nl; x.__nl = undefined; } else if (x.nodeType === 1 && x.__nla) { for (const a in x.__nla) x.setAttribute(a, x.__nla[a]); x.__nla = null; } };
+  fix(n); while ((n = w.nextNode())) fix(n);
+}
+function setLang(l, initial) {
+  if (l !== 'en' && l !== 'nl') l = 'nl';
+  LANG = l; document.documentElement.lang = l;
+  try { localStorage.setItem('ps-lang', l); } catch (_) { }
+  document.querySelectorAll('.lang-btn').forEach(b => b.classList.toggle('active', b.dataset.lang === l));
+  if (l === 'en') trTree(document.body); else restoreTree(document.body);
+  if (!initial) refreshDynamic();
+}
+function refreshDynamic() {
+  try { if (P.wx) renderWeather(P.wx.json, P.wx.t, P.wx.dateStr); else if (P.inited) renderSun(sunTimesFor($('planner-date').value || todayStr(), (readCoords() || { lat: 51.4 }).lat, (readCoords() || { lng: 5.7 }).lng), null, $('planner-date').value || todayStr()); } catch (_) { }
+  try { if (P.inited) { updateSpecies(); updateSpots(); } } catch (_) { }
+  try { renderAurora(); } catch (_) { }
+  try { renderSunDir(); } catch (_) { }
+}
+try {
+  if (window.MutationObserver) new MutationObserver(recs => {
+    if (LANG !== 'en') return;
+    for (const r of recs) {
+      if (r.type === 'characterData') trText(r.target);
+      else if (r.type === 'attributes') trEl(r.target);
+      else r.addedNodes.forEach(n => trTree(n));
+    }
+  }).observe(document.body, { childList: true, subtree: true, characterData: true, attributes: true, attributeFilter: TR_ATTRS });
+} catch (_) { }
+
+/* ───────── Hulpfuncties ───────── */
+const $ = id => document.getElementById(id);
+const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const nlNum = (v, d = 0) => (v == null || isNaN(v)) ? '--' : Number(v).toLocaleString(LOC(), { minimumFractionDigits: d, maximumFractionDigits: d });
+let toastTimer;
+function toast(m) { const t = $('toast'); t.textContent = m; t.classList.add('show'); clearTimeout(toastTimer); toastTimer = setTimeout(() => t.classList.remove('show'), 4200); }
+
+/* ═════════════ Zon: lokaal berekend ═════════════ */
+const RAD = Math.PI / 180, DAYMS = 864e5, J1970 = 2440588, J2000 = 2451545, OBL = RAD * 23.4397;
+const toJ = d => d.valueOf() / DAYMS - .5 + J1970, fromJ = j => new Date((j + .5 - J1970) * DAYMS), toDays = d => toJ(d) - J2000;
+const decl = l => Math.asin(Math.sin(OBL) * Math.sin(l));
+const meanAnom = d => RAD * (357.5291 + .98560028 * d);
+const eclLon = M => { const C = RAD * (1.9148 * Math.sin(M) + .02 * Math.sin(2 * M) + .0003 * Math.sin(3 * M)), P = RAD * 102.9372; return M + C + P + Math.PI; };
+function sunTimes(date, lat, lng) {
+  const lw = RAD * -lng, phi = RAD * lat, d = toDays(date), n = Math.round(d - .0009 - lw / (2 * Math.PI)), ds = .0009 + lw / (2 * Math.PI) + n;
+  const M = meanAnom(ds), L = eclLon(M), dc = decl(L), Jnoon = J2000 + ds + .0053 * Math.sin(M) - .0069 * Math.sin(2 * L);
+  const setJ = h => { const w = Math.acos((Math.sin(h) - Math.sin(phi) * Math.sin(dc)) / (Math.cos(phi) * Math.cos(dc))), a = .0009 + (w + lw) / (2 * Math.PI) + n; return J2000 + a + .0053 * Math.sin(M) - .0069 * Math.sin(2 * L); };
+  const res = { noon: fromJ(Jnoon) };
+  for (const [k, ang] of [['sun', -.833], ['golden', 6], ['civil', -6], ['naut', -12]]) { const Js = setJ(ang * RAD), Jr = Jnoon - (Js - Jnoon); res[k + 'Rise'] = fromJ(Jr); res[k + 'Set'] = fromJ(Js); }
+  return res;
+}
+const rightAsc = l => Math.atan2(Math.sin(l) * Math.cos(OBL), Math.cos(l));
+function sunAltAz(date, lat, lng) {
+  const lw = RAD * -lng, phi = RAD * lat, d = toDays(date), M = meanAnom(d), L = eclLon(M), dc = decl(L), H = RAD * (280.16 + 360.9856235 * d) - lw - rightAsc(L);
+  const az = (Math.atan2(Math.sin(H), Math.cos(H) * Math.sin(phi) - Math.tan(dc) * Math.cos(phi)) / RAD + 180) % 360;
+  const alt = Math.asin(Math.sin(phi) * Math.sin(dc) + Math.cos(phi) * Math.cos(dc) * Math.cos(H)) / RAD;
+  return { az, alt };
+}
+function bearingTo(lat1, lng1, lat2, lng2) {
+  const p1 = lat1 * RAD, p2 = lat2 * RAD, dl = (lng2 - lng1) * RAD;
+  const y = Math.sin(dl) * Math.cos(p2), x = Math.cos(p1) * Math.sin(p2) - Math.sin(p1) * Math.cos(p2) * Math.cos(dl);
+  return (Math.atan2(y, x) / RAD + 360) % 360;
+}
+function sunDirDays(target, lat, lng, maxDays) {
+  const out = [];
+  for (let i = 0; i <= maxDays; i++) {
+    const dateStr = addDays(todayStr(), i), t = sunTimesFor(dateStr, lat, lng);
+    if (isNaN(t.sunRise) || isNaN(t.sunSet)) continue;
+    const startMs = t.sunRise.getTime(), endMs = t.sunSet.getTime(), step = 2 * 60000;
+    let best = null;
+    for (let ms = startMs; ms <= endMs; ms += step) {
+      const dt = new Date(ms), pos = sunAltAz(dt, lat, lng);
+      let diff = Math.abs(pos.az - target); if (diff > 180) diff = 360 - diff;
+      if (!best || diff < best.diff) best = { time: dt, az: pos.az, alt: pos.alt, diff };
+    }
+    if (best && best.diff <= 3) out.push({ dateStr, ...best });
+  }
+  return out;
+}
+function sunYearRange(lat, lng) {
+  let lo = 360, hi = 0;
+  for (let i = 0; i <= 366; i += 3) {
+    const t = sunTimesFor(addDays(todayStr(), i), lat, lng); if (isNaN(t.sunRise) || isNaN(t.sunSet)) continue;
+    lo = Math.min(lo, sunAltAz(t.sunRise, lat, lng).az); hi = Math.max(hi, sunAltAz(t.sunSet, lat, lng).az);
+  }
+  return lo <= hi ? { lo, hi } : null;
+}
+function firstRun(list) {
+  let end = list[0].dateStr;
+  for (let k = 1; k < list.length; k++) { if (list[k].dateStr === addDays(end, 1)) end = list[k].dateStr; else break; }
+  return { start: list[0].dateStr, end };
+}
+function sunAzimuth(date, lat, lng) {
+  const lw = RAD * -lng, phi = RAD * lat, d = toDays(date), M = meanAnom(d), L = eclLon(M), dc = decl(L), H = RAD * (280.16 + 360.9856235 * d) - lw - rightAsc(L);
+  return (Math.atan2(Math.sin(H), Math.cos(H) * Math.sin(phi) - Math.tan(dc) * Math.cos(phi)) / RAD + 180) % 360;
+}
+const COMPASS = { nl: ['N', 'NO', 'O', 'ZO', 'Z', 'ZW', 'W', 'NW'], en: ['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW'] };
+const fmtAz = deg => `${Math.round(deg)}° (${COMPASS[LANG === 'en' ? 'en' : 'nl'][Math.round(deg / 45) % 8]})`;
+function destPoint(lat, lng, brg, km) {
+  const R = 6371, d = km / R, b = brg * RAD, p1 = lat * RAD, l1 = lng * RAD, p2 = Math.asin(Math.sin(p1) * Math.cos(d) + Math.cos(p1) * Math.sin(d) * Math.cos(b)), l2 = l1 + Math.atan2(Math.sin(b) * Math.sin(d) * Math.cos(p1), Math.cos(d) - Math.sin(p1) * Math.sin(p2));
+  return [p2 / RAD, ((l2 / RAD + 540) % 360) - 180];
+}
+const sunTimesFor = (dateStr, lat, lng) => { const [y, m, d] = dateStr.split('-').map(Number); return sunTimes(new Date(Date.UTC(y, m - 1, d, 12) - lng / 15 * 3600e3), lat, lng); };
+function fmtTime(date, tz) {
+  if (!date || isNaN(date)) return '—';
+  const o = { hour: '2-digit', minute: '2-digit', hourCycle: 'h23' };
+  try { return new Intl.DateTimeFormat(LOC(), tz ? { ...o, timeZone: tz } : o).format(date); } catch (_) { return new Intl.DateTimeFormat(LOC(), o).format(date); }
+}
+function localKey(date, tz) {
+  const d = new Date(date.getTime() + 30 * 60000), o = { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', hourCycle: 'h23' };
+  let parts; try { parts = new Intl.DateTimeFormat('en-CA', tz ? { ...o, timeZone: tz } : o).formatToParts(d); } catch (_) { parts = new Intl.DateTimeFormat('en-CA', o).formatToParts(d); }
+  const g = t => parts.find(p => p.type === t).value; return `${g('year')}-${g('month')}-${g('day')}T${g('hour')}`;
+}
+const todayStr = () => { const d = new Date(); return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); };
+const addDays = (s, n) => { const [y, m, d] = s.split('-').map(Number), t = new Date(Date.UTC(y, m - 1, d + n)); return t.toISOString().slice(0, 10); };
+const fmtDate = s => s.slice(8, 10) + '-' + s.slice(5, 7) + '-' + s.slice(0, 4);
+const MONTHS = ['januari', 'februari', 'maart', 'april', 'mei', 'juni', 'juli', 'augustus', 'september', 'oktober', 'november', 'december'];
+
+const SD = { picking: false, landmark: null, target: null, dirLayer: null };
+const P = { kp: undefined, kpReq: 0, sunAz: null, sunLayer: null, obs: [], spLayer: null, spotLayer: null, map: null, marker: null, circle: null, inited: false, reqId: 0, ctrl: null, timer: 0, wx: null };
+function ensureLeaflet() {
+  return new Promise((res, rej) => {
+    if (window.L) return res();
+    const css = document.createElement('link'); css.rel = 'stylesheet'; css.href = 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css'; document.head.appendChild(css);
+    const s = document.createElement('script'); s.src = 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js'; s.onload = () => window.L ? res() : rej(new Error('leaflet')); s.onerror = () => rej(new Error('leaflet')); document.head.appendChild(s);
+  });
+}
+function readCoords() {
+  const lat = parseFloat(String($('planner-lat').value).replace(',', '.')), lng = parseFloat(String($('planner-lng').value).replace(',', '.'));
+  return (isFinite(lat) && isFinite(lng) && Math.abs(lat) <= 90 && Math.abs(lng) <= 180) ? { lat, lng } : null;
+}
+function initScout() {
+  if (P.inited) return;
+  P.inited = true; if (!$('planner-date').value) $('planner-date').value = todayStr();
+  ensureLeaflet().then(buildMap).catch(() => { $('scout-map').textContent = tr('De kaart kon niet worden geladen (controleer je internetverbinding). Weer, zon, plekken en soorten werken wel: vul de coördinaten in.'); });
+  runScout();
+}
+function buildMap() {
+  const c = readCoords() || { lat: 51.3887, lng: 5.7070 }, el = $('scout-map'); el.textContent = '';
+  P.map = L.map(el).setView([c.lat, c.lng], 11);
+  L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19, attribution: '© OpenStreetMap-bijdragers' }).addTo(P.map);
+  P.marker = L.marker([c.lat, c.lng], { draggable: true }).addTo(P.map);
+  P.marker.on('dragend', () => { const p = P.marker.getLatLng(); setCoords(p.lat, p.lng, true); });
+  P.map.on('click', e => { if (SD.picking) { pickDirectionAt(e.latlng.lat, e.latlng.lng); return; } setCoords(e.latlng.lat, e.latlng.lng, true); });
+  updateRadiusCircle(false); drawSpeciesMap(); drawSunLines(); drawSunDirLine();
+  setTimeout(() => P.map.invalidateSize(), 100);
+}
+function setCoords(lat, lng, fromMap) {
+  $('planner-lat').value = (+lat).toFixed(5); $('planner-lng').value = (+lng).toFixed(5);
+  if (P.marker) { P.marker.setLatLng([lat, lng]); if (!fromMap && P.map) P.map.setView([lat, lng], Math.max(P.map.getZoom(), 11)); }
+  scheduleUpdate();
+}
+function useGPSLocation() {
+  if (!navigator.geolocation) { toast(tr('GPS wordt door deze browser niet ondersteund.')); return; }
+  $('planner-status').textContent = tr('Locatie bepalen…');
+  navigator.geolocation.getCurrentPosition(p => { $('planner-status').textContent = ''; setCoords(p.coords.latitude, p.coords.longitude); }, err => { $('planner-status').textContent = ''; toast(err.code === 1 ? tr('Toegang tot je locatie is geweigerd. Sta locatie toe in je browser.') : tr('Je locatie kon niet worden bepaald.')); }, { enableHighAccuracy: true, timeout: 12000 });
+}
+function scheduleUpdate() { clearTimeout(P.timer); P.timer = setTimeout(runScout, 200); }
+function handleRadiusChange() { updateRadiusCircle(true); updateSpecies(); updateSpots(); drawSunLines(); saveSettings(); }
+
+/* Weer (Open-Meteo) */
+const WX_BASE = ['temperature_2m', 'relative_humidity_2m', 'dew_point_2m', 'wind_speed_10m', 'cloud_cover', 'cloud_cover_low', 'cloud_cover_mid', 'cloud_cover_high'];
+async function fetchWeather(lat, lng, dateStr, signal) {
+  const diff = Math.round((Date.parse(dateStr + 'T00:00:00Z') - Date.parse(todayStr() + 'T00:00:00Z')) / 864e5);
+  if (diff > 15) return { unavailable: true };
+  const archive = diff < -90, root = archive ? 'https://archive-api.open-meteo.com/v1/archive' : 'https://api.open-meteo.com/v1/forecast', today = diff === 0 && !archive;
+  const extraNew = today ? '&current=temperature_2m,wind_speed_10m,relative_humidity_2m,dew_point_2m,precipitation,weather_code&minutely_15=precipitation&forecast_minutely_15=8' : '';
+  const extraOld = today ? '&current=temperature_2m,wind_speed_10m,relative_humidity_2m,dew_point_2m' : '';
+  const url = (vars, extra) => `${root}?latitude=${lat.toFixed(4)}&longitude=${lng.toFixed(4)}&hourly=${vars.join(',')}${extra}&start_date=${dateStr}&end_date=${dateStr}&timezone=auto`;
+  const full = archive ? WX_BASE.concat(['precipitation']) : WX_BASE.concat(['visibility', 'precipitation_probability', 'precipitation']);
+  const tries = archive ? [[full, ''], [WX_BASE, '']] : [[full, extraNew], [full, extraOld], [WX_BASE, extraOld]];
+  let r = null;
+  for (const [vars, extra] of tries) { r = await fetch(url(vars, extra), { signal }); if (r.ok) break; }
+  if (!r || !r.ok) throw new Error('Open-Meteo antwoordde met status ' + (r && r.status));
+  return r.json();
+}
+function pickHour(json, key) {
+  const H = json && json.hourly; if (!H || !H.time) return null;
+  const i = H.time.findIndex(t => t.startsWith(key)); if (i < 0) return null;
+  const g = k => H[k] ? H[k][i] : null;
+  return { temp: g('temperature_2m'), rh: g('relative_humidity_2m'), dew: g('dew_point_2m'), wind: g('wind_speed_10m'), cloud: g('cloud_cover'), low: g('cloud_cover_low'), mid: g('cloud_cover_mid'), high: g('cloud_cover_high'), vis: g('visibility'), pp: g('precipitation_probability'), pr: g('precipitation') };
+}
+function fogAssess(w) {
+  if (!w || w.rh == null) return null;
+  let s = 0; const spread = (w.temp != null && w.dew != null) ? w.temp - w.dew : null;
+  s += w.rh >= 97 ? 3 : w.rh >= 93 ? 2 : w.rh >= 88 ? 1 : 0;
+  if (spread != null) s += spread <= .8 ? 3 : spread <= 1.5 ? 2 : spread <= 2.5 ? 1 : 0;
+  if (w.wind != null) s += w.wind <= 5 ? 2 : w.wind <= 10 ? 1 : w.wind > 20 ? -3 : 0;
+  if (w.vis != null) s += w.vis < 1000 ? 4 : w.vis < 3000 ? 2 : w.vis < 10000 ? 1 : w.vis > 20000 ? -1 : 0;
+  const label = s >= 7 ? 'Hoog' : s >= 5 ? 'Matig' : s >= 3 ? 'Laag' : 'Zeer laag';
+  return { score: s, label, text: `${label} (RV ${nlNum(w.rh)}%${w.wind != null ? ', wind ' + nlNum(w.wind) + ' km/h' : ''})` };
+}
+function glowScore(w) {
+  if (!w || w.low == null || w.mid == null || w.high == null) return null;
+  const up = Math.max(w.mid, w.high); let g = up >= 15 && up <= 85 ? 60 * (1 - Math.abs(up - 50) / 45) : 0;
+  if (w.high >= 20 && w.high <= 75) g += 15;
+  if (w.low <= 30) g += 10; else if (w.low > 50) g *= Math.max(.2, 1 - (w.low - 50) / 60);
+  if (w.pp != null && w.pp > 50) g *= .5;
+  if (w.cloud != null && w.cloud > 95) g *= .4;
+  if (w.rh != null && w.rh > 90) g -= 10;
+  return clamp(Math.round(g), 0, 100);
+}
+const glowLabel = g => g == null ? '—' : g >= 70 ? 'Zeer hoog' : g >= 50 ? 'Hoog' : g >= 30 ? 'Matig' : 'Laag';
+function photoScore(fog, glowMax, wSr, wSs) {
+  let s = 5; if (glowMax != null) s += glowMax / 100 * 2.5;
+  if (fog) s += fog.label === 'Hoog' ? 1.5 : fog.label === 'Matig' ? .8 : 0;
+  const w = wSr || wSs; if (w) {
+    if (w.wind != null) s -= w.wind > 25 ? 1.5 : w.wind > 15 ? .7 : 0;
+    if (w.pp != null) s -= w.pp > 60 ? 2 : w.pp > 30 ? 1 : 0;
+    if (w.cloud != null) { if (w.cloud < 20) s += .5; if (w.cloud > 90 && w.low != null && w.low > 80) s -= 1; }
+  }
+  s = clamp(Math.round(s * 2) / 2, 1, 10);
+  return { s, text: `${nlNum(s, 1)} / 10 · ${s >= 8 ? 'Uitstekend' : s >= 6.5 ? 'Goed' : s >= 5 ? 'Redelijk' : 'Zwak'}` };
+}
+function setText(id, v) { $(id).textContent = v; }
+function renderSun(t, tz, dateStr) {
+  $('weather-results').style.display = 'flex';
+  setText('weather-sunrise', fmtTime(t.sunRise, tz)); setText('weather-sunset', fmtTime(t.sunSet, tz));
+  setText('weather-golden-am', t.sunRise && !isNaN(t.sunRise) ? `${fmtTime(t.sunRise, tz)} – ${fmtTime(t.goldenRise, tz)}` : '—');
+  setText('weather-golden-pm', t.sunSet && !isNaN(t.sunSet) ? `${fmtTime(t.goldenSet, tz)} – ${fmtTime(t.sunSet, tz)}` : '—');
+  setText('sun-caption', `${fmtDate(dateStr)} · tijden in ${tz || 'jouw tijdzone'}`);
+  const cc = readCoords(), okS = cc && !isNaN(t.sunRise) && !isNaN(t.sunSet);
+  P.sunAz = okS ? { rise: sunAzimuth(t.sunRise, cc.lat, cc.lng), set: sunAzimuth(t.sunSet, cc.lat, cc.lng) } : null;
+  setText('weather-az-rise', P.sunAz ? fmtAz(P.sunAz.rise) : '—'); setText('weather-az-set', P.sunAz ? fmtAz(P.sunAz.set) : '—');
+  try { drawSunLines(); } catch (_) { }
+  if (isNaN(t.sunRise) || isNaN(t.sunSet)) setText('sun-caption', `${fmtDate(dateStr)} · op deze plek en datum is er geen normale zonsopkomst/-ondergang (poolzomer of -winter).`);
+}
+const WX_IDS = ['weather-temp', 'weather-wind', 'weather-fog', 'weather-rain-now', 'weather-rain-next', 'weather-red-glow', 'weather-score'];
+const RAIN_DESC = mm => mm < 2.5 ? 'lichte regen' : mm < 7.6 ? 'matige regen' : mm < 15 ? 'flinke regen' : 'zware regen';
+function rainRows(json, dateStr, wSr) {
+  const isToday = dateStr === todayStr(), cur = json.current, mi = json.minutely_15;
+  if (!isToday) {
+    const txt = wSr && (wSr.pp != null || wSr.pr != null) ? (wSr.pp != null ? `Kans ${nlNum(wSr.pp)}% · ${nlNum(wSr.pr == null ? 0 : wSr.pr, 1)} mm/u` : `${nlNum(wSr.pr, 1)} mm/u`) : '--';
+    return { now: '—', next: txt };
+  }
+  const steps = mi && mi.precipitation && mi.time ? mi.precipitation.map(v => (v == null ? 0 : v) * 4) : null;
+  let rate = null; if (cur && cur.precipitation != null) rate = cur.precipitation * 3600 / (cur.interval || 900); else if (steps) rate = steps[0];
+  const code = cur ? cur.weather_code : null, snow = code != null && ((code >= 71 && code <= 77) || code === 85 || code === 86), thunder = code != null && code >= 95, rainCode = code != null && ((code >= 51 && code <= 67) || (code >= 80 && code <= 82));
+  if (rate == null && code == null) return { now: '--', next: '--' };
+  const raining = (rate != null && rate >= .1) || rainCode || snow || thunder, kind = thunder ? 'onweer' : snow ? 'sneeuw' : RAIN_DESC(rate == null ? 1 : rate);
+  const now = !raining ? 'Nee, droog' : (rate != null && rate >= .1 ? `Ja: ${kind} (${nlNum(rate, 1)} mm/u)` : `Ja: ${kind}`);
+  let next = '--';
+  if (steps) {
+    const hm = i => String(mi.time[i]).slice(11, 16);
+    if (!raining) { const k = steps.findIndex((v, i) => i >= 1 && v >= .1); next = k < 0 ? 'Droog (komende 2 uur)' : `Regen verwacht rond ${hm(k)} (tot ${nlNum(Math.max(...steps.slice(k)), 1)} mm/u)`; }
+    else { const k = steps.findIndex((v, i) => i >= 1 && v < .1); next = k < 0 ? 'Blijft regenen (komende 2 uur)' : `Regen tot ca. ${hm(k)}, daarna droog`; }
+  } else if (cur && cur.time) { const h = pickHour(json, cur.time.slice(0, 13)); if (h && (h.pp != null || h.pr != null)) next = h.pp != null ? `Kans ${nlNum(h.pp)}% · ${nlNum(h.pr == null ? 0 : h.pr, 1)} mm/u` : `${nlNum(h.pr, 1)} mm/u`; }
+  return { now, next };
+}
+function renderWeather(json, t, dateStr) {
+  P.wx = { json, t, dateStr };
+  const tz = json.timezone, srKey = isNaN(t.sunRise) ? null : localKey(t.sunRise, tz), ssKey = isNaN(t.sunSet) ? null : localKey(t.sunSet, tz);
+  renderSun(t, tz, dateStr);
+  const wSr = srKey ? pickHour(json, srKey) : null, wSs = ssKey ? pickHour(json, ssKey) : null, cur = json.current, wNow = cur && cur.time ? pickHour(json, cur.time.slice(0, 13)) : null;
+  const base = (cur && dateStr === todayStr()) ? { temp: cur.temperature_2m, wind: cur.wind_speed_10m, rh: cur.relative_humidity_2m, dew: cur.dew_point_2m, vis: wNow ? wNow.vis : null } : wSr;
+  setText('weather-caption', cur && dateStr === todayStr() ? 'Actuele waarden (nu)' : 'Waarden rond zonsopkomst (verwachting)');
+  { const rr = rainRows(json, dateStr, wSr); setText('weather-rain-now', rr.now); setText('weather-rain-next', rr.next); }
+  if (!base) { setText('weather-temp', '--'); setText('weather-wind', '--'); setText('weather-fog', 'Geen gegevens'); setText('weather-red-glow', '--'); setText('weather-score', '--'); renderAurora(); return; }
+  setText('weather-temp', base.temp != null ? nlNum(base.temp, 1) + ' °C' : '--');
+  setText('weather-wind', base.wind != null ? nlNum(base.wind) + ' km/h' : '--');
+  const fogW = (cur && dateStr === todayStr()) ? base : wSr, fog = fogAssess(fogW);
+  setText('weather-fog', fog ? fog.text : '--');
+  const gA = glowScore(wSr), gP = glowScore(wSs);
+  setText('weather-red-glow', gA == null && gP == null ? '--' : `Ochtend: ${glowLabel(gA)} · Avond: ${glowLabel(gP)}`);
+  const ps = photoScore(fog, Math.max(gA == null ? 0 : gA, gP == null ? 0 : gP), wSr, wSs);
+  setText('weather-score', ps.text); renderAurora();
+}
+async function runScout() {
+  const c = readCoords(), st = $('planner-status');
+  if (!c) { st.textContent = tr('Vul geldige coördinaten in, bijvoorbeeld 51,3887 en 5,7070.'); return; }
+  const dateStr = $('planner-date').value || todayStr();
+  if (P.marker && P.map) { P.marker.setLatLng([c.lat, c.lng]); }
+  P.wx = null; const t = sunTimesFor(dateStr, c.lat, c.lng); renderSun(t, null, dateStr);
+  WX_IDS.forEach(id => setText(id, '…')); setText('weather-caption', '');
+  const id = ++P.reqId; if (P.ctrl) P.ctrl.abort(); P.ctrl = new AbortController();
+  st.textContent = tr('Weer laden…'); updateSpecies(); updateSpots(); renderAurora(); loadKp(); renderSunDir();
+  try {
+    const wj = await fetchWeather(c.lat, c.lng, dateStr, P.ctrl.signal); if (id !== P.reqId) return;
+    if (wj.unavailable) { st.textContent = tr('Een weersverwachting is maximaal 16 dagen vooruit beschikbaar. De zonnetijden hieronder kloppen wel.'); WX_IDS.forEach(i => setText(i, '--')); return; }
+    renderWeather(wj, t, dateStr); st.textContent = '';
+  } catch (e) {
+    if (e.name === 'AbortError' || id !== P.reqId) return;
+    st.textContent = tr('Het weer kon niet worden geladen (controleer je internetverbinding). De zonnetijden hieronder kloppen wel.');
+    WX_IDS.forEach(i => setText(i, '--'));
+  }
+}
+
+/* ── Noorderlicht ── */
+const KP_URLS = ['https://services.swpc.noaa.gov/products/noaa-planetary-k-index-forecast.json', 'https://services.swpc.noaa.gov/products/noaa-planetary-k-index.json'];
+function geomagLat(lat, lng) { const p = 80.7 * RAD, pl = -72.7 * RAD, f = lat * RAD, l = lng * RAD; return Math.asin(clamp(Math.sin(f) * Math.sin(p) + Math.cos(f) * Math.cos(p) * Math.cos(l - pl), -1, 1)) / RAD; }
+const kpNeed = gl => ({ horizon: (66.5 - (gl + 4)) / 2.05, zenith: (66.5 - gl) / 2.05 });
+const parseUtc = v => { if (!v) return null; v = String(v); const d = new Date(/[zZ]$|[+-]\d\d:?\d\d$/.test(v) ? v : v.replace(' ', 'T') + 'Z'); return isNaN(d) ? null : d; };
+function parseKp(j) {
+  if (!Array.isArray(j) || !j.length) return [];
+  let rows;
+  if (Array.isArray(j[0])) { const h = j[0].map(x => String(x).toLowerCase()), ti = h.indexOf('time_tag'), ki = h.indexOf('kp') >= 0 ? h.indexOf('kp') : h.indexOf('kp_index'); rows = j.slice(1).map(r => ({ t: r[ti], kp: r[ki] })); }
+  else rows = j.map(o => ({ t: o.time_tag || o.time, kp: o.kp != null ? o.kp : (o.Kp != null ? o.Kp : o.kp_index) }));
+  return rows.map(r => ({ t: parseUtc(r.t), kp: parseFloat(r.kp) })).filter(r => r.t && isFinite(r.kp)).sort((a, b) => a.t - b.t);
+}
+async function fetchKp(signal) {
+  for (const u of KP_URLS) { try { const r = await fetch(u, { signal }); if (!r.ok) continue; const rows = parseKp(await r.json()); if (rows.length) return rows; } catch (e) { if (e.name === 'AbortError') throw e; } }
+  return null;
+}
+async function loadKp() {
+  if (P.kp && Date.now() - P.kp.at < 600000) return;
+  const id = ++P.kpReq; let rows = null; try { rows = await fetchKp(); } catch (_) { }
+  if (id !== P.kpReq) return; P.kp = { rows, at: Date.now() }; renderAurora();
+}
+function renderAurora() {
+  const c = readCoords(); if (!c || !$('aurora-geo')) return;
+  const dateStr = $('planner-date').value || todayStr(), gl = geomagLat(c.lat, c.lng), need = kpNeed(gl);
+  const t1 = sunTimesFor(dateStr, c.lat, c.lng), t2 = sunTimesFor(addDays(dateStr, 1), c.lat, c.lng), ds = t1.nautSet, de = t2.nautRise, dark = !isNaN(ds) && !isNaN(de);
+  const tz = P.wx && P.wx.json ? P.wx.json.timezone : null, rows = P.kp ? P.kp.rows : undefined, fk = v => nlNum(Math.max(0, v), 1);
+  setText('aurora-geo', nlNum(gl, 1) + '°');
+  setText('aurora-need', need.horizon <= .5 ? 'Bij vrijwel elke donkere nacht' : need.horizon > 9 ? 'Zelfs bij Kp 9 nauwelijks zichtbaar' : `Kp ≥ ${fk(need.horizon)} (laag) · Kp ≥ ${need.zenith > 9 ? '9+' : fk(need.zenith)} (hoog)`);
+  const now = rows ? rows.filter(r => r.t <= new Date()).pop() : null; setText('aurora-kpnow', rows === undefined ? '…' : now ? nlNum(now.kp, 1) : '--');
+  setText('aurora-dark', dark ? `${fmtTime(ds, tz)} – ${fmtTime(de, tz)}` : 'Geen echte nacht (te licht)');
+  let maxKp = null, kpTxt;
+  if (rows === undefined) kpTxt = '…'; else if (!rows) kpTxt = 'Niet beschikbaar'; else if (!dark) kpTxt = '—';
+  else { const win = rows.filter(r => r.t.getTime() + 3 * 3600e3 > ds.getTime() && r.t.getTime() < de.getTime()); if (win.length) { const m = win.reduce((a, b) => b.kp > a.kp ? b : a); maxKp = m.kp; kpTxt = `${nlNum(m.kp, 1)} (max) rond ${fmtTime(m.t, tz)}`; } else kpTxt = 'Alleen voor de komende 3 dagen'; }
+  setText('aurora-kpfc', kpTxt);
+  const h = P.wx && P.wx.json && P.wx.dateStr === dateStr ? pickHour(P.wx.json, dateStr + 'T23') : null, cloud = h && h.cloud != null ? h.cloud : null;
+  setText('aurora-cloud', cloud != null ? nlNum(cloud) + '%' : '--');
+  let v, good = false;
+  if (!dark) v = 'Te licht (geen echte nacht)'; else if (need.horizon > 9) v = 'Onwaarschijnlijk (te zuidelijk)';
+  else if (maxKp == null) v = rows ? 'Verwachting alleen voor de komende 3 dagen' : rows === undefined ? 'Bezig…' : 'Onbekend (Kp-verwachting niet beschikbaar)';
+  else if (maxKp >= need.zenith) { v = 'Goede kans (ook hoog aan de hemel)'; good = true; } else if (maxKp >= need.horizon) { v = 'Mogelijk (laag in het noorden)'; good = true; } else if (maxKp >= need.horizon - 1) v = 'Kleine kans'; else v = 'Onwaarschijnlijk';
+  if (good && cloud != null && cloud > 75) v += ' — maar zwaar bewolkt';
+  setText('aurora-summary', `🌌 Noorderlicht: ${v}`); $('aurora-card').classList.toggle('good', good && !(cloud != null && cloud > 75));
+}
+
+/* ── Zon op een richting plannen ── */
+function startPickDirection() {
+  if (!P.map) { toast(tr('Wacht tot de kaart geladen is.')); return; }
+  SD.picking = true; $('sundir-pick').textContent = '✋ ' + tr('Tik nu op de kaart op dat punt');
+}
+function resetPickButton() { $('sundir-pick').textContent = '📍 ' + tr('Kies een richting op de kaart'); }
+function pickDirectionAt(lat, lng) { SD.picking = false; resetPickButton(); SD.landmark = { lat, lng }; renderSunDir(); }
+function clearSunDir() { SD.landmark = null; SD.target = null; renderSunDir(); }
+function drawSunDirLine() {
+  if (!P.map || !window.L) return;
+  if (!SD.dirLayer) SD.dirLayer = L.layerGroup().addTo(P.map); SD.dirLayer.clearLayers();
+  if (!SD.landmark) return; const c = readCoords(); if (!c) return;
+  L.polyline([[c.lat, c.lng], [SD.landmark.lat, SD.landmark.lng]], { color: '#7b4fae', weight: 3, opacity: .9, dashArray: '4 6', interactive: false }).addTo(SD.dirLayer);
+  L.circleMarker([SD.landmark.lat, SD.landmark.lng], { radius: 6, color: '#fff', weight: 2, fillColor: '#7b4fae', fillOpacity: .95, interactive: false }).addTo(SD.dirLayer);
+}
+function renderSunDir() {
+  const box = $('sundir-current'), res = $('sundir-results'), limitNote = $('sundir-limit');
+  drawSunDirLine();
+  if (!SD.landmark) { box.style.display = 'none'; res.innerHTML = ''; limitNote.style.display = 'none'; return; }
+  const c = readCoords(); if (!c) return;
+  SD.target = bearingTo(c.lat, c.lng, SD.landmark.lat, SD.landmark.lng);
+  box.style.display = 'block';
+  box.innerHTML = `${tr('Gekozen richting')}: <b>${esc(fmtAz(SD.target))}</b> <button type="button" class="btn-secondary" style="margin-left:8px;padding:2px 9px;font-size:11px;" onclick="clearSunDir()">✕ ${tr('Wissen')}</button>`;
+  const all = sunDirDays(SD.target, c.lat, c.lng, 366), soonEnd = addDays(todayStr(), 90), soon = all.filter(m => m.dateStr <= soonEnd);
+  if (!all.length) {
+    const yr = sunYearRange(c.lat, c.lng);
+    res.innerHTML = `<p class="hint">${c.lat >= 0 && yr ? tr(`Op deze plek staat de zon het hele jaar alleen tussen ${Math.round(yr.lo)}° en ${Math.round(yr.hi)}° (via het zuiden). Deze richting ligt daarbuiten.`) : tr('Deze richting wordt op deze plek door de zon niet bereikt.')}</p>`;
+    limitNote.style.display = 'none'; return;
+  }
+  let intro = '';
+  if (!soon.length) { const run = firstRun(all); intro = `<p class="hint">${tr(`Niet de komende 3 maanden. Wel van ${fmtDate(run.start)} t/m ${fmtDate(run.end)}.`)}</p>`; }
+  const tz = P.wx && P.wx.json ? P.wx.json.timezone : null;
+  const rows = all.slice(0, 10).map(m => {
+    const dv = m.diff >= 1 ? ` <span style="color:var(--text-sub);font-size:.7rem">${tr(`(≈${Math.round(m.diff)}° ernaast)`)}</span>` : '';
+    return `<tr><td>${esc(fmtDate(m.dateStr))}, ${esc(fmtTime(m.time, tz))}${dv}</td><td>${m.alt <= 6 ? tr('🌇 Gouden uur') : tr('☀️ Overdag')}</td></tr>`;
+  }).join('');
+  res.innerHTML = intro + `<table class="weather-table">${rows}</table>`;
+  limitNote.style.display = 'block';
+}
+
+/* ── Soorten (iNaturalist) ── */
+const S = { reqId: 0, ctrl: null };
+const GROUP_ICON = { Aves: '🐦', Mammalia: '🦊', Insecta: '🦋', Plantae: '🌿', Fungi: '🍄', Reptilia: '🦎', Amphibia: '🐸', Arachnida: '🕷️', Mollusca: '🐌', Actinopterygii: '🐟' };
+async function inatSpecies(c, radius, group, extra, signal) {
+  const url = `https://api.inaturalist.org/v1/observations/species_counts?lat=${c.lat.toFixed(4)}&lng=${c.lng.toFixed(4)}&radius=${radius}&per_page=60&locale=${LANG === 'en' ? 'en' : 'nl'}&rank=species&verifiable=true${group ? '&iconic_taxa=' + encodeURIComponent(group) : ''}${extra}`;
+  const r = await fetch(url, { signal }); if (!r.ok) throw new Error('iNaturalist antwoordde met status ' + r.status);
+  const j = await r.json(); return (j.results || []).filter(x => x && x.taxon).map(x => ({ latin: x.taxon.name, common: x.taxon.preferred_common_name || '', count: x.count, group: x.taxon.iconic_taxon_name }));
+}
+function renderSpecies(items, label) {
+  $('species-note').textContent = label + ' · bron: iNaturalist';
+  $('species-list').innerHTML = items.length ? items.slice(0, 50).map(s => `<li><span>${GROUP_ICON[s.group] || '🔹'}</span><span class="sp-name">${esc(s.common || s.latin)}</span>${s.common ? `<span class="sp-lat">${esc(s.latin)}</span>` : ''}<span class="sp-count">${esc(s.count)}×</span></li>`).join('') : `<li>${tr('Geen waarnemingen gevonden voor deze keuze. Probeer een grotere straal of “Alle groepen”.')}</li>`;
+}
+const SP_COLORS = { Aves: '#2b7bb9', Mammalia: '#b5651d', Insecta: '#d4a017', Plantae: '#3a9d3a', Fungi: '#8e5ea2', Reptilia: '#2aa198', Amphibia: '#2aa198', Arachnida: '#7a7a7a' };
+const GROUP_NL = { Aves: 'Vogels', Mammalia: 'Zoogdieren', Insecta: 'Insecten', Plantae: 'Planten', Fungi: 'Paddenstoelen', Reptilia: 'Reptielen', Amphibia: 'Amfibieën', Arachnida: 'Spinachtigen', Mollusca: 'Weekdieren', Actinopterygii: 'Vissen' };
+function parseObs(o) {
+  if (!o || !o.taxon) return null; let lat, lng;
+  if (o.geojson && Array.isArray(o.geojson.coordinates)) { lng = +o.geojson.coordinates[0]; lat = +o.geojson.coordinates[1]; }
+  else if (typeof o.location === 'string') { const p = o.location.split(','); lat = +p[0]; lng = +p[1]; }
+  if (!isFinite(lat) || !isFinite(lng) || Math.abs(lat) > 90 || Math.abs(lng) > 180) return null;
+  const uri = o.uri || (o.id ? 'https://www.inaturalist.org/observations/' + o.id : '');
+  return { lat, lng, latin: o.taxon.name || '', common: o.taxon.preferred_common_name || '', group: o.taxon.iconic_taxon_name || '', date: o.observed_on || (o.time_observed_at ? String(o.time_observed_at).slice(0, 10) : ''), obscured: !!o.obscured, url: /^https:\/\/(www\.)?inaturalist\.org\//.test(uri) ? uri : '' };
+}
+async function inatObservations(c, radius, group, extra, signal) {
+  const url = `https://api.inaturalist.org/v1/observations?lat=${c.lat.toFixed(4)}&lng=${c.lng.toFixed(4)}&radius=${radius}&per_page=100&order_by=observed_on&order=desc&locale=${LANG === 'en' ? 'en' : 'nl'}&verifiable=true&geo=true${group ? '&iconic_taxa=' + encodeURIComponent(group) : ''}${extra}`;
+  const r = await fetch(url, { signal }); if (!r.ok) throw new Error('iNaturalist antwoordde met status ' + r.status);
+  const j = await r.json(); return (j.results || []).map(parseObs).filter(Boolean);
+}
+function obsHtml(list, popup) {
+  const one = o => `<b>${esc(o.common || o.latin)}</b>${o.common ? ` <i>${esc(o.latin)}</i>` : ''}<br><small>${esc(o.date ? fmtDate(o.date) : '')}${o.obscured ? '<span> · locatie bij benadering</span>' : ''}${popup && o.url ? ` · <a href="${esc(o.url)}" target="_blank" rel="noopener">iNaturalist</a>` : ''}</small>`;
+  return list.slice(0, 6).map(one).join('<hr style="margin:4px 0;border:0;border-top:1px solid #ddd">') + (list.length > 6 ? `<br><small>+ ${list.length - 6} meer op deze plek</small>` : '');
+}
+function updateRadiusCircle(fit) {
+  if (!P.map || !window.L) return; const c = readCoords(); if (!c) return; const r = (+$('species-radius').value || 10) * 1000;
+  if (!P.circle) P.circle = L.circle([c.lat, c.lng], { radius: r, color: '#8c6d46', weight: 1.5, dashArray: '6 6', fillOpacity: .04, interactive: false }).addTo(P.map);
+  else { P.circle.setLatLng([c.lat, c.lng]); P.circle.setRadius(r); }
+  if (fit) P.map.fitBounds(P.circle.getBounds(), { padding: [10, 10] });
+}
+function drawSunLines() {
+  const lg = $('sun-legend'), cc = readCoords();
+  if (!P.sunAz || !cc) { lg.innerHTML = ''; if (P.sunLayer) P.sunLayer.clearLayers(); return; }
+  const a = P.sunAz, rows = [[tr('Zonsopkomst'), a.rise, '#f59e0b'], [tr('Zonsondergang'), a.set, '#e0392b']];
+  lg.innerHTML = rows.map(r => `<span><i style="background:${r[2]}"></i>${esc(r[0])} ${esc(fmtAz(r[1]))}</span>`).join('');
+  if (!P.map || !window.L) return;
+  if (!P.sunLayer) P.sunLayer = L.layerGroup().addTo(P.map); P.sunLayer.clearLayers();
+  const km = (+$('species-radius').value || 10) * .9;
+  rows.forEach(r => L.polyline([[cc.lat, cc.lng], destPoint(cc.lat, cc.lng, r[1], km)], { color: r[2], weight: 3, opacity: .9, dashArray: '8 7', interactive: true }).bindTooltip(`${r[0]} ${fmtAz(r[1])}`, { sticky: true }).addTo(P.sunLayer));
+}
+function drawSpeciesMap() {
+  const obs = P.obs || [], lg = $('species-legend'), counts = {};
+  obs.forEach(o => { const g = o.group || 'Overig'; counts[g] = (counts[g] || 0) + 1; });
+  lg.innerHTML = obs.length ? Object.keys(counts).map(g => `<span><i style="background:${SP_COLORS[g] || '#777'}"></i>${esc(GROUP_NL[g] || g)} (${counts[g]})</span>`).join('') + `<span>· ${obs.length} recente waarnemingen op de kaart</span>` : '';
+  if (!P.map || !window.L) return;
+  if (!P.spLayer) P.spLayer = L.layerGroup().addTo(P.map); P.spLayer.clearLayers();
+  const spots = new Map(); obs.forEach(o => { const k = o.lat.toFixed(4) + ',' + o.lng.toFixed(4); if (!spots.has(k)) spots.set(k, []); spots.get(k).push(o); });
+  spots.forEach(list => {
+    const f = list[0];
+    L.circleMarker([f.lat, f.lng], { radius: 6 + Math.min(5, list.length - 1), color: '#fff', weight: 2, fillColor: SP_COLORS[f.group] || '#777', fillOpacity: .92, bubblingMouseEvents: false })
+      .bindTooltip(obsHtml(list, false), { direction: 'top', opacity: .96 }).bindPopup(obsHtml(list, true)).addTo(P.spLayer);
+  });
+}
+async function updateSpecies(fit) {
+  const c = readCoords(); if (!c) return;
+  const list = $('species-list'), dateStr = $('planner-date').value || todayStr(), group = $('species-group').value, radius = $('species-radius').value;
+  const id = ++S.reqId; if (S.ctrl) S.ctrl.abort(); S.ctrl = new AbortController(); const sig = S.ctrl.signal;
+  if (fit === true) { updateRadiusCircle(true); }
+  list.innerHTML = `<li>${tr('Laden van actuele waarnemingen...')}</li>`; $('species-note').textContent = '';
+  const both = async extra => {
+    const [a, b] = await Promise.allSettled([inatSpecies(c, radius, group, extra, sig), inatObservations(c, radius, group, extra, sig)]);
+    if (a.status === 'rejected') throw a.reason;
+    return { items: a.value, obs: b.status === 'fulfilled' ? b.value : [] };
+  };
+  try {
+    const today = todayStr(); let r = { items: [], obs: [] }, label = '';
+    if (dateStr <= today) {
+      const d1 = addDays(dateStr, -3), d2 = addDays(dateStr, 3) > today ? today : addDays(dateStr, 3);
+      r = await both(`&d1=${d1}&d2=${d2}`); label = `Waarnemingen van ${fmtDate(d1)} t/m ${fmtDate(d2)} binnen ${radius} km`;
+    }
+    if (r.items.length < 3) { const mo = +dateStr.slice(5, 7); r = await both(`&month=${mo}`); label = `Verwacht in ${MONTHS[mo - 1]}: waarnemingen uit eerdere jaren binnen ${radius} km`; }
+    if (id !== S.reqId) return; P.obs = r.obs; renderSpecies(r.items, label); drawSpeciesMap();
+  } catch (e) {
+    if (e.name === 'AbortError' || id !== S.reqId) return;
+    list.innerHTML = `<li>${tr('Waarnemingen konden niet worden geladen (controleer je internetverbinding en probeer het opnieuw).')}</li>`;
+  }
+}
+
+/* ═════════════ Fotolocaties (OpenStreetMap / Overpass) ═════════════ */
+const CATS = {
+  viewpoint: { emoji: '🌄', nl: '🌄 Uitzichtpunten', color: '#2b7bb9', fallback: 'Uitzichtpunt', q: ['node["tourism"="viewpoint"]', 'way["tourism"="viewpoint"]'] },
+  waterfall: { emoji: '💧', nl: '💧 Watervallen', color: '#1fa7c9', fallback: 'Waterval', q: ['node["waterway"="waterfall"]'] },
+  landmark: { emoji: '🏛️', nl: '🏛️ Bezienswaardigheden', color: '#b5651d', fallback: 'Bezienswaardigheid', q: ['node["historic"]', 'way["historic"]', 'node["tourism"="attraction"]', 'way["tourism"="attraction"]'] },
+  architecture: { emoji: '🏙️', nl: '🏙️ Architectuur', color: '#6e6adf', fallback: 'Bijzonder gebouw', q: ['node["man_made"="lighthouse"]', 'node["building"="cathedral"]', 'way["building"="cathedral"]', 'node["man_made"="tower"]["tourism"="attraction"]'] },
+  artwork: { emoji: '🎨', nl: '🎨 Kunst & street art', color: '#8e5ea2', fallback: 'Kunstwerk', q: ['node["tourism"="artwork"]'] },
+  nature: { emoji: '🌳', nl: '🌳 Natuurgebieden', color: '#3a9d3a', fallback: 'Natuurgebied', q: ['way["leisure"="nature_reserve"]', 'relation["leisure"="nature_reserve"]', 'way["boundary"="national_park"]'] }
+};
+let ACTIVE_CATS = Object.keys(CATS);
+function toggleCat(key, btn) {
+  const i = ACTIVE_CATS.indexOf(key);
+  if (i >= 0) ACTIVE_CATS.splice(i, 1); else ACTIVE_CATS.push(key);
+  btn.classList.toggle('active', ACTIVE_CATS.includes(key));
+  saveSettings(); updateSpots();
+}
+function classifySpot(tags) {
+  if (!tags) return null;
+  if (tags.waterway === 'waterfall') return 'waterfall';
+  if (tags.tourism === 'viewpoint') return 'viewpoint';
+  if (tags.tourism === 'artwork') return 'artwork';
+  if (tags.man_made === 'lighthouse' || tags.building === 'cathedral' || (tags.man_made === 'tower' && tags.tourism === 'attraction')) return 'architecture';
+  if (tags.leisure === 'nature_reserve' || tags.boundary === 'national_park') return 'nature';
+  if (tags.historic || tags.tourism === 'attraction') return 'landmark';
+  return null;
+}
+function distanceKm(lat1, lng1, lat2, lng2) {
+  const R = 6371, dLat = (lat2 - lat1) * RAD, dLng = (lng2 - lng1) * RAD;
+  const a = Math.sin(dLat / 2) ** 2 + Math.cos(lat1 * RAD) * Math.cos(lat2 * RAD) * Math.sin(dLng / 2) ** 2;
+  return R * 2 * Math.asin(Math.sqrt(a));
+}
+function buildOverpassQuery(lat, lng, radiusM, cats) {
+  const parts = [];
+  cats.forEach(key => { const c = CATS[key]; if (!c) return; c.q.forEach(stmt => parts.push(`${stmt}(around:${radiusM},${lat},${lng});`)); });
+  return `[out:json][timeout:25];(${parts.join('')});out center 300;`;
+}
+const OVERPASS_URLS = ['https://overpass-api.de/api/interpreter', 'https://overpass.kumi.systems/api/interpreter', 'https://overpass.openstreetmap.ru/api/interpreter'];
+async function fetchOverpass(query, signal) {
+  let lastErr;
+  for (const base of OVERPASS_URLS) {
+    try {
+      const r = await fetch(base, { method: 'POST', body: 'data=' + encodeURIComponent(query), signal, headers: { 'Content-Type': 'application/x-www-form-urlencoded' } });
+      if (!r.ok) { lastErr = new Error('Overpass antwoordde met status ' + r.status); continue; }
+      return await r.json();
+    } catch (e) { if (e.name === 'AbortError') throw e; lastErr = e; }
+  }
+  throw lastErr || new Error('Overpass niet bereikbaar');
+}
+function parseSpots(json, c) {
+  const out = [];
+  (json.elements || []).forEach(el => {
+    const tags = el.tags || {};
+    const lat = el.lat != null ? el.lat : (el.center ? el.center.lat : null);
+    const lng = el.lon != null ? el.lon : (el.center ? el.center.lon : null);
+    if (lat == null || lng == null) return;
+    const cat = classifySpot(tags); if (!cat || !ACTIVE_CATS.includes(cat)) return;
+    const name = tags.name || tags['name:nl'] || tags['name:en'] || '';
+    out.push({ id: el.type + el.id, lat, lng, name, cat, dist: distanceKm(c.lat, c.lng, lat, lng) });
+  });
+  const seen = new Set(), dedup = [];
+  out.sort((a, b) => a.dist - b.dist).forEach(s => { const k = s.lat.toFixed(4) + ',' + s.lng.toFixed(4) + ',' + s.cat; if (seen.has(k)) return; seen.add(k); dedup.push(s); });
+  return dedup;
+}
+function renderSpots(list) {
+  $('spots-note').textContent = list.length ? tr(`${list.length} plekken gevonden`).replace(String(list.length), list.length) + ' · bron: OpenStreetMap' : '';
+  $('spots-list').innerHTML = list.length ? list.slice(0, 60).map(s => {
+    const label = s.name || tr(CATS[s.cat].fallback);
+    const gmaps = `https://www.google.com/maps/search/?api=1&query=${s.lat.toFixed(5)},${s.lng.toFixed(5)}`;
+    return `<li><span>${CATS[s.cat].emoji}</span><span class="sp-name">${esc(label)}</span><span class="sp-lat">${esc(tr(CATS[s.cat].fallback))}</span><span class="sp-count">${nlNum(s.dist, 1)} km</span> <a href="${gmaps}" target="_blank" rel="noopener">↗</a></li>`;
+  }).join('') : `<li>${ACTIVE_CATS.length ? tr('Geen plekken gevonden in deze straal. Probeer een grotere straal of andere categorieën.') : tr('Kies minstens één categorie hierboven.')}</li>`;
+}
+function renderSpotsLegend(list) {
+  const counts = {}; list.forEach(s => counts[s.cat] = (counts[s.cat] || 0) + 1);
+  $('spots-legend').innerHTML = ACTIVE_CATS.length ? ACTIVE_CATS.map(k => `<span><i style="background:${CATS[k].color}"></i>${esc(tr(CATS[k].nl))} (${counts[k] || 0})</span>`).join('') : '';
+}
+function drawSpotsMap(list) {
+  if (!P.map || !window.L) { renderSpotsLegend(list); return; }
+  if (!P.spotLayer) P.spotLayer = L.layerGroup().addTo(P.map); P.spotLayer.clearLayers();
+  list.forEach(s => {
+    const label = s.name || tr(CATS[s.cat].fallback);
+    const gmaps = `https://www.google.com/maps/search/?api=1&query=${s.lat.toFixed(5)},${s.lng.toFixed(5)}`;
+    L.circleMarker([s.lat, s.lng], { radius: 6, color: '#fff', weight: 2, fillColor: CATS[s.cat].color, fillOpacity: .92 })
+      .bindTooltip(`${CATS[s.cat].emoji} ${esc(label)}`, { direction: 'top' })
+      .bindPopup(`<b>${esc(label)}</b><br><small>${esc(tr(CATS[s.cat].nl))} · ${nlNum(s.dist, 1)} km</small><br><a href="${gmaps}" target="_blank" rel="noopener">Google Maps ↗</a>`)
+      .addTo(P.spotLayer);
+  });
+  renderSpotsLegend(list);
+}
+const SPOT = { reqId: 0, ctrl: null };
+async function updateSpots() {
+  const c = readCoords(); if (!c) return;
+  const radius = +$('species-radius').value || 10, radiusM = radius * 1000;
+  const cats = ACTIVE_CATS.slice();
+  if (!cats.length) { $('spots-list').innerHTML = `<li>${tr('Kies minstens één categorie hierboven.')}</li>`; $('spots-note').textContent = ''; drawSpotsMap([]); return; }
+  $('spots-list').innerHTML = `<li>${tr('Plekken zoeken...')}</li>`; $('spots-note').textContent = '';
+  const id = ++SPOT.reqId; if (SPOT.ctrl) SPOT.ctrl.abort(); SPOT.ctrl = new AbortController();
+  try {
+    const q = buildOverpassQuery(c.lat.toFixed(4), c.lng.toFixed(4), radiusM, cats);
+    const json = await fetchOverpass(q, SPOT.ctrl.signal);
+    if (id !== SPOT.reqId) return;
+    const list = parseSpots(json, c);
+    renderSpots(list); drawSpotsMap(list);
+  } catch (e) {
+    if (e.name === 'AbortError' || id !== SPOT.reqId) return;
+    $('spots-list').innerHTML = `<li>${tr('Plekken konden niet worden geladen (OpenStreetMap/Overpass is misschien druk bezet). Probeer het later opnieuw.')}</li>`;
+    drawSpotsMap([]);
+  }
+}
+
+/* ───────── Instellingen onthouden ───────── */
+const REMEMBER = ['species-group', 'species-radius'], DEFAULTS = {};
+REMEMBER.forEach(id => { const el = $(id); if (el) DEFAULTS[id] = el.value; });
+function saveSettings() {
+  try {
+    const j = {}; REMEMBER.forEach(id => { const el = $(id); if (el) j[id] = el.value; });
+    j.cats = ACTIVE_CATS.join(',');
+    localStorage.setItem('scout-settings', JSON.stringify(j));
+  } catch (_) { }
+}
+function restoreSettings() {
+  try {
+    const j = JSON.parse(localStorage.getItem('scout-settings') || '{}');
+    REMEMBER.forEach(id => { const el = $(id); if (!el || j[id] == null) return; if (el.tagName === 'SELECT' && ![...el.options].some(o => o.value === String(j[id]))) return; el.value = j[id]; });
+    if (typeof j.cats === 'string') {
+      ACTIVE_CATS = j.cats ? j.cats.split(',').filter(k => CATS[k]) : [];
+      document.querySelectorAll('#cat-chips .chip').forEach(b => b.classList.toggle('active', ACTIVE_CATS.includes(b.dataset.cat)));
+    }
+  } catch (_) { }
+}
+function clearSettings() {
+  try { localStorage.removeItem('scout-settings'); } catch (_) { }
+  REMEMBER.forEach(id => { const el = $(id); if (el && DEFAULTS[id] != null) el.value = DEFAULTS[id]; });
+  ACTIVE_CATS = Object.keys(CATS);
+  document.querySelectorAll('#cat-chips .chip').forEach(b => b.classList.add('active'));
+  try { if (P.inited) { updateRadiusCircle(true); updateSpecies(); updateSpots(); drawSunLines(); } } catch (_) { }
+  toast(tr('Instellingen gewist.'));
+}
+restoreSettings();
+REMEMBER.forEach(id => { const el = $(id); if (el) { el.addEventListener('input', saveSettings); el.addEventListener('change', saveSettings); } });
+
+/* ───────── Hoogte doorgeven aan de pagina eromheen (iframe past zich dan aan) ───────── */
+function postHeight() { try { if (window.parent && window.parent !== window) window.parent.postMessage({ photoSuiteHeight: Math.ceil(document.body.getBoundingClientRect().height) + 4 }, '*'); } catch (_) { } }
+try { if (window.ResizeObserver) new ResizeObserver(postHeight).observe(document.body); window.addEventListener('load', postHeight); } catch (_) { }
+
+/* ───────── Start ───────── */
+{ let l = null; try { l = new URLSearchParams(location.search).get('lang'); } catch (_) { } if (l !== 'en' && l !== 'nl') { l = null; try { l = localStorage.getItem('ps-lang'); } catch (_) { } } setLang(l === 'en' ? 'en' : 'nl', true); }
+initScout();
+
+</script>
+</body>
+</html>
