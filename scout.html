@@ -832,7 +832,7 @@ async function updateSpecies(fit) {
 const CATS = {
   viewpoint: { emoji: '🌄', nl: '🌄 Uitzichtpunten', color: '#2b7bb9', fallback: 'Uitzichtpunt', q: ['node["tourism"="viewpoint"]', 'way["tourism"="viewpoint"]'] },
   waterfall: { emoji: '💧', nl: '💧 Watervallen', color: '#1fa7c9', fallback: 'Waterval', q: ['node["waterway"="waterfall"]'] },
-  landmark: { emoji: '🏛️', nl: '🏛️ Bezienswaardigheden', color: '#b5651d', fallback: 'Bezienswaardigheid', q: ['node["historic"]', 'way["historic"]', 'node["tourism"="attraction"]', 'way["tourism"="attraction"]'] },
+  landmark: { emoji: '🏛️', nl: '🏛️ Bezienswaardigheden', color: '#b5651d', fallback: 'Bezienswaardigheid', q: ['node["historic"]["historic"!~"^(wayside_cross|wayside_shrine|milestone|boundary_stone|highwater_mark|optical_telegraph|yes)$"]', 'way["historic"]["historic"!~"^(wayside_cross|wayside_shrine|milestone|boundary_stone|highwater_mark|optical_telegraph|yes)$"]', 'node["tourism"="attraction"]', 'way["tourism"="attraction"]'] },
   architecture: { emoji: '🏙️', nl: '🏙️ Architectuur', color: '#6e6adf', fallback: 'Bijzonder gebouw', q: ['node["man_made"="lighthouse"]', 'node["building"="cathedral"]', 'way["building"="cathedral"]', 'node["man_made"="tower"]["tourism"="attraction"]'] },
   artwork: { emoji: '🎨', nl: '🎨 Kunst & street art', color: '#8e5ea2', fallback: 'Kunstwerk', q: ['node["tourism"="artwork"]'] },
   nature: { emoji: '🌳', nl: '🌳 Natuurgebieden', color: '#3a9d3a', fallback: 'Natuurgebied', q: ['way["leisure"="nature_reserve"]', 'relation["leisure"="nature_reserve"]', 'way["boundary"="national_park"]'] }
@@ -888,7 +888,10 @@ function parseSpots(json, c) {
     out.push({ id: el.type + el.id, lat, lng, name, cat, dist: distanceKm(c.lat, c.lng, lat, lng) });
   });
   const seen = new Set(), dedup = [];
-  out.sort((a, b) => a.dist - b.dist).forEach(s => { const k = s.lat.toFixed(4) + ',' + s.lng.toFixed(4) + ',' + s.cat; if (seen.has(k)) return; seen.add(k); dedup.push(s); });
+  /* vooral op afstand sorteren, maar een naamloze OSM-stip (minder interessant als fotolocatie) telt
+     als iets verder weg, zodat benoemde plekken op vergelijkbare afstand naar boven komen */
+  const sortKey = s => s.dist * (s.name ? 1 : 1.6);
+  out.sort((a, b) => sortKey(a) - sortKey(b)).forEach(s => { const k = s.lat.toFixed(4) + ',' + s.lng.toFixed(4) + ',' + s.cat; if (seen.has(k)) return; seen.add(k); dedup.push(s); });
   return dedup;
 }
 function renderSpots(list) {
