@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>PhotoByArno Scout v1.7</title>
+  <title>PhotoByArno Scout v1.8</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css" />
   <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js"></script>
   <style>
@@ -144,7 +144,7 @@
   <header>
     <h1>PhotoByArno Scout</h1>
     <div class="header-right">
-      <span class="header-badge">v1.7<span class="hb-date"> • Oct 2026</span></span>
+      <span class="header-badge">v1.8<span class="hb-date"> • Oct 2026</span></span>
       <div class="lang" role="group" aria-label="Taal / Language"><button class="lang-btn active" data-lang="nl" onclick="setLang('nl')">NL</button><button class="lang-btn" data-lang="en" onclick="setLang('en')">EN</button></div>
     </div>
   </header>
@@ -996,18 +996,17 @@ function toggleMapExpand() {
   const expanded = el.classList.toggle('expanded');
   const btn = $('map-expand-btn'); if (btn) btn.textContent = tr(expanded ? '⤡ Verklein kaart' : '⤢ Vergroot kaart');
   if (P.map) {
-    /* de kaart onthoudt het midden/zoomniveau zelf niet als de hoogte van zijn vak verandert. Gebruik
-       de bekende coördinaten (uit de invoervelden/marker) als "waarheid" in plaats van map.getCenter(),
-       want die kan een verkeerde waarde teruggeven als hij vlak vóór/tijdens de hoogte-overgang wordt
-       opgevraagd. Herhaal het herstel ook een tijdje na de overgang: op mobiel (vooral Safari) verandert
-       de werkelijke viewport-hoogte nog een keer, los van onze CSS-animatie, zodra de adresbalk
-       in-/uitklapt door de scrollIntoView hieronder — dat gaf eerder nog een extra, ongecorrigeerde
-       sprong op de kaart nadat onze eerste herstelpoging al was uitgevoerd. */
-    const zoom = P.map.getZoom();
+    /* het oude zoomniveau simpelweg vasthouden werkt niet: dat niveau was afgestemd op het kleine
+       vakje (280px). Het vergrote vak is smal-en-hoog (72vh), dus dezelfde zoom toont dan opeens een
+       veel groter gebied noord-zuid ("uitgerekte" kaart van bv. Wijchen tot Maasmechelen). In plaats
+       daarvan zoomen we opnieuw passend in op de zoekcirkel (de ingestelde straal) — dat geeft in élk
+       vak-formaat een zinnige weergave, netjes gecentreerd op de huidige locatie. Herhaal dit ook een
+       tijdje na de overgang: op mobiel (vooral Safari) verandert de werkelijke viewport-hoogte nog een
+       keer, los van onze CSS-animatie, zodra de adresbalk in-/uitklapt door de scrollIntoView hieronder. */
     const fix = () => {
-      const c = readCoords(); if (!c) return;
       P.map.invalidateSize();
-      P.map.setView([c.lat, c.lng], zoom, { animate: false });
+      if (P.circle) P.map.fitBounds(P.circle.getBounds(), { padding: [20, 20], animate: false });
+      else { const c = readCoords(); if (c) P.map.setView([c.lat, c.lng], P.map.getZoom(), { animate: false }); }
     };
     const onEnd = (e) => { if (e.target === el && e.propertyName === 'height') fix(); };
     el.addEventListener('transitionend', onEnd);
