@@ -3,9 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>PhotoByArno Scout v1.5</title>
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <title>PhotoByArno Scout v1.6</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js"></script>
   <style>
     :root {
       --bg-main: #f5f2eb;
@@ -76,7 +76,7 @@
     .hint { font-size: 0.75rem; color: var(--text-sub); margin: 6px 0 0; }
     .warn-box { background: #fff4cf; border: 1px solid #d8a84e; border-left: 5px solid var(--warn); color: #5f4214; border-radius: 9px; padding: 10px 12px; font-size: 0.8rem; font-weight: 600; margin: 10px 0; }
 
-    #scout-map { height: 280px; border-radius: 10px; width: 100%; margin-top: 8px; background: #e9e4d8; display: flex; align-items: center; justify-content: center; color: var(--text-sub); font-size: .8rem; text-align: center; padding: 10px; transition: height .25s ease; }
+    #scout-map { height: 280px; border-radius: 10px; width: 100%; margin-top: 8px; background: #e9e4d8; display: flex; flex-direction: column; align-items: center; justify-content: center; color: var(--text-sub); font-size: .8rem; text-align: center; padding: 10px; transition: height .25s ease; }
     #scout-map.expanded { height: 72vh; }
     .map-tools { display: flex; justify-content: flex-end; margin-top: 6px; }
     .map-tools .btn-secondary { padding: 6px 10px; font-size: .78rem; }
@@ -144,7 +144,7 @@
   <header>
     <h1>PhotoByArno Scout</h1>
     <div class="header-right">
-      <span class="header-badge">v1.5<span class="hb-date"> • Oct 2026</span></span>
+      <span class="header-badge">v1.6<span class="hb-date"> • Oct 2026</span></span>
       <div class="lang" role="group" aria-label="Taal / Language"><button class="lang-btn active" data-lang="nl" onclick="setLang('nl')">NL</button><button class="lang-btn" data-lang="en" onclick="setLang('en')">EN</button></div>
     </div>
   </header>
@@ -309,6 +309,7 @@ const I18N_PAIRS = [
   ['⤢ Vergroot kaart', '⤢ Enlarge map'], ['⤡ Verklein kaart', '⤡ Shrink map'],
   ['Tik op de kaart om een andere plek te kiezen. Beweeg met je muis over een gekleurde stip (of tik erop) om te zien wat daar te vinden is.', 'Tap the map to pick another spot. Hover over a colored dot (or tap it) to see what is there.'],
   ['De kaart kon niet worden geladen (controleer je internetverbinding). Weer, zon, plekken en soorten werken wel: vul de coördinaten in.', 'The map could not be loaded (check your internet connection). Weather, sun, spots and species still work: enter the coordinates.'],
+  ['🔄 Opnieuw proberen', '🔄 Try again'],
   ['☁️ Live Weer & Mist', '☁️ Live Weather & Fog'], ['Temperatuur', 'Temperature'], ['Windsnelheid', 'Wind speed'], ['Mistverwachting', 'Fog forecast'], ['Regen nu', 'Rain now'], ['Regen verwacht', 'Rain expected'],
   ['🌅 Zon, Gouden Uur & Rode Gloed', '🌅 Sun, Golden Hour & Red Glow'],
   ['Zonsopkomst', 'Sunrise'], ['Gouden Uur (Ochtend)', 'Golden hour (morning)'], ['Gouden Uur (Avond)', 'Golden hour (evening)'], ['Zonsondergang', 'Sunset'],
@@ -501,21 +502,34 @@ const MONTHS = ['januari', 'februari', 'maart', 'april', 'mei', 'juni', 'juli', 
 const SD = { picking: false, landmark: null, target: null, dirLayer: null };
 const P = { kp: undefined, kpReq: 0, sunAz: null, sunLayer: null, obs: [], spLayer: null, spotLayer: null, map: null, marker: null, circle: null, inited: false, reqId: 0, ctrl: null, timer: 0, wx: null };
 function ensureLeaflet() {
-  return new Promise((res, rej) => {
+  const load = new Promise((res, rej) => {
     if (window.L) return res();
     const css = document.createElement('link'); css.rel = 'stylesheet'; css.href = 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css'; document.head.appendChild(css);
     const s = document.createElement('script'); s.src = 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js'; s.onload = () => window.L ? res() : rej(new Error('leaflet')); s.onerror = () => rej(new Error('leaflet')); document.head.appendChild(s);
   });
+  /* zonder tijdslimiet kon dit voor altijd blijven hangen op "Kaart wordt geladen…" als de kaart-bibliotheek
+     om wat voor reden dan ook nooit klaar meldt (geen load, geen error) */
+  const timeout = new Promise((_, rej) => setTimeout(() => rej(new Error('leaflet-timeout')), 10000));
+  return Promise.race([load, timeout]);
 }
 function readCoords() {
   const lat = parseFloat(String($('planner-lat').value).replace(',', '.')), lng = parseFloat(String($('planner-lng').value).replace(',', '.'));
   return (isFinite(lat) && isFinite(lng) && Math.abs(lat) <= 90 && Math.abs(lng) <= 180) ? { lat, lng } : null;
 }
 function initScout() {
-  if (P.inited) return;
-  P.inited = true; if (!$('planner-date').value) $('planner-date').value = todayStr();
-  ensureLeaflet().then(buildMap).catch(() => { $('scout-map').textContent = tr('De kaart kon niet worden geladen (controleer je internetverbinding). Weer, zon, plekken en soorten werken wel: vul de coördinaten in.'); });
-  runScout();
+  if (!$('planner-date').value) $('planner-date').value = todayStr();
+  loadMapWithRetry();
+  if (!P.inited) { P.inited = true; runScout(); }
+}
+function loadMapWithRetry() {
+  ensureLeaflet().then(buildMap).catch(() => {
+    const el = $('scout-map'); el.innerHTML = '';
+    const msg = document.createElement('p'); msg.textContent = tr('De kaart kon niet worden geladen (controleer je internetverbinding). Weer, zon, plekken en soorten werken wel: vul de coördinaten in.');
+    msg.style.margin = '0 0 10px';
+    const btn = document.createElement('button'); btn.type = 'button'; btn.className = 'btn-secondary'; btn.textContent = tr('🔄 Opnieuw proberen');
+    btn.onclick = () => { el.textContent = tr('Kaart wordt geladen…'); loadMapWithRetry(); };
+    el.appendChild(msg); el.appendChild(btn);
+  });
 }
 function buildMap() {
   const c = readCoords() || { lat: 51.3887, lng: 5.7070 }, el = $('scout-map'); el.textContent = '';
@@ -1026,4 +1040,20 @@ function clearSettings() {
   ACTIVE_CATS = Object.keys(CATS);
   SHOW_WILDLIFE = true;
   document.querySelectorAll('#cat-chips .chip').forEach(b => b.classList.add('active'));
-  try { if (P.inited) { updateRadiusCircle(true); updateSpecie
+  try { if (P.inited) { updateRadiusCircle(true); updateSpecies(); updateSpots(); drawSunLines(); } } catch (_) { }
+  toast(tr('Instellingen gewist.'));
+}
+restoreSettings();
+REMEMBER.forEach(id => { const el = $(id); if (el) { el.addEventListener('input', saveSettings); el.addEventListener('change', saveSettings); } });
+
+/* ───────── Hoogte doorgeven aan de pagina eromheen (iframe past zich dan aan) ───────── */
+function postHeight() { try { if (window.parent && window.parent !== window) window.parent.postMessage({ photoSuiteHeight: Math.ceil(document.body.getBoundingClientRect().height) + 4 }, '*'); } catch (_) { } }
+try { if (window.ResizeObserver) new ResizeObserver(postHeight).observe(document.body); window.addEventListener('load', postHeight); } catch (_) { }
+
+/* ───────── Start ───────── */
+{ let l = null; try { l = new URLSearchParams(location.search).get('lang'); } catch (_) { } if (l !== 'en' && l !== 'nl') { l = null; try { l = localStorage.getItem('ps-lang'); } catch (_) { } } setLang(l === 'en' ? 'en' : 'nl', true); }
+initScout();
+
+</script>
+</body>
+</html>
