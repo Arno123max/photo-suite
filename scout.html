@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>PhotoByArno Scout v1.2</title>
+  <title>PhotoByArno Scout v1.3</title>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <style>
@@ -144,7 +144,7 @@
   <header>
     <h1>PhotoByArno Scout</h1>
     <div class="header-right">
-      <span class="header-badge">v1.2<span class="hb-date"> • Oct 2026</span></span>
+      <span class="header-badge">v1.3<span class="hb-date"> • Oct 2026</span></span>
       <div class="lang" role="group" aria-label="Taal / Language"><button class="lang-btn active" data-lang="nl" onclick="setLang('nl')">NL</button><button class="lang-btn" data-lang="en" onclick="setLang('en')">EN</button></div>
     </div>
   </header>
@@ -971,10 +971,15 @@ function toggleMapExpand() {
   const expanded = el.classList.toggle('expanded');
   const btn = $('map-expand-btn'); if (btn) btn.textContent = tr(expanded ? '⤡ Verklein kaart' : '⤢ Vergroot kaart');
   if (P.map) {
-    /* de kaart onthoudt het midden/zoomniveau zelf niet als de hoogte van zijn vak verandert,
-       dus na het aanpassen van de grootte opnieuw expliciet op dezelfde plek centreren */
+    /* de kaart onthoudt het midden/zoomniveau zelf niet als de hoogte van zijn vak verandert. Pas
+       hercentreren zodra de hoogte-animatie écht klaar is (niet na een gegokt aantal milliseconden,
+       dat liep soms nog net vóór de animatie was afgerond, waardoor de kaart op de verkeerde plek viel) */
     const center = P.map.getCenter(), zoom = P.map.getZoom();
-    setTimeout(() => { P.map.invalidateSize(); P.map.setView(center, zoom, { animate: false }); }, 220);
+    let fixed = false;
+    const fix = () => { if (fixed) return; fixed = true; P.map.invalidateSize(); P.map.setView(center, zoom, { animate: false }); };
+    const onEnd = (e) => { if (e.target === el && e.propertyName === 'height') { el.removeEventListener('transitionend', onEnd); fix(); } };
+    el.addEventListener('transitionend', onEnd);
+    setTimeout(() => { el.removeEventListener('transitionend', onEnd); fix(); }, 500);
   }
   if (expanded) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
