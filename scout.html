@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>PhotoByArno Scout v1.3</title>
+  <title>PhotoByArno Scout v1.5</title>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <style>
@@ -144,7 +144,7 @@
   <header>
     <h1>PhotoByArno Scout</h1>
     <div class="header-right">
-      <span class="header-badge">v1.3<span class="hb-date"> • Oct 2026</span></span>
+      <span class="header-badge">v1.5<span class="hb-date"> • Oct 2026</span></span>
       <div class="lang" role="group" aria-label="Taal / Language"><button class="lang-btn active" data-lang="nl" onclick="setLang('nl')">NL</button><button class="lang-btn" data-lang="en" onclick="setLang('en')">EN</button></div>
     </div>
   </header>
@@ -191,6 +191,7 @@
             <button type="button" class="chip active" data-cat="architecture" onclick="toggleCat('architecture', this)">🏙️ Architectuur</button>
             <button type="button" class="chip active" data-cat="artwork" onclick="toggleCat('artwork', this)">🎨 Kunst &amp; street art</button>
             <button type="button" class="chip active" data-cat="nature" onclick="toggleCat('nature', this)">🌳 Natuurgebieden</button>
+            <button type="button" class="chip active" id="wildlife-chip" onclick="toggleWildlife(this)">🐾 Dieren &amp; planten</button>
           </div>
 
           <div class="map-tools">
@@ -303,7 +304,7 @@ const I18N_PAIRS = [
   ['📍 Mijn GPS locatie gebruiken', '📍 Use my GPS location'], ['Straal:', 'Radius:'],
   ['Straal {0} km', 'Radius {0} km'], ['Categorieën op de kaart:', 'Categories on the map:'],
   ['🌄 Uitzichtpunten', '🌄 Viewpoints'], ['💧 Watervallen', '💧 Waterfalls'], ['🏛️ Bezienswaardigheden', '🏛️ Landmarks'],
-  ['🏙️ Architectuur', '🏙️ Architecture'], ['🎨 Kunst & street art', '🎨 Art & street art'], ['🌳 Natuurgebieden', '🌳 Nature reserves'],
+  ['🏙️ Architectuur', '🏙️ Architecture'], ['🎨 Kunst & street art', '🎨 Art & street art'], ['🌳 Natuurgebieden', '🌳 Nature reserves'], ['🐾 Dieren & planten', '🐾 Animals & plants'],
   ['Kaart wordt geladen…', 'Loading map…'],
   ['⤢ Vergroot kaart', '⤢ Enlarge map'], ['⤡ Verklein kaart', '⤡ Shrink map'],
   ['Tik op de kaart om een andere plek te kiezen. Beweeg met je muis over een gekleurde stip (of tik erop) om te zien wat daar te vinden is.', 'Tap the map to pick another spot. Hover over a colored dot (or tap it) to see what is there.'],
@@ -762,7 +763,9 @@ function renderSpecies(items, label) {
   $('species-note').textContent = label + ' · bron: iNaturalist';
   $('species-list').innerHTML = items.length ? items.slice(0, 50).map(s => `<li><span>${GROUP_ICON[s.group] || '🔹'}</span><span class="sp-name">${esc(s.common || s.latin)}</span>${s.common ? `<span class="sp-lat">${esc(s.latin)}</span>` : ''}<span class="sp-count">${esc(s.count)}×</span></li>`).join('') : `<li>${tr('Geen waarnemingen gevonden voor deze keuze. Probeer een grotere straal of “Alle groepen”.')}</li>`;
 }
-const SP_COLORS = { Aves: '#2b7bb9', Mammalia: '#b5651d', Insecta: '#d4a017', Plantae: '#3a9d3a', Fungi: '#8e5ea2', Reptilia: '#2aa198', Amphibia: '#2aa198', Arachnida: '#7a7a7a' };
+/* eigen kleuren voor diersoorten, bewust anders dan de CATS-kleuren hierboven (die stonden er per ongeluk
+   grotendeels hetzelfde uit, bijv. Kunst & street art en Paddenstoelen waren allebei exact #8e5ea2) */
+const SP_COLORS = { Aves: '#d1495b', Mammalia: '#e07a5f', Insecta: '#f2c14e', Plantae: '#81b29a', Fungi: '#d81b60', Reptilia: '#2a9d8f', Amphibia: '#2a9d8f', Arachnida: '#6c757d' };
 const GROUP_NL = { Aves: 'Vogels', Mammalia: 'Zoogdieren', Insecta: 'Insecten', Plantae: 'Planten', Fungi: 'Paddenstoelen', Reptilia: 'Reptielen', Amphibia: 'Amfibieën', Arachnida: 'Spinachtigen', Mollusca: 'Weekdieren', Actinopterygii: 'Vissen' };
 function parseObs(o) {
   if (!o || !o.taxon) return null; let lat, lng;
@@ -797,8 +800,14 @@ function drawSunLines() {
   const km = (+$('species-radius').value || 10) * .9;
   rows.forEach(r => L.polyline([[cc.lat, cc.lng], destPoint(cc.lat, cc.lng, r[1], km)], { color: r[2], weight: 3, opacity: .9, dashArray: '8 7', interactive: true }).bindTooltip(`${r[0]} ${fmtAz(r[1])}`, { sticky: true }).addTo(P.sunLayer));
 }
+let SHOW_WILDLIFE = true;
+function toggleWildlife(btn) {
+  SHOW_WILDLIFE = !SHOW_WILDLIFE;
+  btn.classList.toggle('active', SHOW_WILDLIFE);
+  saveSettings(); drawSpeciesMap();
+}
 function drawSpeciesMap() {
-  const obs = P.obs || [], lg = $('species-legend'), counts = {};
+  const obs = SHOW_WILDLIFE ? (P.obs || []) : [], lg = $('species-legend'), counts = {};
   obs.forEach(o => { const g = o.group || 'Overig'; counts[g] = (counts[g] || 0) + 1; });
   lg.innerHTML = obs.length ? Object.keys(counts).map(g => `<span><i style="background:${SP_COLORS[g] || '#777'}"></i>${esc(GROUP_NL[g] || g)} (${counts[g]})</span>`).join('') + `<span>· ${obs.length} recente waarnemingen op de kaart</span>` : '';
   if (!P.map || !window.L) return;
@@ -824,10 +833,12 @@ async function updateSpecies(fit) {
   try {
     const today = todayStr(); let r = { items: [], obs: [] }, label = '';
     if (dateStr <= today) {
-      const d1 = addDays(dateStr, -3), d2 = addDays(dateStr, 3) > today ? today : addDays(dateStr, 3);
+      /* ruimer venster (±7 i.p.v. ±3 dagen): bij een smal venster waren er vaak maar een handvol
+         meldingen, terwijl lang niet elke bezoeker van een plek ook op iNaturalist post */
+      const d1 = addDays(dateStr, -7), d2 = addDays(dateStr, 7) > today ? today : addDays(dateStr, 7);
       r = await both(`&d1=${d1}&d2=${d2}`); label = `Waarnemingen van ${fmtDate(d1)} t/m ${fmtDate(d2)} binnen ${radius} km`;
     }
-    if (r.items.length < 3) { const mo = +dateStr.slice(5, 7); r = await both(`&month=${mo}`); label = `Verwacht in ${MONTHS[mo - 1]}: waarnemingen uit eerdere jaren binnen ${radius} km`; }
+    if (r.items.length < 5) { const mo = +dateStr.slice(5, 7); r = await both(`&month=${mo}`); label = `Verwacht in ${MONTHS[mo - 1]}: waarnemingen uit eerdere jaren binnen ${radius} km`; }
     if (id !== S.reqId) return; P.obs = r.obs; renderSpecies(r.items, label); drawSpeciesMap();
   } catch (e) {
     if (e.name === 'AbortError' || id !== S.reqId) return;
@@ -991,6 +1002,7 @@ function saveSettings() {
   try {
     const j = {}; REMEMBER.forEach(id => { const el = $(id); if (el) j[id] = el.value; });
     j.cats = ACTIVE_CATS.join(',');
+    j.wildlife = SHOW_WILDLIFE ? 1 : 0;
     localStorage.setItem('scout-settings', JSON.stringify(j));
   } catch (_) { }
 }
@@ -1000,7 +1012,11 @@ function restoreSettings() {
     REMEMBER.forEach(id => { const el = $(id); if (!el || j[id] == null) return; if (el.tagName === 'SELECT' && ![...el.options].some(o => o.value === String(j[id]))) return; el.value = j[id]; });
     if (typeof j.cats === 'string') {
       ACTIVE_CATS = j.cats ? j.cats.split(',').filter(k => CATS[k]) : [];
-      document.querySelectorAll('#cat-chips .chip').forEach(b => b.classList.toggle('active', ACTIVE_CATS.includes(b.dataset.cat)));
+      document.querySelectorAll('#cat-chips .chip[data-cat]').forEach(b => b.classList.toggle('active', ACTIVE_CATS.includes(b.dataset.cat)));
+    }
+    if (j.wildlife != null) {
+      SHOW_WILDLIFE = !!j.wildlife;
+      const wb = $('wildlife-chip'); if (wb) wb.classList.toggle('active', SHOW_WILDLIFE);
     }
   } catch (_) { }
 }
@@ -1008,21 +1024,6 @@ function clearSettings() {
   try { localStorage.removeItem('scout-settings'); } catch (_) { }
   REMEMBER.forEach(id => { const el = $(id); if (el && DEFAULTS[id] != null) el.value = DEFAULTS[id]; });
   ACTIVE_CATS = Object.keys(CATS);
+  SHOW_WILDLIFE = true;
   document.querySelectorAll('#cat-chips .chip').forEach(b => b.classList.add('active'));
-  try { if (P.inited) { updateRadiusCircle(true); updateSpecies(); updateSpots(); drawSunLines(); } } catch (_) { }
-  toast(tr('Instellingen gewist.'));
-}
-restoreSettings();
-REMEMBER.forEach(id => { const el = $(id); if (el) { el.addEventListener('input', saveSettings); el.addEventListener('change', saveSettings); } });
-
-/* ───────── Hoogte doorgeven aan de pagina eromheen (iframe past zich dan aan) ───────── */
-function postHeight() { try { if (window.parent && window.parent !== window) window.parent.postMessage({ photoSuiteHeight: Math.ceil(document.body.getBoundingClientRect().height) + 4 }, '*'); } catch (_) { } }
-try { if (window.ResizeObserver) new ResizeObserver(postHeight).observe(document.body); window.addEventListener('load', postHeight); } catch (_) { }
-
-/* ───────── Start ───────── */
-{ let l = null; try { l = new URLSearchParams(location.search).get('lang'); } catch (_) { } if (l !== 'en' && l !== 'nl') { l = null; try { l = localStorage.getItem('ps-lang'); } catch (_) { } } setLang(l === 'en' ? 'en' : 'nl', true); }
-initScout();
-
-</script>
-</body>
-</html>
+  try { if (P.inited) { updateRadiusCircle(true); updateSpecie
