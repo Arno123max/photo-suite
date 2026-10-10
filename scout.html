@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>PhotoByArno Scout v1.6</title>
+  <title>PhotoByArno Scout v1.7</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css" />
   <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js"></script>
   <style>
@@ -144,7 +144,7 @@
   <header>
     <h1>PhotoByArno Scout</h1>
     <div class="header-right">
-      <span class="header-badge">v1.6<span class="hb-date"> • Oct 2026</span></span>
+      <span class="header-badge">v1.7<span class="hb-date"> • Oct 2026</span></span>
       <div class="lang" role="group" aria-label="Taal / Language"><button class="lang-btn active" data-lang="nl" onclick="setLang('nl')">NL</button><button class="lang-btn" data-lang="en" onclick="setLang('en')">EN</button></div>
     </div>
   </header>
@@ -996,15 +996,23 @@ function toggleMapExpand() {
   const expanded = el.classList.toggle('expanded');
   const btn = $('map-expand-btn'); if (btn) btn.textContent = tr(expanded ? '⤡ Verklein kaart' : '⤢ Vergroot kaart');
   if (P.map) {
-    /* de kaart onthoudt het midden/zoomniveau zelf niet als de hoogte van zijn vak verandert. Pas
-       hercentreren zodra de hoogte-animatie écht klaar is (niet na een gegokt aantal milliseconden,
-       dat liep soms nog net vóór de animatie was afgerond, waardoor de kaart op de verkeerde plek viel) */
-    const center = P.map.getCenter(), zoom = P.map.getZoom();
-    let fixed = false;
-    const fix = () => { if (fixed) return; fixed = true; P.map.invalidateSize(); P.map.setView(center, zoom, { animate: false }); };
-    const onEnd = (e) => { if (e.target === el && e.propertyName === 'height') { el.removeEventListener('transitionend', onEnd); fix(); } };
+    /* de kaart onthoudt het midden/zoomniveau zelf niet als de hoogte van zijn vak verandert. Gebruik
+       de bekende coördinaten (uit de invoervelden/marker) als "waarheid" in plaats van map.getCenter(),
+       want die kan een verkeerde waarde teruggeven als hij vlak vóór/tijdens de hoogte-overgang wordt
+       opgevraagd. Herhaal het herstel ook een tijdje na de overgang: op mobiel (vooral Safari) verandert
+       de werkelijke viewport-hoogte nog een keer, los van onze CSS-animatie, zodra de adresbalk
+       in-/uitklapt door de scrollIntoView hieronder — dat gaf eerder nog een extra, ongecorrigeerde
+       sprong op de kaart nadat onze eerste herstelpoging al was uitgevoerd. */
+    const zoom = P.map.getZoom();
+    const fix = () => {
+      const c = readCoords(); if (!c) return;
+      P.map.invalidateSize();
+      P.map.setView([c.lat, c.lng], zoom, { animate: false });
+    };
+    const onEnd = (e) => { if (e.target === el && e.propertyName === 'height') fix(); };
     el.addEventListener('transitionend', onEnd);
-    setTimeout(() => { el.removeEventListener('transitionend', onEnd); fix(); }, 500);
+    [0, 150, 300, 500, 800, 1200].forEach(t => setTimeout(fix, t));
+    setTimeout(() => el.removeEventListener('transitionend', onEnd), 1300);
   }
   if (expanded) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
