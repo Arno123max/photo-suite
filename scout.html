@@ -76,7 +76,10 @@
     .hint { font-size: 0.75rem; color: var(--text-sub); margin: 6px 0 0; }
     .warn-box { background: #fff4cf; border: 1px solid #d8a84e; border-left: 5px solid var(--warn); color: #5f4214; border-radius: 9px; padding: 10px 12px; font-size: 0.8rem; font-weight: 600; margin: 10px 0; }
 
-    #scout-map { height: 280px; border-radius: 10px; width: 100%; margin-top: 8px; background: #e9e4d8; display: flex; align-items: center; justify-content: center; color: var(--text-sub); font-size: .8rem; text-align: center; padding: 10px; }
+    #scout-map { height: 280px; border-radius: 10px; width: 100%; margin-top: 8px; background: #e9e4d8; display: flex; align-items: center; justify-content: center; color: var(--text-sub); font-size: .8rem; text-align: center; padding: 10px; transition: height .25s ease; }
+    #scout-map.expanded { height: 72vh; }
+    .map-tools { display: flex; justify-content: flex-end; margin-top: 6px; }
+    .map-tools .btn-secondary { padding: 6px 10px; font-size: .78rem; }
 
     .species-list { max-height: 320px; overflow-y: auto; font-size: 0.8rem; line-height: 1.5; padding-left: 0; margin: 8px 0 0 0; list-style: none; }
     .species-list li { padding: 5px 0; border-bottom: 1px solid #f1ede4; display: flex; gap: 8px; align-items: baseline; }
@@ -190,7 +193,10 @@
             <button type="button" class="chip active" data-cat="nature" onclick="toggleCat('nature', this)">🌳 Natuurgebieden</button>
           </div>
 
-          <div id="scout-map" style="margin-top:12px;">Kaart wordt geladen…</div>
+          <div class="map-tools">
+            <button type="button" class="btn-secondary" id="map-expand-btn" onclick="toggleMapExpand()">⤢ Vergroot kaart</button>
+          </div>
+          <div id="scout-map" style="margin-top:4px;">Kaart wordt geladen…</div>
           <div id="spots-legend" class="legend"></div>
           <div id="species-legend" class="legend"></div>
           <div id="sun-legend" class="legend"></div>
@@ -299,6 +305,7 @@ const I18N_PAIRS = [
   ['🌄 Uitzichtpunten', '🌄 Viewpoints'], ['💧 Watervallen', '💧 Waterfalls'], ['🏛️ Bezienswaardigheden', '🏛️ Landmarks'],
   ['🏙️ Architectuur', '🏙️ Architecture'], ['🎨 Kunst & street art', '🎨 Art & street art'], ['🌳 Natuurgebieden', '🌳 Nature reserves'],
   ['Kaart wordt geladen…', 'Loading map…'],
+  ['⤢ Vergroot kaart', '⤢ Enlarge map'], ['⤡ Verklein kaart', '⤡ Shrink map'],
   ['Tik op de kaart om een andere plek te kiezen. Beweeg met je muis over een gekleurde stip (of tik erop) om te zien wat daar te vinden is.', 'Tap the map to pick another spot. Hover over a colored dot (or tap it) to see what is there.'],
   ['De kaart kon niet worden geladen (controleer je internetverbinding). Weer, zon, plekken en soorten werken wel: vul de coördinaten in.', 'The map could not be loaded (check your internet connection). Weather, sun, spots and species still work: enter the coordinates.'],
   ['☁️ Live Weer & Mist', '☁️ Live Weather & Fog'], ['Temperatuur', 'Temperature'], ['Windsnelheid', 'Wind speed'], ['Mistverwachting', 'Fog forecast'], ['Regen nu', 'Rain now'], ['Regen verwacht', 'Rain expected'],
@@ -865,16 +872,29 @@ function buildOverpassQuery(lat, lng, radiusM, cats) {
   return `[out:json][timeout:25];(${parts.join('')});out center 300;`;
 }
 const OVERPASS_URLS = ['https://overpass-api.de/api/interpreter', 'https://overpass.kumi.systems/api/interpreter', 'https://overpass.openstreetmap.ru/api/interpreter'];
-async function fetchOverpass(query, signal) {
-  let lastErr;
-  for (const base of OVERPASS_URLS) {
-    try {
-      const r = await fetch(base, { method: 'POST', body: 'data=' + encodeURIComponent(query), signal, headers: { 'Content-Type': 'application/x-www-form-urlencoded' } });
-      if (!r.ok) { lastErr = new Error('Overpass antwoordde met status ' + r.status); continue; }
-      return await r.json();
-    } catch (e) { if (e.name === 'AbortError') throw e; lastErr = e; }
+async function fetchOneMirror(base, query, outerSignal) {
+  const ctrl = new AbortController();
+  const onAbort = () => ctrl.abort();
+  if (outerSignal) { if (outerSignal.aborted) ctrl.abort(); else outerSignal.addEventListener('abort', onAbort); }
+  const t = setTimeout(() => ctrl.abort(), 15000);
+  try {
+    const r = await fetch(base, { method: 'POST', body: 'data=' + encodeURIComponent(query), signal: ctrl.signal, headers: { 'Content-Type': 'application/x-www-form-urlencoded' } });
+    if (!r.ok) throw new Error('Overpass antwoordde met status ' + r.status);
+    return await r.json();
+  } finally {
+    clearTimeout(t);
+    if (outerSignal) outerSignal.removeEventListener('abort', onAbort);
   }
-  throw lastErr || new Error('Overpass niet bereikbaar');
+}
+async function fetchOverpass(query, signal) {
+  /* alle spiegelservers tegelijk proberen; de snelste die antwoordt wint, i.p.v. op elkaar wachten */
+  try {
+    return await Promise.any(OVERPASS_URLS.map(base => fetchOneMirror(base, query, signal)));
+  } catch (agg) {
+    const aborted = agg && agg.errors && agg.errors.find(e => e && e.name === 'AbortError');
+    if (aborted) throw aborted;
+    throw new Error('Overpass niet bereikbaar');
+  }
 }
 function parseSpots(json, c) {
   const out = [];
@@ -919,18 +939,25 @@ function drawSpotsMap(list) {
   });
   renderSpotsLegend(list);
 }
-const SPOT = { reqId: 0, ctrl: null };
+const SPOT = { reqId: 0, ctrl: null, cacheKey: null, cacheJson: null };
 async function updateSpots() {
   const c = readCoords(); if (!c) return;
   const radius = +$('species-radius').value || 10, radiusM = radius * 1000;
-  const cats = ACTIVE_CATS.slice();
-  if (!cats.length) { $('spots-list').innerHTML = `<li>${tr('Kies minstens één categorie hierboven.')}</li>`; $('spots-note').textContent = ''; drawSpotsMap([]); return; }
+  if (!ACTIVE_CATS.length) { $('spots-list').innerHTML = `<li>${tr('Kies minstens één categorie hierboven.')}</li>`; $('spots-note').textContent = ''; drawSpotsMap([]); return; }
+  const key = c.lat.toFixed(4) + ',' + c.lng.toFixed(4) + ',' + radiusM;
+  /* alle categorieën zijn al opgehaald voor deze plek/straal: alleen opnieuw filteren en tonen, geen nieuwe download nodig */
+  if (SPOT.cacheKey === key && SPOT.cacheJson) {
+    const list = parseSpots(SPOT.cacheJson, c);
+    renderSpots(list); drawSpotsMap(list);
+    return;
+  }
   $('spots-list').innerHTML = `<li>${tr('Plekken zoeken...')}</li>`; $('spots-note').textContent = '';
   const id = ++SPOT.reqId; if (SPOT.ctrl) SPOT.ctrl.abort(); SPOT.ctrl = new AbortController();
   try {
-    const q = buildOverpassQuery(c.lat.toFixed(4), c.lng.toFixed(4), radiusM, cats);
+    const q = buildOverpassQuery(c.lat.toFixed(4), c.lng.toFixed(4), radiusM, Object.keys(CATS));
     const json = await fetchOverpass(q, SPOT.ctrl.signal);
     if (id !== SPOT.reqId) return;
+    SPOT.cacheKey = key; SPOT.cacheJson = json;
     const list = parseSpots(json, c);
     renderSpots(list); drawSpotsMap(list);
   } catch (e) {
@@ -938,6 +965,13 @@ async function updateSpots() {
     $('spots-list').innerHTML = `<li>${tr('Plekken konden niet worden geladen (OpenStreetMap/Overpass is misschien druk bezet). Probeer het later opnieuw.')}</li>`;
     drawSpotsMap([]);
   }
+}
+function toggleMapExpand() {
+  const el = $('scout-map'); if (!el) return;
+  const expanded = el.classList.toggle('expanded');
+  const btn = $('map-expand-btn'); if (btn) btn.textContent = tr(expanded ? '⤡ Verklein kaart' : '⤢ Vergroot kaart');
+  if (P.map) setTimeout(() => P.map.invalidateSize(), 220);
+  if (expanded) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
 /* ───────── Instellingen onthouden ───────── */
