@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>PhotoByArno Scout v1.8</title>
+  <title>PhotoByArno Scout v1.9</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css" />
   <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js"></script>
   <style>
@@ -101,8 +101,12 @@
     .weather-table td:last-child { text-align: right; font-weight: 600; padding-left: 12px; }
 
     footer { text-align: center; font-size: 0.75rem; color: var(--text-sub); margin-top: 24px; padding: 0 12px 20px; line-height: 1.5; }
-    .toast { position: fixed; left: 50%; bottom: 22px; transform: translate(-50%, 20px); background: var(--dark-btn); color: #fff; padding: 12px 17px; border-radius: 10px; font-size: 13px; opacity: 0; pointer-events: none; transition: .2s; z-index: 2000; max-width: min(90vw, 520px); text-align: center; }
-    .toast.show { opacity: 1; transform: translate(-50%, 0); }
+    /* geen position:fixed: Scout zit in een iframe die zichzelf laat meegroeien met de hele pagina-
+       inhoud (geen eigen schuifbalk), dus "fixed" zou onderaan de hele, lange pagina belanden — ver
+       buiten beeld. In plaats daarvan een melding die gewoon in de pagina meeloopt, met scrollIntoView()
+       in toast() hieronder zodat hij altijd in beeld komt, ongeacht waar je op de pagina staat. */
+    .toast { background: var(--dark-btn); color: #fff; padding: 0 17px; border-radius: 10px; font-size: 13px; text-align: center; max-height: 0; opacity: 0; overflow: hidden; transition: max-height .25s ease, opacity .2s ease, padding .25s ease, margin .25s ease; margin: 0 auto; max-width: min(90vw, 520px); }
+    .toast.show { max-height: 80px; opacity: 1; padding: 12px 17px; margin: 0 auto 14px; }
 
     .tool-grid { display: block; }
     .tool-left, .tool-right { display: contents; }
@@ -144,7 +148,7 @@
   <header>
     <h1>PhotoByArno Scout</h1>
     <div class="header-right">
-      <span class="header-badge">v1.8<span class="hb-date"> • Oct 2026</span></span>
+      <span class="header-badge">v1.9<span class="hb-date"> • Oct 2026</span></span>
       <div class="lang" role="group" aria-label="Taal / Language"><button class="lang-btn active" data-lang="nl" onclick="setLang('nl')">NL</button><button class="lang-btn" data-lang="en" onclick="setLang('en')">EN</button></div>
     </div>
   </header>
@@ -155,6 +159,8 @@
       <h2>🧭 Vind fotolocaties bij jou in de buurt</h2>
       <p>Kies een plek op de kaart en zie uitzichtpunten, watervallen, bezienswaardigheden, architectuur, kunst, natuurgebieden en live gespotte dieren — samen met het weer, zonsopkomst/-ondergang en het gouden uur voor die plek.</p>
     </div>
+
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
     <div class="tool-grid">
       <div class="tool-left">
@@ -291,8 +297,6 @@
     </footer>
   </div>
 
-  <div class="toast" id="toast" role="status" aria-live="polite"></div>
-
 <script>
 'use strict';
 
@@ -416,7 +420,7 @@ const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
 const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const nlNum = (v, d = 0) => (v == null || isNaN(v)) ? '--' : Number(v).toLocaleString(LOC(), { minimumFractionDigits: d, maximumFractionDigits: d });
 let toastTimer;
-function toast(m) { const t = $('toast'); t.textContent = m; t.classList.add('show'); clearTimeout(toastTimer); toastTimer = setTimeout(() => t.classList.remove('show'), 4200); }
+function toast(m) { const t = $('toast'); t.textContent = m; t.classList.add('show'); t.scrollIntoView({ behavior: 'smooth', block: 'center' }); clearTimeout(toastTimer); toastTimer = setTimeout(() => t.classList.remove('show'), 4200); }
 
 /* ═════════════ Zon: lokaal berekend ═════════════ */
 const RAD = Math.PI / 180, DAYMS = 864e5, J1970 = 2440588, J2000 = 2451545, OBL = RAD * 23.4397;
