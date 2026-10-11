@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
+<script>try{if(window.self!==window.top)document.documentElement.classList.add('embedded')}catch(e){document.documentElement.classList.add('embedded')}</script>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>PhotoByArno Academy – learn photography with free interactive animations</title>
 <meta name="description" content="Learn photography with interactive animations. Free, no account needed. Start with the exposure triangle: aperture, shutter speed and ISO. Available in English, Dutch, German and Spanish.">
@@ -13,7 +14,7 @@
   --ok:#2f7a1f;--ok-bg:#eaf3de;--bad:#a32d2d;--bad-bg:#fcebeb;--radius:10px;
 }
 @media (prefers-color-scheme: dark){
-  :root{--bg:#161615;--card:#21211f;--soft:#2a2a28;--text:#f1efe8;--text2:#b4b2a9;--muted:#888780;
+  :root:not(.embedded){--bg:#161615;--card:#21211f;--soft:#2a2a28;--text:#f1efe8;--text2:#b4b2a9;--muted:#888780;
   --line:rgba(255,255,255,.10);--line2:rgba(255,255,255,.20);--accent:#5c9ce6;--accent-bg:#0c2f55;--accent-text:#b5d4f4;
   --ok:#97c459;--ok-bg:#1f3410;--bad:#f09595;--bad-bg:#4a1717;}
 }
@@ -107,6 +108,14 @@ canvas{width:100%;display:block;border-radius:10px}
 .dends{display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin:2px 0 8px}
 .fstat{font-size:14px;font-weight:600;text-align:center;margin:4px 0 12px}
 footer{margin-top:36px;padding-top:14px;border-top:1px solid var(--line);font-size:13px;color:var(--muted)}
+.embedded,.embedded body{background:transparent}
+.embedded .wrap{max-width:none;padding:0 0 8px}
+.lead{max-width:75ch}
+@media (min-width:900px){
+  .embedded .concepts{grid-template-columns:repeat(auto-fit,minmax(240px,1fr))}
+  .embedded .grid{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .embedded .stage,.embedded #quiz,.embedded #asg,.embedded .tool{max-width:860px}
+}
 @media (max-width:420px){.row label{width:78px}.hint{margin-left:88px}.row span{min-width:64px}}
 </style>
 </head>
@@ -114,7 +123,7 @@ footer{margin-top:36px;padding-top:14px;border-top:1px solid var(--line);font-si
 <div class="wrap">
   <header>
     <span class="logo">PhotoByArno Academy</span>
-    <span class="badge">v1.9</span>
+    <span class="badge">v1.10</span>
     <div class="lang" id="langs"></div>
   </header>
   <main id="app"></main>
