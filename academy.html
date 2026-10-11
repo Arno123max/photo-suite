@@ -126,7 +126,7 @@ footer{margin-top:36px;padding-top:14px;border-top:1px solid var(--line);font-si
 <div class="wrap">
   <header>
     <span class="logo">PhotoByArno Academy</span>
-    <span class="badge">v1.11</span>
+    <span class="badge">v1.12</span>
     <div class="lang" id="langs"></div>
   </header>
   <main id="app"></main>
@@ -651,10 +651,11 @@ function track(path,title,isEvent){
 }
 (function(){
   if(!/^https?:$/.test(location.protocol))return;
-  window.goatcounter={no_onload:true};
+  window.goatcounter={no_onload:true,allow_frame:true};
   const gs=document.createElement('script');
   gs.async=true;gs.src='https://gc.zgo.at/count.js';
   gs.setAttribute('data-goatcounter','https://'+GC_CODE+'.goatcounter.com/count');
+  gs.setAttribute('data-goatcounter-settings','{"no_onload":true,"allow_frame":true}');
   gs.onload=()=>{gcReady=true;gcQueue.splice(0).forEach(a=>track(a[0],a[1],a[2]))};
   document.head.appendChild(gs);
 })();
