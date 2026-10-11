@@ -114,7 +114,7 @@ footer{margin-top:36px;padding-top:14px;border-top:1px solid var(--line);font-si
 <div class="wrap">
   <header>
     <span class="logo">PhotoByArno Academy</span>
-    <span class="badge">v1.8</span>
+    <span class="badge">v1.9</span>
     <div class="lang" id="langs"></div>
   </header>
   <main id="app"></main>
@@ -614,7 +614,12 @@ function route(){
   document.title=L?t(L.t)+' – PhotoByArno Academy':t('title');
   track('/academy/'+(L?L.id:'home'),L?T.en[L.t]:'Academy home');
   window.scrollTo(0,0);
+  postToParent({pbaTop:true});
+  postHeight();
 }
+/* Geeft de hoogte door aan de JouwWeb-pagina, zodat de iframe meegroeit. */
+function postToParent(msg){try{if(window.parent!==window)window.parent.postMessage(msg,'*')}catch(e){}}
+function postHeight(){postToParent({pbaHeight:Math.ceil(document.documentElement.scrollHeight)})}
 
 function renderHome(){
   app.innerHTML=`<h1>${t('homeTitle')}</h1><p class="lead">${t('homeLead')}</p>
@@ -951,6 +956,8 @@ langBox.querySelectorAll('button').forEach(b=>b.onclick=()=>{
 markLang();
 track('lang/'+lang,'Language: '+lang,true);
 window.addEventListener('hashchange',route);
+try{new ResizeObserver(postHeight).observe(document.body)}catch(e){setInterval(postHeight,1000)}
+window.addEventListener('load',postHeight);
 route();
 </script>
 </body>
