@@ -1,0 +1,957 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PhotoByArno Academy – learn photography with free interactive animations</title>
+<meta name="description" content="Learn photography with interactive animations. Free, no account needed. Start with the exposure triangle: aperture, shutter speed and ISO. Available in English, Dutch, German and Spanish.">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css">
+<style>
+:root{
+  --bg:#f6f5f2;--card:#ffffff;--soft:#efede8;--text:#1d1d1b;--text2:#5f5e5a;--muted:#8a8984;
+  --line:rgba(0,0,0,.10);--line2:rgba(0,0,0,.18);--accent:#1d6fd1;--accent-bg:#e6f0fb;--accent-text:#0c447c;
+  --ok:#2f7a1f;--ok-bg:#eaf3de;--bad:#a32d2d;--bad-bg:#fcebeb;--radius:10px;
+}
+@media (prefers-color-scheme: dark){
+  :root{--bg:#161615;--card:#21211f;--soft:#2a2a28;--text:#f1efe8;--text2:#b4b2a9;--muted:#888780;
+  --line:rgba(255,255,255,.10);--line2:rgba(255,255,255,.20);--accent:#5c9ce6;--accent-bg:#0c2f55;--accent-text:#b5d4f4;
+  --ok:#97c459;--ok-bg:#1f3410;--bad:#f09595;--bad-bg:#4a1717;}
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;line-height:1.6}
+.wrap{max-width:760px;margin:0 auto;padding:16px}
+header{display:flex;align-items:center;gap:10px;margin-bottom:18px;flex-wrap:wrap}
+.logo{font-size:20px;font-weight:600;letter-spacing:-.01em}
+.badge{font-size:12px;font-weight:500;background:var(--accent-bg);color:var(--accent-text);padding:2px 9px;border-radius:999px}
+.lang{margin-left:auto;display:flex;border:1px solid var(--line2);border-radius:var(--radius);overflow:hidden}
+.lang button{border:0;background:transparent;color:var(--text2);padding:6px 10px;font:inherit;font-size:13px;cursor:pointer}
+.lang button.on{background:var(--text);color:var(--bg)}
+h1{font-size:24px;font-weight:600;margin:0 0 6px;letter-spacing:-.01em}
+h2{font-size:19px;font-weight:600;margin:28px 0 8px}
+h3{font-size:16px;font-weight:600;margin:0 0 4px}
+p{margin:0 0 12px}
+.lead{color:var(--text2);margin-bottom:22px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;text-align:left;font:inherit;color:inherit;width:100%}
+button.card{cursor:pointer;transition:border-color .15s}
+button.card:hover{border-color:var(--accent)}
+.card i{font-size:24px;color:var(--accent)}
+.card p{font-size:14px;color:var(--text2);margin:0}
+.card.soon{opacity:.6}
+.card.soon i{color:var(--muted)}
+.tag{display:inline-block;font-size:11px;font-weight:500;padding:2px 8px;border-radius:999px;margin-top:10px;background:var(--soft);color:var(--text2)}
+.tag.go{background:var(--accent-bg);color:var(--accent-text)}
+.back{border:0;background:none;color:var(--accent);font:inherit;font-size:14px;cursor:pointer;padding:0;margin-bottom:12px;display:inline-flex;align-items:center;gap:4px}
+.concepts{display:grid;gap:10px;margin:14px 0 6px}
+.concept{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 14px;display:flex;gap:12px}
+.concept i{font-size:22px;color:var(--accent);margin-top:2px}
+.concept p{font-size:14px;color:var(--text2);margin:0}
+.key{background:var(--accent-bg);color:var(--accent-text);border-radius:12px;padding:12px 14px;margin:4px 0 6px;display:flex;gap:12px}
+.key i{font-size:22px;margin-top:2px}
+.key p{font-size:14px;margin:0}
+.stage{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;margin-top:10px}
+canvas{width:100%;display:block;border-radius:10px}
+.meterlbl{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin:12px 0 4px}
+.meter{position:relative;height:8px;border-radius:4px;background:var(--soft);border:1px solid var(--line)}
+.meter .mid{position:absolute;left:50%;top:-4px;width:1px;height:14px;background:var(--line2)}
+.meter .mk{position:absolute;top:-5px;width:16px;height:16px;border-radius:50%;background:var(--accent);transform:translateX(-50%);left:50%;transition:left .3s}
+.evtxt{font-size:14px;font-weight:600;text-align:center;margin:8px 0 14px}
+.row{display:flex;align-items:center;gap:10px}
+.row label{font-size:14px;color:var(--text2);width:90px;flex-shrink:0}
+.row input{flex:1;accent-color:var(--accent)}
+.row span{font-size:14px;font-weight:600;min-width:72px;text-align:right}
+.hint{font-size:12px;color:var(--muted);margin:2px 0 12px 100px}
+.btns{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px}
+.btn{border:1px solid var(--line2);background:transparent;color:var(--text);border-radius:var(--radius);padding:8px 14px;font:inherit;font-size:14px;cursor:pointer;display:inline-flex;align-items:center;gap:6px}
+.btn:hover{background:var(--soft)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+.cap{font-size:14px;color:var(--text2);margin:12px 0 0;min-height:44px}
+.q{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px;margin-bottom:10px}
+.q h3{font-size:15px;margin-bottom:10px}
+.opt{display:flex;align-items:center;gap:8px;padding:8px 10px;border:1px solid var(--line);border-radius:8px;margin-bottom:6px;cursor:pointer;font-size:14px}
+.opt input{accent-color:var(--accent)}
+.fb{font-size:13px;margin-top:6px;padding:6px 10px;border-radius:8px;display:none}
+.fb.ok{display:block;background:var(--ok-bg);color:var(--ok)}
+.fb.bad{display:block;background:var(--bad-bg);color:var(--bad)}
+.err{font-size:13px;color:var(--bad);margin-top:6px;display:none}
+.score{font-size:15px;font-weight:600;margin-top:10px}
+.tool{display:flex;gap:12px;align-items:center;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin-top:14px;text-decoration:none;color:inherit}
+.tool:hover{border-color:var(--accent)}
+.tool>i{font-size:24px;color:var(--accent)}
+.tool p{font-size:14px;color:var(--text2);margin:0}
+.tool .go{margin-left:auto;font-size:20px;color:var(--accent)}
+.seg.wrap button{white-space:normal;line-height:1.3}
+.small{font-size:13px;color:var(--muted);margin:8px 0 12px}
+.pick{display:inline-flex}
+#asgOut img{display:block;max-width:100%;max-height:300px;margin:14px auto 10px;border-radius:10px}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0 10px}
+.chip{font-size:13px;font-weight:600;background:var(--soft);border-radius:999px;padding:3px 10px}
+.fbk{list-style:none;padding:0;margin:6px 0 12px}
+.fbk li{display:flex;gap:10px;font-size:14px;padding:9px 12px;border-radius:10px;margin-bottom:6px}
+.fbk li i{font-size:18px;margin-top:1px}
+.fbk .g{background:var(--ok-bg);color:var(--ok)}
+.fbk .t{background:var(--accent-bg);color:var(--accent-text)}
+.fbk .n{background:var(--soft);color:var(--text2)}
+#histo{width:100%;height:70px;display:block;border-radius:8px;background:var(--soft);margin:4px 0 10px}
+.seg{display:flex;border:1px solid var(--line2);border-radius:var(--radius);overflow:hidden;margin:4px 0 12px}
+.seg button{flex:1;border:0;background:transparent;color:var(--text2);padding:9px 4px;font:inherit;font-size:13px;cursor:pointer}
+.seg button+button{border-left:1px solid var(--line)}
+.seg button.on{background:var(--accent);color:#fff}
+.lbl{font-size:13px;color:var(--text2);margin:0}
+.dbar{position:relative;height:62px;margin:14px 28px 0}
+.dbar .tr{position:absolute;left:0;right:0;top:27px;height:4px;border-radius:2px;background:var(--soft);border:1px solid var(--line)}
+.dbar .mkr{position:absolute;transform:translateX(-50%);text-align:center;font-size:11px;white-space:nowrap}
+.dbar .mkr b{display:block;width:12px;height:12px;border-radius:50%;margin:0 auto}
+.dbar .sub{top:2px}.dbar .sub b{margin-top:4px}
+.dbar .foc{top:23px}.dbar .foc b{margin-bottom:3px}
+.dends{display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin:2px 0 8px}
+.fstat{font-size:14px;font-weight:600;text-align:center;margin:4px 0 12px}
+footer{margin-top:36px;padding-top:14px;border-top:1px solid var(--line);font-size:13px;color:var(--muted)}
+@media (max-width:420px){.row label{width:78px}.hint{margin-left:88px}.row span{min-width:64px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <span class="logo">PhotoByArno Academy</span>
+    <span class="badge">v1.8</span>
+    <div class="lang" id="langs"></div>
+  </header>
+  <main id="app"></main>
+  <footer></footer>
+</div>
+
+<script>
+const LANGS=['en','nl','de','es'];
+/* Links naar je eigen tools. Pas hier de adressen aan als een pagina verhuist. */
+const TOOLS={
+  suite:'https://photobyarno.com/tools/photography-suite',
+  studio:'https://photobyarno.com/tools/instagram-studio',
+  scout:'https://photobyarno.com/tools/scout'
+};
+function toolLink(key,icon,textKey,lesson,headKey){
+  return `<a class="tool" href="${TOOLS[key]}" target="_top" data-track="${lesson}/tool-${key}"><i class="ti ${icon}" aria-hidden="true"></i><div><h3>${t(headKey||'toolTry')}</h3><p>${t(textKey)}</p></div><i class="ti ti-arrow-right go" aria-hidden="true"></i></a>`;
+}
+document.addEventListener('click',e=>{const a=e.target.closest&&e.target.closest('a[data-track]');if(a)track(a.dataset.track,'Tool link clicked',true)});
+const T={
+en:{
+  title:"PhotoByArno Academy – learn photography with free interactive animations",
+  footer:"Free, no account needed. New lessons are added regularly.",privacy:"Anonymous visitor statistics, no cookies.",
+  homeTitle:"Learn photography, step by step",
+  homeLead:"Short lessons with animations you control yourself. Slide, watch what happens and understand why.",
+  lessons:"Lessons",available:"Start lesson",soon:"Coming soon",back:"All lessons",
+  l1:"The exposure triangle",l1d:"Aperture, shutter speed and ISO: how they shape your photo together.",
+  l2:"Depth of field",l2d:"What decides how much of your photo is sharp?",
+  l3:"Focal length",l3d:"Wide angle or telephoto: what does it do to your image?",
+  l4:"Reading the histogram",l4d:"See at a glance whether your photo is well exposed.",
+  l5:"White balance",l5d:"Why photos sometimes turn out too blue or too orange.",
+  l7:"Direction of light",l7d:"Why the direction of light makes or breaks your photo.",
+  l6:"Composition",l6d:"Rule of thirds, lines and space in your frame.",
+  intro:"Every photo is a balance of three settings. Change one, and another has to move to keep the same brightness. Each setting also has a side effect.",
+  cA:"Aperture",cAd:"The opening in your lens. It feels backwards: the smaller the number, the bigger the opening. That's because the f-number is a fraction: f/2 means an opening of 1/2, f/16 only 1/16. Half a pizza is more than a sixteenth. Big opening (f/1.8) = lots of light and a blurry background. Small opening (f/16) = less light and everything sharp.",
+  cS:"Shutter speed",cSd:"How long the sensor collects light. Short (1/1000 s) freezes motion. Long (1/15 s) makes moving subjects blur.",
+  cI:"ISO",cId:"How much the signal is amplified. Higher makes your photo brighter but adds noise.",
+  cK:"How they work together",cKd:"Photographers measure light in stops. A stop is simply one step: twice as much light, or half. Open the aperture one stop and you get twice the light. You balance that with one stop faster shutter or one stop lower ISO. Every click on a slider below is exactly one stop.",
+  lf:"Focus modes",
+  lfd:"Single, continuous, automatic or manual: when do you use which?",
+  fIntro:"Your camera can focus in four ways. The difference is what happens after it finds focus: does it lock, or does it keep following your subject?",
+  fS:"Single (AF-S)",
+  fSd:"The camera focuses once and then locks. Ideal for still subjects like landscapes, buildings and portraits.",
+  fC:"Continuous (AF-C)",
+  fCd:"The camera keeps focusing as long as you half-press the button. For anything that moves: sports, animals, children at play.",
+  fA:"Automatic (AF-A)",
+  fAd:"The camera decides. It starts in single and switches to continuous when the subject starts moving. Handy when in doubt, but sometimes just too late.",
+  fM:"Manual (MF)",
+  fMd:"You turn the focus ring yourself. Useful for macro, stars, or when autofocus keeps hunting, for example through glass or in the dark.",
+  fKey:"How you start focusing",
+  fKeyd:"On most cameras you half-press the shutter button to focus and press it fully to take the photo. Names sometimes differ per camera: single is also called 'One Shot' and continuous 'Servo'.",
+  fTryLead:"Pick a mode and watch what happens to the dog. Green frame = sharp, red = blurry.",
+  fMode:"Mode",
+  fSubj:"Subject",
+  moving:"Moving",
+  still:"Still",
+  fDist:"Focus at",
+  sharp:"Sharp",
+  blurry:"Blurry",
+  near:"Near",
+  far:"Far",
+  subjLbl:"Dog",
+  focusLbl:"Focus",
+  switched:"switches to continuous",
+  fTours:["A dog sitting still, in single mode: focusing once is enough. Sharp.", "Now the dog runs towards you. Single keeps focus locked at the starting distance, so the dog gets blurrier and blurrier.", "Continuous moves along with the dog. It stays sharp, all the way in.", "Automatic starts in single and switches as soon as the dog moves. Watch the short moment before it does.", "Manual at 8 metres: the dog is only sharp when it's exactly there. This is how pre-focusing works.", "Rule of thumb: still = single, moving = continuous."],
+  fQs:[{"q": "You're shooting a landscape from a tripod. Which mode?", "o": ["Continuous", "Single", "Manual is required"], "a": 1, "e": "A landscape doesn't move, so focusing once is enough."}, {"q": "Your child runs towards you during a football match. Which mode?", "o": ["Single", "Continuous", "Automatic is always better"], "a": 1, "e": "Continuous keeps following the moving subject."}, {"q": "Autofocus keeps hunting when you shoot through a window. What helps?", "o": ["Manual focus", "Higher ISO", "Faster shutter speed"], "a": 0, "e": "With manual focus you set it yourself, so the glass can't distract the camera."}],
+  toolTry:"Continue with your own photos",tool1:"See which aperture, shutter speed and ISO your own photos were taken with, in the EXIF tab of the Photography Suite.",toolGo:"Go and practise",tool2:"Want to practise with moving subjects? Find wildlife and nature spots in PhotoByArno Scout.",
+  asgTitle:"Assignment: your turn",
+  asgLead:"Pick an assignment, take the photo and choose it below. You'll get tips right away. Your photo stays on your own device: nobody else sees it.",
+  asgFileHint:"Use a JPG straight from your camera or phone, or an export from your editing app with metadata kept. Photos sent through WhatsApp or social media lose the data the tool needs.",
+  a1:"Blurry background",
+  a1d:"Photograph a nearby subject with a calm, blurry background. Goal: aperture f/4 or a smaller number.",
+  a2:"Freeze motion",
+  a2d:"Photograph something that moves fast, like a running dog, a cyclist or splashing water, so it looks sharp and still. Goal: shutter speed 1/500 s or faster.",
+  a3:"Show motion",
+  a3d:"Show movement as soft streaks, for example flowing water or passing traffic. Goal: shutter speed 1/15 s or longer. Use a tripod or lean against something.",
+  choose:"Choose your photo",
+  analyzing:"Taking a look…",
+  yourSettings:"Your settings",
+  goodH:"Well done",
+  tipsH:"Tips for next time",
+  noExif:"This photo has no shooting data (EXIF). That often happens with photos sent through WhatsApp or social media. Use the original file so I can review your settings. I did check the exposure.",
+  badFile:"I can't open this photo. Try a JPG file.",
+  phoneNote:"You're shooting with a phone, great for learning. Just note: phones have a fixed aperture.",
+  a1ok:"Aperture {v}: nicely open, which gives a blurry background.",
+  a1mid:"Aperture {v}: fairly open already. For more blur, try f/2.8 or as low as your lens allows.",
+  a1bad:"Aperture {v}: this keeps a lot in focus. Set your camera to A or Av (aperture priority) and choose the lowest f-number, for example f/2.8 or f/4.",
+  a1extra:"Even more blur: move closer to your subject and keep the background far away. Zooming in a bit helps too.",
+  a1phone:"Use your phone's portrait mode, get close to your subject and keep the background far away.",
+  a2ok:"Shutter speed {v}: fast enough to freeze motion.",
+  a2mid:"Shutter speed {v}: fine for calm movement, but just too slow for fast action. Try 1/1000 s.",
+  a2bad:"Shutter speed {v}: too slow to freeze motion. Set your camera to S or Tv (shutter priority) and choose 1/500 s or faster. Too dark? Raise the ISO.",
+  a3ok:"Shutter speed {v}: long enough to show motion as streaks.",
+  a3mid:"Shutter speed {v}: some motion shows, but it can be softer. Try 1/4 s or longer.",
+  a3bad:"Shutter speed {v}: too short, so motion stands still. Choose 1/15 s or longer, with a low ISO and a larger f-number (for example f/11) so you don't get too much light.",
+  a3light:"Too bright in daylight with a long shutter speed? An ND filter works like sunglasses for your lens.",
+  a3phone:"Many phones have a night mode or a 'long exposure' effect for this. With a pro mode or pro app you choose the shutter speed yourself.",
+  shake:"Shutter speed {v} handheld is long for this focal length. Your hands may have moved: keep it faster than 1/{f} s or use a tripod.",
+  isoLow:"ISO {v}: nice and low, little noise.",
+  isoHigh:"ISO {v}: high, so visible noise is likely. Could you use more light or a wider aperture?",
+  expOk:"Exposure looks good: no large areas that are fully white or black.",
+  expHi:"{p}% of your photo is pure white. That detail is gone and can't be recovered later. Next time go a bit darker: faster shutter, lower ISO or negative exposure compensation.",
+  expLo:"{p}% of your photo is pure black. It could be a bit brighter: slower shutter, higher ISO or wider aperture.",
+  expDark:"The photo is quite dark overall. On purpose? Fine. If not, give it a bit more light.",
+  expBright:"The photo is quite bright overall. On purpose? Fine. If not, give it a bit less light.",
+  sharpNo:"I can't find any truly sharp details. Check your focus and keep the camera steady.",
+  sharpOk:"There are sharp details in your photo.",
+  encourage:"Every photo is practice. Try again with these tips and compare the results.",
+  tryIt:"Try it yourself",tryLead:"Tap Tour for a guided walkthrough, or use the sliders. Each slider step is one stop.",
+  dark:"Too dark",good:"Good",light:"Too bright",
+  aperture:"Aperture",shutter:"Shutter",iso:"ISO",
+  hA:"Smaller number = bigger opening = more light, blurrier background",hS:"Longer = more light, motion blur",hI:"Higher = brighter, but more noise",
+  tour:"Tour",stop:"Stop",reset:"Reset",
+  more:"too much light",less:"too little light",correct:"Correctly exposed",stop1:"stop",stopN:"stops",over:"overexposed",under:"underexposed",
+  tours:["Starting point: f/5.6, 1/125 s, ISO 100. Well exposed, background fairly sharp.",
+    "Open the aperture to f/1.8: three stops more light. Lovely soft background, but far too bright.",
+    "Compensate with a faster shutter, 1/1000 s. Well exposed again, cyclist frozen, background stays soft.",
+    "Now f/16 to get everything sharp: six stops less light. Far too dark.",
+    "ISO 6400 brightens it again, but look at the noise.",
+    "Alternative: ISO back down, shutter to 1/15 s. No noise, but a blurred cyclist. Every choice has a cost.",
+    "That's the triangle: what you gain in one, you give up in another."],
+  quiz:"Test yourself",check:"Check",pick:"Pick an answer first",right:"Correct!",wrong:"Not quite.",score:"Score",
+  qs:[
+   {q:"You want a blurry background for a portrait. What do you change?",o:["Aperture to f/16","Aperture to f/1.8","ISO to 6400"],a:1,e:"A small f-number gives a shallow depth of field."},
+   {q:"Your photo of a running dog is blurred by motion. What helps?",o:["Longer shutter speed","Shorter shutter speed","Larger f-number"],a:1,e:"A short shutter speed freezes motion."},
+   {q:"You go from f/4 to f/8, two stops less light. How do you keep the same exposure without changing the shutter?",o:["ISO 400 to 1600","ISO 400 to 800","ISO 400 to 100"],a:0,e:"Two stops means doubling twice: 400, 800, 1600."}]
+},
+nl:{
+  title:"PhotoByArno Academy – gratis fotografie leren met animaties",
+  footer:"Gratis, geen account nodig. Nieuwe lessen komen er regelmatig bij.",privacy:"Anonieme bezoekersstatistieken, zonder cookies.",
+  homeTitle:"Leer fotografie, stap voor stap",
+  homeLead:"Korte lessen met animaties die je zelf kunt bedienen. Schuif, kijk wat er gebeurt en begrijp waarom.",
+  lessons:"Lessen",available:"Start les",soon:"Binnenkort",back:"Alle lessen",
+  l1:"De belichtingsdriehoek",l1d:"Diafragma, sluitertijd en ISO: hoe ze samen je foto bepalen.",
+  l2:"Scherptediepte",l2d:"Wat bepaalt hoeveel van je foto scherp is?",
+  l3:"Brandpuntsafstand",l3d:"Groothoek of tele: wat doet het met je beeld?",
+  l4:"Het histogram lezen",l4d:"Zie in één oogopslag of je foto goed belicht is.",
+  l5:"Witbalans",l5d:"Waarom foto's soms te blauw of te oranje worden.",
+  l7:"Lichtinval",l7d:"Waarom de richting van het licht je foto maakt of breekt.",
+  l6:"Compositie",l6d:"Derdenregel, lijnen en ruimte in je beeld.",
+  intro:"Elke foto is een balans tussen drie instellingen. Verander je er één, dan moet een andere meebewegen om dezelfde helderheid te houden. Elke instelling heeft ook een bijwerking.",
+  cA:"Diafragma",cAd:"De opening in je lens. Het voelt omgekeerd: hoe kleiner het getal, hoe groter de opening. Dat komt doordat het f-getal een breuk is: f/2 betekent een opening van 1/2, f/16 maar 1/16. Een halve pizza is meer dan een zestiende. Grote opening (f/1.8) = veel licht en een wazige achtergrond. Kleine opening (f/16) = minder licht en alles scherp.",
+  cS:"Sluitertijd",cSd:"Hoe lang de sensor licht vangt. Kort (1/1000 s) bevriest beweging. Lang (1/15 s) laat bewegende onderwerpen vegen.",
+  cI:"ISO",cId:"Hoe sterk het signaal versterkt wordt. Hoger maakt je foto lichter, maar geeft meer ruis.",
+  cK:"Zo werken ze samen",cKd:"Fotografen meten licht in stops. Een stop is gewoon één stap: twee keer zoveel licht, of de helft. Zet je het diafragma één stop verder open, dan krijg je twee keer zoveel licht. Dat maak je weer goed met één stop snellere sluitertijd of één stop lagere ISO. Elke tik op een schuifje hieronder is precies één stop.",
+  lf:"Scherpstelmodi",
+  lfd:"Enkelvoudig, continu, automatisch of handmatig: wanneer kies je wat?",
+  fIntro:"Je camera kan op vier manieren scherpstellen. Het verschil zit in wat er gebeurt nadat hij scherp heeft gesteld: blijft de scherpte vastliggen, of beweegt hij mee met je onderwerp?",
+  fS:"Enkelvoudig (AF-S)",
+  fSd:"De camera stelt één keer scherp en zet de scherpte dan vast. Ideaal voor stilstaande onderwerpen zoals landschappen, gebouwen en portretten.",
+  fC:"Continu (AF-C)",
+  fCd:"De camera blijft scherpstellen zolang je de knop half indrukt. Voor alles wat beweegt: sport, dieren, spelende kinderen.",
+  fA:"Automatisch (AF-A)",
+  fAd:"De camera kiest zelf. Hij begint enkelvoudig en schakelt over naar continu als het onderwerp gaat bewegen. Handig als je twijfelt, maar soms net te laat.",
+  fM:"Handmatig (MF)",
+  fMd:"Jij draait zelf aan de scherpstelring. Handig bij macro, sterren of als de autofocus blijft zoeken, bijvoorbeeld door glas of in het donker.",
+  fKey:"Zo start je het scherpstellen",
+  fKeyd:"Bij de meeste camera's druk je de ontspanknop half in om scherp te stellen, en helemaal in om de foto te maken. De namen verschillen soms per camera: enkelvoudig heet ook wel 'One Shot' en continu 'Servo'.",
+  fTryLead:"Kies een stand en kijk wat er met de hond gebeurt. Groen kader = scherp, rood = onscherp.",
+  fMode:"Stand",
+  fSubj:"Onderwerp",
+  moving:"Bewegend",
+  still:"Stilstaand",
+  fDist:"Scherpstellen op",
+  sharp:"Scherp",
+  blurry:"Onscherp",
+  near:"Dichtbij",
+  far:"Ver weg",
+  subjLbl:"Hond",
+  focusLbl:"Scherpte",
+  switched:"schakelt naar continu",
+  fTours:["Een stilstaande hond in enkelvoudige stand: één keer scherpstellen is genoeg. Scherp.", "Nu rent de hond op je af. Enkelvoudig houdt de scherpte vast op de beginafstand, dus de hond wordt steeds onscherper.", "Continu schuift mee met de hond. Hij blijft scherp, tot dichtbij.", "Automatisch begint enkelvoudig en schakelt over zodra de hond beweegt. Let op het korte moment ervoor.", "Handmatig op 8 meter: de hond is alleen scherp als hij precies daar is. Zo werkt ook 'vooraf scherpstellen'.", "Vuistregel: stilstaand = enkelvoudig, bewegend = continu."],
+  fQs:[{"q": "Je fotografeert een landschap vanaf statief. Welke stand?", "o": ["Continu", "Enkelvoudig", "Handmatig is verplicht"], "a": 1, "e": "Een landschap beweegt niet, één keer scherpstellen is genoeg."}, {"q": "Je kind rent op je af tijdens een voetbalwedstrijd. Welke stand?", "o": ["Enkelvoudig", "Continu", "Automatisch is altijd beter"], "a": 1, "e": "Continu blijft het bewegende onderwerp volgen."}, {"q": "De autofocus blijft zoeken bij een foto door een raam. Wat helpt?", "o": ["Handmatig scherpstellen", "Hogere ISO", "Snellere sluitertijd"], "a": 0, "e": "Met de hand stel jij zelf scherp, zodat het glas de camera niet afleidt."}],
+  toolTry:"Verder met je eigen foto's",tool1:"Bekijk met welk diafragma, welke sluitertijd en ISO je eigen foto's zijn gemaakt, in de EXIF-tab van de Photography Suite.",toolGo:"Ga zelf oefenen",tool2:"Oefenen met bewegende onderwerpen? Vind plekken voor wildlife en natuur in PhotoByArno Scout.",
+  asgTitle:"Opdracht: nu jij",
+  asgLead:"Kies een opdracht, maak de foto en kies hem hieronder. Je krijgt meteen tips. Je foto blijft op je eigen apparaat: niemand anders ziet hem.",
+  asgFileHint:"Gebruik een JPG rechtstreeks uit je camera of telefoon, of een export uit je bewerkingsprogramma met de metadata behouden. Foto's die via WhatsApp of sociale media zijn verstuurd, missen de gegevens die de tool nodig heeft.",
+  a1:"Wazige achtergrond",
+  a1d:"Fotografeer een onderwerp dichtbij met een rustige, wazige achtergrond. Doel: diafragma f/4 of een kleiner getal.",
+  a2:"Beweging bevriezen",
+  a2d:"Fotografeer iets dat snel beweegt, zoals een rennende hond, een fietser of opspattend water, zodat het scherp en stil staat. Doel: sluitertijd 1/500 s of korter.",
+  a3:"Bewust bewegen",
+  a3d:"Laat beweging zien als zachte vegen, bijvoorbeeld stromend water of langsrijdend verkeer. Doel: sluitertijd 1/15 s of langer. Gebruik een statief of leun ergens tegenaan.",
+  choose:"Kies je foto",
+  analyzing:"Bezig met bekijken…",
+  yourSettings:"Jouw instellingen",
+  goodH:"Goed bezig",
+  tipsH:"Tips voor de volgende keer",
+  noExif:"Deze foto bevat geen opnamegegevens (EXIF). Dat gebeurt vaak bij foto's die via WhatsApp of sociale media zijn verstuurd. Gebruik het originele bestand, dan kan ik je instellingen beoordelen. De belichting heb ik wel bekeken.",
+  badFile:"Deze foto kan ik niet openen. Probeer een JPG-bestand.",
+  phoneNote:"Je fotografeert met een telefoon, prima om mee te leren. Let wel op: bij telefoons zit het diafragma vast.",
+  a1ok:"Diafragma {v}: mooi open, dat geeft een wazige achtergrond.",
+  a1mid:"Diafragma {v}: al redelijk open. Voor nog meer wazigheid: probeer f/2.8, of zo laag als je lens toelaat.",
+  a1bad:"Diafragma {v}: daarmee blijft veel scherp. Zet je camera op A of Av (diafragmavoorkeur) en kies het laagste f-getal, bijvoorbeeld f/2.8 of f/4.",
+  a1extra:"Nog waziger: ga dichter bij je onderwerp staan en zorg dat de achtergrond ver weg is. Iets inzoomen helpt ook.",
+  a1phone:"Gebruik de portretmodus van je telefoon, ga dicht bij je onderwerp staan en zorg dat de achtergrond ver weg is.",
+  a2ok:"Sluitertijd {v}: snel genoeg om beweging te bevriezen.",
+  a2mid:"Sluitertijd {v}: genoeg voor rustige bewegingen, maar net te langzaam voor snelle actie. Probeer 1/1000 s.",
+  a2bad:"Sluitertijd {v}: te langzaam om beweging te bevriezen. Zet je camera op S of Tv (sluitertijdvoorkeur) en kies 1/500 s of sneller. Te donker? Verhoog de ISO.",
+  a3ok:"Sluitertijd {v}: lang genoeg om beweging als vegen te laten zien.",
+  a3mid:"Sluitertijd {v}: er is wat beweging te zien, maar het kan zachter. Probeer 1/4 s of langer.",
+  a3bad:"Sluitertijd {v}: te kort, de beweging staat dan stil. Kies 1/15 s of langer, met een lage ISO en een groter f-getal (bijvoorbeeld f/11) zodat je niet te veel licht krijgt.",
+  a3light:"Overdag te licht met een lange sluitertijd? Een ND-filter werkt als een zonnebril voor je lens.",
+  a3phone:"Veel telefoons hebben een nachtmodus of een 'lange belichting'-effect hiervoor. Met een pro-modus of pro-app kies je de sluitertijd zelf.",
+  shake:"Sluitertijd {v} uit de hand is lang voor dit brandpunt. Kans op beweging van je handen: houd de sluitertijd korter dan 1/{f} s of gebruik een statief.",
+  isoLow:"ISO {v}: lekker laag, weinig ruis.",
+  isoHigh:"ISO {v}: hoog, dus kans op zichtbare ruis. Kan het met meer licht of een opener diafragma?",
+  expOk:"Belichting ziet er goed uit: geen grote delen helemaal wit of zwart.",
+  expHi:"{p}% van je foto is helemaal wit. Dat detail is weg en later niet meer terug te halen. Volgende keer iets donkerder: kortere sluitertijd, lagere ISO of belichtingscorrectie min.",
+  expLo:"{p}% van je foto is helemaal zwart. Iets lichter kan: langere sluitertijd, hogere ISO of opener diafragma.",
+  expDark:"De foto is in zijn geheel vrij donker. Bewust gedaan? Prima. Zo niet, geef wat meer licht.",
+  expBright:"De foto is in zijn geheel vrij licht. Bewust gedaan? Prima. Zo niet, geef wat minder licht.",
+  sharpNo:"Ik zie nergens echt scherpe details. Controleer je scherpstelling en houd de camera stil.",
+  sharpOk:"Er zijn scherpe details in je foto.",
+  encourage:"Elke foto is oefening. Probeer het nog eens met deze tips en vergelijk het resultaat.",
+  tryIt:"Probeer het zelf",tryLead:"Tik op Rondleiding voor een tour, of schuif zelf. Elke stap op een schuifje is één stop.",
+  dark:"Te donker",good:"Goed",light:"Te licht",
+  aperture:"Diafragma",shutter:"Sluitertijd",iso:"ISO",
+  hA:"Kleiner getal = grotere opening = meer licht, wazigere achtergrond",hS:"Langer = meer licht, bewegingsonscherpte",hI:"Hoger = lichter, maar meer ruis",
+  tour:"Rondleiding",stop:"Stop",reset:"Reset",
+  more:"te veel licht",less:"te weinig licht",correct:"Correct belicht",stop1:"stop",stopN:"stops",over:"overbelicht",under:"onderbelicht",
+  tours:["Startpunt: f/5.6, 1/125 s, ISO 100. Goed belicht, achtergrond redelijk scherp.",
+    "Diafragma open naar f/1.8: drie stops meer licht. Mooie wazige achtergrond, maar veel te licht.",
+    "Compenseer met een snellere sluiter, 1/1000 s. Weer goed belicht, fietser bevroren, achtergrond blijft zacht.",
+    "Nu f/16 voor alles scherp: zes stops minder licht. Veel te donker.",
+    "ISO naar 6400 maakt het weer licht, maar kijk naar de ruis.",
+    "Alternatief: ISO terug, sluiter naar 1/15 s. Geen ruis, wel een vegende fietser. Elke keuze kost iets.",
+    "Dat is de driehoek: wat je bij de een wint, lever je bij de ander in."],
+  quiz:"Test jezelf",check:"Controleer",pick:"Kies eerst een antwoord",right:"Goed!",wrong:"Niet helemaal.",score:"Score",
+  qs:[
+   {q:"Je wilt een wazige achtergrond bij een portret. Wat verander je?",o:["Diafragma naar f/16","Diafragma naar f/1.8","ISO naar 6400"],a:1,e:"Een klein f-getal geeft een kleine scherptediepte."},
+   {q:"Je foto van een rennende hond is onscherp door beweging. Wat helpt?",o:["Langere sluitertijd","Kortere sluitertijd","Groter f-getal"],a:1,e:"Een korte sluitertijd bevriest beweging."},
+   {q:"Je gaat van f/4 naar f/8, twee stops minder licht. Hoe houd je dezelfde belichting zonder de sluitertijd te veranderen?",o:["ISO 400 naar 1600","ISO 400 naar 800","ISO 400 naar 100"],a:0,e:"Twee stops is twee keer verdubbelen: 400, 800, 1600."}]
+},
+de:{
+  title:"PhotoByArno Academy – Fotografie lernen mit kostenlosen Animationen",
+  footer:"Kostenlos, kein Konto nötig. Neue Lektionen kommen regelmäßig dazu.",privacy:"Anonyme Besucherstatistik, ohne Cookies.",
+  homeTitle:"Fotografie lernen, Schritt für Schritt",
+  homeLead:"Kurze Lektionen mit Animationen, die du selbst steuerst. Schieben, beobachten und verstehen, warum.",
+  lessons:"Lektionen",available:"Lektion starten",soon:"Demnächst",back:"Alle Lektionen",
+  l1:"Das Belichtungsdreieck",l1d:"Blende, Belichtungszeit und ISO: wie sie gemeinsam dein Foto bestimmen.",
+  l2:"Schärfentiefe",l2d:"Was bestimmt, wie viel von deinem Foto scharf ist?",
+  l3:"Brennweite",l3d:"Weitwinkel oder Tele: Was macht das mit deinem Bild?",
+  l4:"Das Histogramm lesen",l4d:"Auf einen Blick sehen, ob dein Foto richtig belichtet ist.",
+  l5:"Weißabgleich",l5d:"Warum Fotos manchmal zu blau oder zu orange werden.",
+  l7:"Lichteinfall",l7d:"Warum die Richtung des Lichts über dein Foto entscheidet.",
+  l6:"Bildgestaltung",l6d:"Drittelregel, Linien und Raum im Bild.",
+  intro:"Jedes Foto ist ein Gleichgewicht aus drei Einstellungen. Änderst du eine, muss eine andere mitgehen, damit die Helligkeit gleich bleibt. Jede Einstellung hat außerdem eine Nebenwirkung.",
+  cA:"Blende",cAd:"Die Öffnung im Objektiv. Es wirkt verkehrt herum: Je kleiner die Zahl, desto größer die Öffnung. Das liegt daran, dass die Blendenzahl ein Bruch ist: f/2 bedeutet eine Öffnung von 1/2, f/16 nur 1/16. Eine halbe Pizza ist mehr als ein Sechzehntel. Große Öffnung (f/1.8) = viel Licht und ein unscharfer Hintergrund. Kleine Öffnung (f/16) = weniger Licht und alles scharf.",
+  cS:"Belichtungszeit",cSd:"Wie lange der Sensor Licht sammelt. Kurz (1/1000 s) friert Bewegung ein. Lang (1/15 s) lässt bewegte Motive verwischen.",
+  cI:"ISO",cId:"Wie stark das Signal verstärkt wird. Höher macht dein Foto heller, bringt aber mehr Bildrauschen.",
+  cK:"So arbeiten sie zusammen",cKd:"Fotografen messen Licht in Stufen (englisch: stops). Eine Stufe ist einfach ein Schritt: doppelt so viel Licht oder die Hälfte. Öffnest du die Blende um eine Stufe, bekommst du doppelt so viel Licht. Das gleichst du mit einer Stufe kürzerer Zeit oder einer Stufe niedrigerer ISO aus. Jeder Klick auf einem Schieberegler unten ist genau eine Stufe.",
+  lf:"Fokusmodi",
+  lfd:"Einzel, kontinuierlich, automatisch oder manuell: Wann nimmst du was?",
+  fIntro:"Deine Kamera kann auf vier Arten scharfstellen. Der Unterschied liegt darin, was danach passiert: Bleibt die Schärfe fixiert oder folgt sie deinem Motiv?",
+  fS:"Einzel (AF-S)",
+  fSd:"Die Kamera stellt einmal scharf und speichert die Schärfe. Ideal für unbewegte Motive wie Landschaften, Gebäude und Porträts.",
+  fC:"Kontinuierlich (AF-C)",
+  fCd:"Die Kamera stellt weiter scharf, solange du den Auslöser halb gedrückt hältst. Für alles, was sich bewegt: Sport, Tiere, spielende Kinder.",
+  fA:"Automatisch (AF-A)",
+  fAd:"Die Kamera entscheidet selbst. Sie beginnt mit Einzel-AF und wechselt zu kontinuierlich, wenn sich das Motiv bewegt. Praktisch im Zweifel, aber manchmal knapp zu spät.",
+  fM:"Manuell (MF)",
+  fMd:"Du drehst selbst am Fokusring. Nützlich bei Makro, Sternen oder wenn der Autofokus pumpt, zum Beispiel durch Glas oder im Dunkeln.",
+  fKey:"So startest du das Scharfstellen",
+  fKeyd:"Bei den meisten Kameras drückst du den Auslöser halb zum Scharfstellen und ganz zum Auslösen. Die Namen unterscheiden sich manchmal: Einzel heißt auch 'One Shot' und kontinuierlich 'Servo'.",
+  fTryLead:"Wähle einen Modus und beobachte den Hund. Grüner Rahmen = scharf, rot = unscharf.",
+  fMode:"Modus",
+  fSubj:"Motiv",
+  moving:"Bewegt",
+  still:"Ruhig",
+  fDist:"Fokus auf",
+  sharp:"Scharf",
+  blurry:"Unscharf",
+  near:"Nah",
+  far:"Fern",
+  subjLbl:"Hund",
+  focusLbl:"Fokus",
+  switched:"wechselt zu kontinuierlich",
+  fTours:["Ein sitzender Hund im Einzel-AF: Einmal scharfstellen reicht. Scharf.", "Jetzt rennt der Hund auf dich zu. Einzel-AF hält die Schärfe auf der Anfangsentfernung, also wird der Hund immer unschärfer.", "Kontinuierlich geht mit dem Hund mit. Er bleibt scharf, bis ganz nah.", "Automatisch beginnt mit Einzel-AF und wechselt, sobald sich der Hund bewegt. Achte auf den kurzen Moment davor.", "Manuell auf 8 Meter: Der Hund ist nur scharf, wenn er genau dort ist. So funktioniert auch das Vorfokussieren.", "Faustregel: ruhig = Einzel, bewegt = kontinuierlich."],
+  fQs:[{"q": "Du fotografierst eine Landschaft vom Stativ. Welcher Modus?", "o": ["Kontinuierlich", "Einzel", "Manuell ist Pflicht"], "a": 1, "e": "Eine Landschaft bewegt sich nicht, einmal scharfstellen reicht."}, {"q": "Dein Kind rennt beim Fußball auf dich zu. Welcher Modus?", "o": ["Einzel", "Kontinuierlich", "Automatisch ist immer besser"], "a": 1, "e": "Kontinuierlich folgt dem bewegten Motiv."}, {"q": "Der Autofokus pumpt beim Fotografieren durch ein Fenster. Was hilft?", "o": ["Manuell scharfstellen", "Höhere ISO", "Kürzere Belichtungszeit"], "a": 0, "e": "Manuell stellst du selbst scharf, so kann das Glas die Kamera nicht ablenken."}],
+  toolTry:"Weiter mit deinen eigenen Fotos",tool1:"Sieh dir im EXIF-Tab der Photography Suite an, mit welcher Blende, Belichtungszeit und ISO deine eigenen Fotos entstanden sind.",toolGo:"Geh selbst üben",tool2:"Willst du mit bewegten Motiven üben? Finde Orte für Wildtiere und Natur in PhotoByArno Scout.",
+  asgTitle:"Aufgabe: jetzt du",
+  asgLead:"Wähle eine Aufgabe, mach das Foto und wähle es unten aus. Du bekommst sofort Tipps. Dein Foto bleibt auf deinem Gerät: Niemand sonst sieht es.",
+  asgFileHint:"Verwende ein JPG direkt aus Kamera oder Handy oder einen Export aus deinem Bearbeitungsprogramm mit erhaltenen Metadaten. Fotos, die über WhatsApp oder soziale Medien verschickt wurden, verlieren die Daten, die das Tool braucht.",
+  a1:"Unscharfer Hintergrund",
+  a1d:"Fotografiere ein nahes Motiv vor einem ruhigen, unscharfen Hintergrund. Ziel: Blende f/4 oder eine kleinere Zahl.",
+  a2:"Bewegung einfrieren",
+  a2d:"Fotografiere etwas, das sich schnell bewegt, etwa einen rennenden Hund, einen Radfahrer oder spritzendes Wasser, sodass es scharf und still wirkt. Ziel: Belichtungszeit 1/500 s oder kürzer.",
+  a3:"Bewegung zeigen",
+  a3d:"Zeige Bewegung als weiche Wischer, zum Beispiel fließendes Wasser oder vorbeifahrenden Verkehr. Ziel: Belichtungszeit 1/15 s oder länger. Nutze ein Stativ oder lehne dich irgendwo an.",
+  choose:"Foto wählen",
+  analyzing:"Wird angesehen…",
+  yourSettings:"Deine Einstellungen",
+  goodH:"Gut gemacht",
+  tipsH:"Tipps für das nächste Mal",
+  noExif:"Dieses Foto enthält keine Aufnahmedaten (EXIF). Das passiert oft bei Fotos, die über WhatsApp oder soziale Medien verschickt wurden. Nutze die Originaldatei, dann kann ich deine Einstellungen bewerten. Die Belichtung habe ich trotzdem geprüft.",
+  badFile:"Dieses Foto kann ich nicht öffnen. Versuche eine JPG-Datei.",
+  phoneNote:"Du fotografierst mit dem Handy, prima zum Lernen. Beachte nur: Bei Handys ist die Blende fest.",
+  a1ok:"Blende {v}: schön offen, das ergibt einen unscharfen Hintergrund.",
+  a1mid:"Blende {v}: schon ziemlich offen. Für mehr Unschärfe: Versuche f/2.8 oder so offen, wie dein Objektiv es erlaubt.",
+  a1bad:"Blende {v}: Damit bleibt viel scharf. Stell deine Kamera auf A oder Av (Blendenvorwahl) und wähle die kleinste Blendenzahl, zum Beispiel f/2.8 oder f/4.",
+  a1extra:"Noch unschärfer: Geh näher an dein Motiv heran und sorge dafür, dass der Hintergrund weit weg ist. Etwas hineinzoomen hilft auch.",
+  a1phone:"Nutze den Porträtmodus deines Handys, geh nah an dein Motiv und sorge dafür, dass der Hintergrund weit weg ist.",
+  a2ok:"Belichtungszeit {v}: kurz genug, um Bewegung einzufrieren.",
+  a2mid:"Belichtungszeit {v}: reicht für ruhige Bewegungen, ist für schnelle Action aber knapp zu lang. Versuche 1/1000 s.",
+  a2bad:"Belichtungszeit {v}: zu lang, um Bewegung einzufrieren. Stell deine Kamera auf S oder Tv (Zeitvorwahl) und wähle 1/500 s oder kürzer. Zu dunkel? Erhöhe die ISO.",
+  a3ok:"Belichtungszeit {v}: lang genug, um Bewegung als Wischer zu zeigen.",
+  a3mid:"Belichtungszeit {v}: Etwas Bewegung ist zu sehen, aber es geht weicher. Versuche 1/4 s oder länger.",
+  a3bad:"Belichtungszeit {v}: zu kurz, die Bewegung steht still. Wähle 1/15 s oder länger, mit niedriger ISO und größerer Blendenzahl (zum Beispiel f/11), damit es nicht zu hell wird.",
+  a3light:"Tagsüber zu hell mit langer Belichtungszeit? Ein ND-Filter wirkt wie eine Sonnenbrille für dein Objektiv.",
+  a3phone:"Viele Handys haben dafür einen Nachtmodus oder einen Langzeitbelichtungs-Effekt. Mit einem Pro-Modus oder einer Pro-App wählst du die Belichtungszeit selbst.",
+  shake:"Belichtungszeit {v} aus der Hand ist lang für diese Brennweite. Deine Hände könnten sich bewegt haben: Bleib kürzer als 1/{f} s oder nutze ein Stativ.",
+  isoLow:"ISO {v}: schön niedrig, wenig Rauschen.",
+  isoHigh:"ISO {v}: hoch, also wahrscheinlich sichtbares Rauschen. Geht es mit mehr Licht oder offenerer Blende?",
+  expOk:"Die Belichtung sieht gut aus: keine großen Flächen, die komplett weiß oder schwarz sind.",
+  expHi:"{p}% deines Fotos sind komplett weiß. Dieses Detail ist weg und später nicht mehr zu retten. Nächstes Mal etwas dunkler: kürzere Zeit, niedrigere ISO oder Belichtungskorrektur minus.",
+  expLo:"{p}% deines Fotos sind komplett schwarz. Etwas heller geht: längere Zeit, höhere ISO oder offenere Blende.",
+  expDark:"Das Foto ist insgesamt ziemlich dunkel. Absicht? Prima. Wenn nicht, gib etwas mehr Licht.",
+  expBright:"Das Foto ist insgesamt ziemlich hell. Absicht? Prima. Wenn nicht, gib etwas weniger Licht.",
+  sharpNo:"Ich finde keine wirklich scharfen Details. Prüfe deine Scharfstellung und halte die Kamera ruhig.",
+  sharpOk:"Dein Foto hat scharfe Details.",
+  encourage:"Jedes Foto ist Übung. Versuch es noch einmal mit diesen Tipps und vergleiche das Ergebnis.",
+  tryIt:"Probier es selbst",tryLead:"Tippe auf Rundgang für eine Führung oder nutze die Schieberegler. Jeder Schritt ist eine Stufe.",
+  dark:"Zu dunkel",good:"Gut",light:"Zu hell",
+  aperture:"Blende",shutter:"Zeit",iso:"ISO",
+  hA:"Kleinere Zahl = größere Öffnung = mehr Licht, unschärferer Hintergrund",hS:"Länger = mehr Licht, Bewegungsunschärfe",hI:"Höher = heller, aber mehr Rauschen",
+  tour:"Rundgang",stop:"Stopp",reset:"Zurücksetzen",
+  more:"zu viel Licht",less:"zu wenig Licht",correct:"Richtig belichtet",stop1:"Stufe",stopN:"Stufen",over:"überbelichtet",under:"unterbelichtet",
+  tours:["Ausgangspunkt: f/5.6, 1/125 s, ISO 100. Gut belichtet, Hintergrund ziemlich scharf.",
+    "Blende auf f/1.8 öffnen: drei Stufen mehr Licht. Schön unscharfer Hintergrund, aber viel zu hell.",
+    "Mit kürzerer Zeit ausgleichen, 1/1000 s. Wieder gut belichtet, Radfahrer eingefroren, Hintergrund bleibt weich.",
+    "Jetzt f/16, damit alles scharf ist: sechs Stufen weniger Licht. Viel zu dunkel.",
+    "ISO 6400 macht es wieder hell, aber achte auf das Rauschen.",
+    "Alternative: ISO zurück, Zeit auf 1/15 s. Kein Rauschen, aber ein verwischter Radfahrer. Jede Wahl hat ihren Preis.",
+    "Das ist das Dreieck: Was du bei einem gewinnst, gibst du beim anderen ab."],
+  quiz:"Teste dich",check:"Prüfen",pick:"Wähle zuerst eine Antwort",right:"Richtig!",wrong:"Nicht ganz.",score:"Ergebnis",
+  qs:[
+   {q:"Du willst bei einem Porträt einen unscharfen Hintergrund. Was änderst du?",o:["Blende auf f/16","Blende auf f/1.8","ISO auf 6400"],a:1,e:"Eine kleine Blendenzahl ergibt eine geringe Schärfentiefe."},
+   {q:"Dein Foto eines rennenden Hundes ist durch Bewegung unscharf. Was hilft?",o:["Längere Belichtungszeit","Kürzere Belichtungszeit","Größere Blendenzahl"],a:1,e:"Eine kurze Belichtungszeit friert Bewegung ein."},
+   {q:"Du gehst von f/4 auf f/8, zwei Stufen weniger Licht. Wie hältst du die Belichtung gleich, ohne die Zeit zu ändern?",o:["ISO 400 auf 1600","ISO 400 auf 800","ISO 400 auf 100"],a:0,e:"Zwei Stufen heißt zweimal verdoppeln: 400, 800, 1600."}]
+},
+es:{
+  title:"PhotoByArno Academy – aprende fotografía con animaciones gratuitas",
+  footer:"Gratis, sin cuenta. Se añaden nuevas lecciones con regularidad.",privacy:"Estadísticas de visitas anónimas, sin cookies.",
+  homeTitle:"Aprende fotografía, paso a paso",
+  homeLead:"Lecciones cortas con animaciones que controlas tú. Desliza, observa qué pasa y entiende por qué.",
+  lessons:"Lecciones",available:"Empezar lección",soon:"Próximamente",back:"Todas las lecciones",
+  l1:"El triángulo de exposición",l1d:"Apertura, velocidad de obturación e ISO: cómo definen juntos tu foto.",
+  l2:"Profundidad de campo",l2d:"¿Qué determina cuánto de tu foto está nítido?",
+  l3:"Distancia focal",l3d:"Gran angular o teleobjetivo: ¿qué le hace a tu imagen?",
+  l4:"Leer el histograma",l4d:"Comprueba de un vistazo si tu foto está bien expuesta.",
+  l5:"Balance de blancos",l5d:"Por qué a veces las fotos salen demasiado azules o naranjas.",
+  l7:"Dirección de la luz",l7d:"Por qué la dirección de la luz hace o arruina tu foto.",
+  l6:"Composición",l6d:"Regla de los tercios, líneas y espacio en el encuadre.",
+  intro:"Cada foto es un equilibrio entre tres ajustes. Si cambias uno, otro tiene que moverse para mantener el mismo brillo. Cada ajuste tiene además un efecto secundario.",
+  cA:"Apertura",cAd:"La abertura del objetivo. Parece al revés: cuanto menor es el número, mayor es la abertura. Es porque el número f es una fracción: f/2 significa una abertura de 1/2, f/16 solo 1/16. Media pizza es más que un dieciseisavo. Abertura grande (f/1.8) = mucha luz y fondo desenfocado. Abertura pequeña (f/16) = menos luz y todo nítido.",
+  cS:"Velocidad de obturación",cSd:"Cuánto tiempo capta luz el sensor. Corta (1/1000 s) congela el movimiento. Larga (1/15 s) hace que los sujetos en movimiento salgan movidos.",
+  cI:"ISO",cId:"Cuánto se amplifica la señal. Más alto aclara la foto, pero añade ruido.",
+  cK:"Cómo funcionan juntos",cKd:"Los fotógrafos miden la luz en pasos (en inglés, stops). Un paso es simplemente un escalón: el doble de luz o la mitad. Si abres el diafragma un paso, entra el doble de luz. Lo compensas con un paso de obturación más rápida o un paso menos de ISO. Cada clic en un control de abajo es exactamente un paso.",
+  lf:"Modos de enfoque",
+  lfd:"Único, continuo, automático o manual: ¿cuándo usar cada uno?",
+  fIntro:"Tu cámara puede enfocar de cuatro maneras. La diferencia está en lo que pasa después de enfocar: ¿el enfoque se queda fijo o sigue a tu sujeto?",
+  fS:"Único (AF-S)",
+  fSd:"La cámara enfoca una vez y fija el enfoque. Ideal para sujetos quietos como paisajes, edificios y retratos.",
+  fC:"Continuo (AF-C)",
+  fCd:"La cámara sigue enfocando mientras mantienes el botón pulsado a medias. Para todo lo que se mueve: deporte, animales, niños jugando.",
+  fA:"Automático (AF-A)",
+  fAd:"La cámara decide. Empieza en único y cambia a continuo cuando el sujeto se mueve. Útil si dudas, pero a veces llega justo tarde.",
+  fM:"Manual (MF)",
+  fMd:"Giras tú el anillo de enfoque. Útil para macro, estrellas o cuando el autoenfoque no deja de buscar, por ejemplo a través de un cristal o en la oscuridad.",
+  fKey:"Cómo empiezas a enfocar",
+  fKeyd:"En la mayoría de cámaras pulsas el disparador a medias para enfocar y a fondo para hacer la foto. Los nombres a veces cambian: el único también se llama 'One Shot' y el continuo 'Servo'.",
+  fTryLead:"Elige un modo y mira qué le pasa al perro. Marco verde = nítido, rojo = desenfocado.",
+  fMode:"Modo",
+  fSubj:"Sujeto",
+  moving:"En movimiento",
+  still:"Quieto",
+  fDist:"Enfocar a",
+  sharp:"Nítido",
+  blurry:"Desenfocado",
+  near:"Cerca",
+  far:"Lejos",
+  subjLbl:"Perro",
+  focusLbl:"Enfoque",
+  switched:"cambia a continuo",
+  fTours:["Un perro sentado, en modo único: enfocar una vez basta. Nítido.", "Ahora el perro corre hacia ti. El modo único mantiene el enfoque a la distancia inicial, así que el perro sale cada vez más desenfocado.", "El continuo acompaña al perro. Se mantiene nítido hasta muy cerca.", "El automático empieza en único y cambia en cuanto el perro se mueve. Fíjate en el breve momento anterior.", "Manual a 8 metros: el perro solo está nítido cuando pasa justo por ahí. Así funciona el enfoque previo.", "Regla práctica: quieto = único, en movimiento = continuo."],
+  fQs:[{"q": "Fotografías un paisaje con trípode. ¿Qué modo?", "o": ["Continuo", "Único", "El manual es obligatorio"], "a": 1, "e": "Un paisaje no se mueve, enfocar una vez basta."}, {"q": "Tu hijo corre hacia ti en un partido de fútbol. ¿Qué modo?", "o": ["Único", "Continuo", "El automático siempre es mejor"], "a": 1, "e": "El continuo sigue al sujeto en movimiento."}, {"q": "El autoenfoque no deja de buscar al disparar a través de una ventana. ¿Qué ayuda?", "o": ["Enfoque manual", "ISO más alto", "Obturación más rápida"], "a": 0, "e": "Con el enfoque manual lo fijas tú y el cristal no confunde a la cámara."}],
+  toolTry:"Sigue con tus propias fotos",tool1:"Consulta en la pestaña EXIF de Photography Suite con qué apertura, velocidad e ISO hiciste tus propias fotos.",toolGo:"Sal a practicar",tool2:"¿Quieres practicar con sujetos en movimiento? Encuentra lugares de fauna y naturaleza en PhotoByArno Scout.",
+  asgTitle:"Tarea: ahora tú",
+  asgLead:"Elige una tarea, haz la foto y selecciónala abajo. Recibirás consejos al momento. Tu foto se queda en tu dispositivo: nadie más la ve.",
+  asgFileHint:"Usa un JPG directo de tu cámara o móvil, o una exportación de tu programa de edición conservando los metadatos. Las fotos enviadas por WhatsApp o redes sociales pierden los datos que la herramienta necesita.",
+  a1:"Fondo desenfocado",
+  a1d:"Fotografía un sujeto cercano con un fondo tranquilo y desenfocado. Objetivo: apertura f/4 o un número menor.",
+  a2:"Congelar el movimiento",
+  a2d:"Fotografía algo que se mueva rápido, como un perro corriendo, un ciclista o agua salpicando, para que salga nítido y quieto. Objetivo: velocidad de 1/500 s o más rápida.",
+  a3:"Mostrar movimiento",
+  a3d:"Muestra el movimiento como estelas suaves, por ejemplo agua que fluye o tráfico que pasa. Objetivo: velocidad de 1/15 s o más lenta. Usa un trípode o apóyate en algo.",
+  choose:"Elige tu foto",
+  analyzing:"Echando un vistazo…",
+  yourSettings:"Tus ajustes",
+  goodH:"Bien hecho",
+  tipsH:"Consejos para la próxima vez",
+  noExif:"Esta foto no tiene datos de disparo (EXIF). Suele pasar con fotos enviadas por WhatsApp o redes sociales. Usa el archivo original para que pueda revisar tus ajustes. La exposición sí la he revisado.",
+  badFile:"No puedo abrir esta foto. Prueba con un archivo JPG.",
+  phoneNote:"Disparas con un móvil, perfecto para aprender. Ten en cuenta que en los móviles la apertura es fija.",
+  a1ok:"Apertura {v}: bien abierta, eso da un fondo desenfocado.",
+  a1mid:"Apertura {v}: ya bastante abierta. Para más desenfoque, prueba f/2.8 o lo más abierto que permita tu objetivo.",
+  a1bad:"Apertura {v}: así queda mucho nítido. Pon la cámara en A o Av (prioridad a la apertura) y elige el número f más bajo, por ejemplo f/2.8 o f/4.",
+  a1extra:"Aún más desenfoque: acércate al sujeto y deja el fondo lejos. Hacer un poco de zoom también ayuda.",
+  a1phone:"Usa el modo retrato del móvil, acércate al sujeto y deja el fondo lejos.",
+  a2ok:"Velocidad {v}: lo bastante rápida para congelar el movimiento.",
+  a2mid:"Velocidad {v}: suficiente para movimientos tranquilos, pero algo lenta para acción rápida. Prueba 1/1000 s.",
+  a2bad:"Velocidad {v}: demasiado lenta para congelar el movimiento. Pon la cámara en S o Tv (prioridad a la velocidad) y elige 1/500 s o más rápida. ¿Demasiado oscura? Sube el ISO.",
+  a3ok:"Velocidad {v}: lo bastante lenta para mostrar el movimiento como estelas.",
+  a3mid:"Velocidad {v}: se ve algo de movimiento, pero puede ser más suave. Prueba 1/4 s o más.",
+  a3bad:"Velocidad {v}: demasiado rápida, el movimiento queda congelado. Elige 1/15 s o más lenta, con ISO bajo y un número f mayor (por ejemplo f/11) para no recibir demasiada luz.",
+  a3light:"¿Demasiada luz de día con una velocidad lenta? Un filtro ND funciona como unas gafas de sol para tu objetivo.",
+  a3phone:"Muchos móviles tienen un modo noche o un efecto de 'larga exposición' para esto. Con un modo pro o una app pro eliges tú la velocidad.",
+  shake:"Una velocidad de {v} a pulso es lenta para esta focal. Puede que tus manos se movieran: mantente por encima de 1/{f} s o usa un trípode.",
+  isoLow:"ISO {v}: bajo, poco ruido.",
+  isoHigh:"ISO {v}: alto, así que es probable que se vea ruido. ¿Podrías usar más luz o abrir más el diafragma?",
+  expOk:"La exposición se ve bien: no hay grandes zonas totalmente blancas o negras.",
+  expHi:"El {p}% de tu foto es blanco puro. Ese detalle se ha perdido y no se puede recuperar después. La próxima vez algo más oscura: velocidad más rápida, ISO más bajo o compensación de exposición negativa.",
+  expLo:"El {p}% de tu foto es negro puro. Podría estar algo más clara: velocidad más lenta, ISO más alto o diafragma más abierto.",
+  expDark:"La foto es bastante oscura en general. ¿A propósito? Bien. Si no, dale algo más de luz.",
+  expBright:"La foto es bastante clara en general. ¿A propósito? Bien. Si no, dale algo menos de luz.",
+  sharpNo:"No encuentro detalles realmente nítidos. Revisa el enfoque y mantén la cámara quieta.",
+  sharpOk:"Tu foto tiene detalles nítidos.",
+  encourage:"Cada foto es práctica. Inténtalo de nuevo con estos consejos y compara el resultado.",
+  tryIt:"Pruébalo tú",tryLead:"Toca Recorrido para una visita guiada o usa los controles. Cada paso del control es un paso de luz.",
+  dark:"Muy oscura",good:"Bien",light:"Muy clara",
+  aperture:"Apertura",shutter:"Obturador",iso:"ISO",
+  hA:"Número menor = abertura mayor = más luz, fondo más desenfocado",hS:"Más largo = más luz, desenfoque de movimiento",hI:"Más alto = más claro, pero más ruido",
+  tour:"Recorrido",stop:"Parar",reset:"Reiniciar",
+  more:"más luz de la necesaria",less:"menos luz de la necesaria",correct:"Bien expuesta",stop1:"paso",stopN:"pasos",over:"sobreexpuesta",under:"subexpuesta",
+  tours:["Punto de partida: f/5.6, 1/125 s, ISO 100. Bien expuesta, fondo bastante nítido.",
+    "Abre la apertura a f/1.8: tres pasos más de luz. Fondo bonito y desenfocado, pero demasiado clara.",
+    "Compensa con un obturador más rápido, 1/1000 s. Bien expuesta otra vez, ciclista congelado, fondo suave.",
+    "Ahora f/16 para tenerlo todo nítido: seis pasos menos de luz. Demasiado oscura.",
+    "ISO 6400 la vuelve a aclarar, pero fíjate en el ruido.",
+    "Alternativa: ISO de vuelta, obturador a 1/15 s. Sin ruido, pero el ciclista sale movido. Cada elección tiene un precio.",
+    "Ese es el triángulo: lo que ganas en uno, lo cedes en otro."],
+  quiz:"Ponte a prueba",check:"Comprobar",pick:"Elige primero una respuesta",right:"¡Correcto!",wrong:"No del todo.",score:"Puntuación",
+  qs:[
+   {q:"Quieres un fondo desenfocado en un retrato. ¿Qué cambias?",o:["Apertura a f/16","Apertura a f/1.8","ISO a 6400"],a:1,e:"Un número f pequeño da poca profundidad de campo."},
+   {q:"Tu foto de un perro corriendo sale movida. ¿Qué ayuda?",o:["Velocidad de obturación más lenta","Velocidad de obturación más rápida","Número f mayor"],a:1,e:"Una velocidad rápida congela el movimiento."},
+   {q:"Pasas de f/4 a f/8, dos pasos menos de luz. ¿Cómo mantienes la exposición sin cambiar la velocidad?",o:["ISO de 400 a 1600","ISO de 400 a 800","ISO de 400 a 100"],a:0,e:"Dos pasos es duplicar dos veces: 400, 800, 1600."}]
+}};
+
+function pickLang(){
+  try{const p=new URLSearchParams(location.search).get('lang');if(p&&LANGS.includes(p.toLowerCase()))return p.toLowerCase()}catch(e){}
+  try{const s=localStorage.getItem('pba-lang');if(LANGS.includes(s))return s}catch(e){}
+  const list=(navigator.languages&&navigator.languages.length)?navigator.languages:[navigator.language||'en'];
+  for(const l of list){const c=String(l).slice(0,2).toLowerCase();if(LANGS.includes(c))return c}
+  return 'en';
+}
+let lang=pickLang();
+const t=k=>T[lang][k];
+
+/* Bezoekersstatistieken via GoatCounter (geen cookies, geen Google).
+   Pas GC_CODE aan als je bij GoatCounter een andere code kiest. */
+const GC_CODE='photobyarno';
+const gcQueue=[];let gcReady=false;
+function track(path,title,isEvent){
+  if(!gcReady){gcQueue.push([path,title,isEvent]);return}
+  try{if(window.goatcounter&&typeof window.goatcounter.count==='function')window.goatcounter.count({path:path,title:title||path,event:!!isEvent})}catch(e){}
+}
+(function(){
+  if(!/^https?:$/.test(location.protocol))return;
+  window.goatcounter={no_onload:true};
+  const gs=document.createElement('script');
+  gs.async=true;gs.src='https://gc.zgo.at/count.js';
+  gs.setAttribute('data-goatcounter','https://'+GC_CODE+'.goatcounter.com/count');
+  gs.onload=()=>{gcReady=true;gcQueue.splice(0).forEach(a=>track(a[0],a[1],a[2]))};
+  document.head.appendChild(gs);
+})();
+
+const LESSONS=[
+  {id:'belichtingsdriehoek',icon:'ti-aperture',t:'l1',d:'l1d',ready:true,render:renderExposure},
+  {id:'scherpstelmodi',icon:'ti-focus-centered',t:'lf',d:'lfd',ready:true,render:renderFocus},
+  {id:'scherptediepte',icon:'ti-focus-2',t:'l2',d:'l2d'},
+  {id:'brandpuntsafstand',icon:'ti-zoom-in',t:'l3',d:'l3d'},
+  {id:'histogram',icon:'ti-chart-histogram',t:'l4',d:'l4d'},
+  {id:'witbalans',icon:'ti-temperature',t:'l5',d:'l5d'},
+  {id:'lichtinval',icon:'ti-sun',t:'l7',d:'l7d'},
+  {id:'compositie',icon:'ti-grid-3x3',t:'l6',d:'l6d'}
+];
+
+const app=document.getElementById('app');
+let cleanup=null;
+
+function route(){
+  if(cleanup){cleanup();cleanup=null}
+  const id=location.hash.slice(1);
+  const L=LESSONS.find(l=>l.id===id&&l.ready);
+  if(L){L.render();}else renderHome();
+  document.querySelector('footer').textContent=t('footer')+' '+t('privacy');
+  document.title=L?t(L.t)+' – PhotoByArno Academy':t('title');
+  track('/academy/'+(L?L.id:'home'),L?T.en[L.t]:'Academy home');
+  window.scrollTo(0,0);
+}
+
+function renderHome(){
+  app.innerHTML=`<h1>${t('homeTitle')}</h1><p class="lead">${t('homeLead')}</p>
+  <h2>${t('lessons')}</h2><div class="grid">${LESSONS.map(l=>l.ready
+   ?`<button class="card" data-go="${l.id}"><i class="ti ${l.icon}" aria-hidden="true"></i><h3 style="margin-top:8px">${t(l.t)}</h3><p>${t(l.d)}</p><span class="tag go">${t('available')}</span></button>`
+   :`<div class="card soon"><i class="ti ${l.icon}" aria-hidden="true"></i><h3 style="margin-top:8px">${t(l.t)}</h3><p>${t(l.d)}</p><span class="tag">${t('soon')}</span></div>`).join('')}</div>`;
+  app.querySelectorAll('[data-go]').forEach(b=>b.onclick=()=>{location.hash=b.dataset.go});
+}
+
+function backBtn(){return `<button class="back" onclick="location.hash=''"><i class="ti ti-arrow-left" aria-hidden="true"></i>${t('back')}</button>`}
+
+function renderQuiz(box,key){
+  const qs=t(key||'qs');let answered={};
+  box.innerHTML=qs.map((q,n)=>`<div class="q" data-n="${n}"><h3>${n+1}. ${q.q}</h3>${q.o.map((o,k)=>`<label class="opt"><input type="radio" name="q${n}" value="${k}">${o}</label>`).join('')}
+  <button class="btn" data-check="${n}">${t('check')}</button><div class="err">${t('pick')}</div><div class="fb"></div></div>`).join('')+`<div class="score" id="score"></div>`;
+  box.querySelectorAll('[data-check]').forEach(b=>b.onclick=()=>{
+    const n=+b.dataset.check,el=box.querySelector(`.q[data-n="${n}"]`),sel=el.querySelector('input:checked'),err=el.querySelector('.err'),fb=el.querySelector('.fb');
+    if(!sel){err.style.display='block';return}
+    err.style.display='none';const ok=+sel.value===qs[n].a;answered[n]=ok;
+    fb.className='fb '+(ok?'ok':'bad');fb.textContent=(ok?t('right'):t('wrong'))+' '+qs[n].e;
+    const done=Object.keys(answered).length;
+    if(done===qs.length){const sc=Object.values(answered).filter(Boolean).length;box.querySelector('#score').textContent=`${t('score')}: ${sc} / ${qs.length}`;
+      if(!box.dataset.tracked){box.dataset.tracked='1';track((location.hash.slice(1)||'home')+'/quiz-done','Quiz done, score '+sc+'/'+qs.length,true)}}
+  });
+  box.querySelectorAll('input[type=radio]').forEach(r=>r.onchange=()=>{r.closest('.q').querySelector('.err').style.display='none'});
+}
+
+function parseExif(buf){
+  try{
+    const v=new DataView(buf);if(v.getUint16(0)!==0xFFD8)return null;
+    let o=2;
+    while(o<v.byteLength-10){
+      const m=v.getUint16(o);if((m&0xFF00)!==0xFF00)return null;
+      const len=v.getUint16(o+2);
+      if(m===0xFFE1&&v.getUint32(o+4)===0x45786966)return readTiff(v,o+10);
+      if(m===0xFFDA)return null;
+      o+=2+len;
+    }
+  }catch(e){}
+  return null;
+}
+function readTiff(v,t){
+  const le=v.getUint16(t)===0x4949,u16=p=>v.getUint16(p,le),u32=p=>v.getUint32(p,le),r={};
+  function ifd(off,tags){
+    const n=u16(t+off);
+    for(let i=0;i<n;i++){
+      const e=t+off+2+i*12,tag=u16(e),type=u16(e+2),cnt=u32(e+4),vo=e+8,name=tags[tag];
+      if(!name)continue;
+      try{
+        if(type===2){const p=cnt>4?t+u32(vo):vo;let str='';for(let k=0;k<cnt;k++){const ch=v.getUint8(p+k);if(!ch)break;str+=String.fromCharCode(ch)}r[name]=str.trim()}
+        else if(type===3)r[name]=u16(vo);
+        else if(type===4)r[name]=u32(vo);
+        else if(type===5||type===10){const p=t+u32(vo),a=u32(p),b=u32(p+4);r[name]=b?a/b:0}
+      }catch(e){}
+    }
+  }
+  ifd(u32(t+4),{0x010F:'make',0x0110:'model',0x8769:'exif'});
+  if(r.exif)ifd(r.exif,{0x829A:'exp',0x829D:'fn',0x8827:'iso',0x8833:'iso2',0x920A:'fl',0xA405:'fl35'});
+  if(!r.iso&&r.iso2)r.iso=r.iso2;
+  return(r.exp||r.fn||r.iso)?r:null;
+}
+function fmtExp(e){if(!e)return '';return e<0.5?'1/'+Math.round(1/e)+' s':(Math.round(e*10)/10)+' s'}
+function fmtFn(f){return 'f/'+(Math.round(f*10)/10)}
+function analysePixels(img){
+  const W=Math.min(640,img.naturalWidth),H=Math.round(img.naturalHeight*W/img.naturalWidth);
+  const cv=document.createElement('canvas');cv.width=W;cv.height=H;const g=cv.getContext('2d');g.drawImage(img,0,0,W,H);
+  const d=g.getImageData(0,0,W,H).data,N=W*H,hist=new Array(256).fill(0),gray=new Float32Array(N);let sum=0;
+  for(let i=0,j=0;i<d.length;i+=4,j++){const l=Math.round(0.2126*d[i]+0.7152*d[i+1]+0.0722*d[i+2]);hist[l]++;gray[j]=l;sum+=l}
+  let hi=0,lo=0;for(let k=252;k<256;k++)hi+=hist[k];for(let k=0;k<4;k++)lo+=hist[k];
+  const G=8,tw=Math.floor(W/G),th=Math.floor(H/G);let best=0;
+  for(let ty=0;ty<G;ty++)for(let tx=0;tx<G;tx++){
+    let s1=0,s2=0,n=0;
+    for(let y=Math.max(1,ty*th);y<Math.min(H-1,(ty+1)*th);y++)for(let x=Math.max(1,tx*tw);x<Math.min(W-1,(tx+1)*tw);x++){
+      const p=y*W+x,lap=4*gray[p]-gray[p-1]-gray[p+1]-gray[p-W]-gray[p+W];s1+=lap;s2+=lap*lap;n++}
+    if(n){const m=s1/n,va=s2/n-m*m;if(va>best)best=va}
+  }
+  return{hist:hist,hi:hi/N,lo:lo/N,mean:sum/N,sharp:best};
+}
+function drawHisto(cv,hist){
+  const g=cv.getContext('2d'),W=cv.width=600,H=cv.height=140,mx=Math.max(...hist.slice(2,254))||1;
+  const col=getComputedStyle(document.documentElement).getPropertyValue('--accent').trim()||'#1d6fd1';
+  g.clearRect(0,0,W,H);g.fillStyle=col;
+  for(let k=0;k<256;k++){const h=Math.min(H,hist[k]/mx*H*0.95);g.fillRect(k*W/256,H-h,W/256+0.6,h)}
+}
+function renderAssignment(box){
+  box.innerHTML=`<h2>${t('asgTitle')}</h2><p style="color:var(--text2);font-size:15px">${t('asgLead')}</p>
+   <div class="seg wrap" id="asgSeg"><button data-a="1">${t('a1')}</button><button data-a="2">${t('a2')}</button><button data-a="3">${t('a3')}</button></div>
+   <div class="concept"><i class="ti ti-target" aria-hidden="true"></i><div><p id="asgDesc"></p></div></div>
+   <p class="small">${t('asgFileHint')}</p>
+   <label class="btn primary pick" for="asgFile"><i class="ti ti-photo-up" aria-hidden="true"></i>${t('choose')}</label>
+   <input type="file" id="asgFile" accept="image/jpeg,image/png,image/webp" style="display:none">
+   <div id="asgOut"></div>`;
+  let asg=1,last=null,url=null;
+  const seg=box.querySelector('#asgSeg'),out=box.querySelector('#asgOut');
+  function setA(n){asg=n;seg.querySelectorAll('button').forEach(b=>b.classList.toggle('on',+b.dataset.a===n));box.querySelector('#asgDesc').textContent=t('a'+n+'d');if(last)evaluate()}
+  seg.querySelectorAll('button').forEach(b=>b.onclick=()=>setA(+b.dataset.a));
+  box.querySelector('#asgFile').addEventListener('change',e=>{
+    const f=e.target.files&&e.target.files[0];if(!f)return;
+    out.innerHTML=`<p class="small">${t('analyzing')}</p>`;
+    const rd=new FileReader();
+    rd.onload=()=>{
+      const exif=parseExif(rd.result);
+      if(url)URL.revokeObjectURL(url);url=URL.createObjectURL(f);
+      const img=new Image();
+      img.onload=()=>{try{last={exif:exif,px:analysePixels(img),url:url};evaluate();track('belichtingsdriehoek/assignment-'+asg,'Assignment photo checked',true)}catch(err){out.innerHTML=`<ul class="fbk"><li class="n"><i class="ti ti-alert-circle" aria-hidden="true"></i><span>${t('badFile')}</span></li></ul>`}};
+      img.onerror=()=>{out.innerHTML=`<ul class="fbk"><li class="n"><i class="ti ti-alert-circle" aria-hidden="true"></i><span>${t('badFile')}</span></li></ul>`};
+      img.src=url;
+    };
+    rd.onerror=()=>{out.innerHTML=`<ul class="fbk"><li class="n"><i class="ti ti-alert-circle" aria-hidden="true"></i><span>${t('badFile')}</span></li></ul>`};
+    rd.readAsArrayBuffer(f);e.target.value='';
+  });
+  function evaluate(){
+    const ex=last.exif,px=last.px,good=[],tips=[],notes=[];
+    const fill=(k,o)=>t(k).replace('{v}',o.v||'').replace('{f}',o.f||'').replace('{p}',o.p||'');
+    const phone=ex&&/apple|iphone|pixel|google|samsung|xiaomi|redmi|oneplus|huawei|oppo|vivo|motorola|realme|nothing|honor/i.test((ex.make||'')+' '+(ex.model||''));
+    if(!ex)notes.push(t('noExif'));
+    if(phone)notes.push(t('phoneNote'));
+    if(ex){
+      if(asg===1&&ex.fn){const v=fmtFn(ex.fn);
+        if(phone)tips.push(t('a1phone'));
+        else if(ex.fn<=4){good.push(fill('a1ok',{v:v}));tips.push(t('a1extra'))}
+        else if(ex.fn<=5.6){tips.push(fill('a1mid',{v:v}));tips.push(t('a1extra'))}
+        else tips.push(fill('a1bad',{v:v}));}
+      if(asg===2&&ex.exp){const v=fmtExp(ex.exp);
+        if(ex.exp<=1/500+1e-6)good.push(fill('a2ok',{v:v}));
+        else if(ex.exp<=1/250+1e-6)tips.push(fill('a2mid',{v:v}));
+        else tips.push(fill('a2bad',{v:v}));}
+      if(asg===3&&ex.exp){const v=fmtExp(ex.exp);
+        if(ex.exp>=1/15-1e-6){good.push(fill('a3ok',{v:v}));if(px.hi>0.02)tips.push(t('a3light'))}
+        else if(ex.exp>=1/60-1e-6){tips.push(fill('a3mid',{v:v}));if(phone)tips.push(t('a3phone'))}
+        else{tips.push(fill('a3bad',{v:v}));if(phone)tips.push(t('a3phone'))}}
+      const fl=ex.fl35||(phone?0:ex.fl);
+      if(asg!==3&&ex.exp&&fl&&ex.exp>1/fl+1e-6&&ex.exp>=1/250)tips.push(fill('shake',{v:fmtExp(ex.exp),f:Math.round(fl)}));
+      if(ex.iso){if(ex.iso<=800)good.push(fill('isoLow',{v:ex.iso}));else if(ex.iso>=3200)tips.push(fill('isoHigh',{v:ex.iso}))}
+    }
+    const pc=v=>Math.max(1,Math.round(v*100));
+    if(px.hi>0.02)tips.push(fill('expHi',{p:pc(px.hi)}));
+    if(px.lo>0.05)tips.push(fill('expLo',{p:pc(px.lo)}));
+    if(px.hi<=0.02&&px.lo<=0.05){if(px.mean<60)tips.push(t('expDark'));else if(px.mean>200)tips.push(t('expBright'));else good.push(t('expOk'))}
+    if(asg!==3){if(px.sharp<40)tips.push(t('sharpNo'));else good.push(t('sharpOk'))}
+    const li=(arr,c,ic)=>arr.map(x=>`<li class="${c}"><i class="ti ${ic}" aria-hidden="true"></i><span>${x}</span></li>`).join('');
+    const chips=ex?[ex.fn?fmtFn(ex.fn):'',ex.exp?fmtExp(ex.exp):'',ex.iso?'ISO '+ex.iso:'',(ex.fl35||ex.fl)?Math.round(ex.fl35||ex.fl)+' mm':''].filter(Boolean).map(c=>`<span class="chip">${c}</span>`).join(''):'';
+    out.innerHTML=`<img src="${last.url}" alt="">
+     ${chips?`<p class="lbl">${t('yourSettings')}</p><div class="chips">${chips}</div>`:''}
+     ${notes.length?`<ul class="fbk">${li(notes,'n','ti-info-circle')}</ul>`:''}
+     ${good.length?`<h3>${t('goodH')}</h3><ul class="fbk">${li(good,'g','ti-circle-check')}</ul>`:''}
+     ${tips.length?`<h3>${t('tipsH')}</h3><ul class="fbk">${li(tips,'t','ti-bulb')}</ul>`:''}
+     <p class="small">${t('encourage')}</p>`;
+  }
+  setA(1);
+}
+
+function renderExposure(){
+  app.innerHTML=`${backBtn()}<h1>${t('l1')}</h1><p class="lead">${t('intro')}</p>
+  <div class="concepts">
+   <div class="concept"><i class="ti ti-aperture" aria-hidden="true"></i><div><h3>${t('cA')}</h3><p>${t('cAd')}</p></div></div>
+   <div class="concept"><i class="ti ti-stopwatch" aria-hidden="true"></i><div><h3>${t('cS')}</h3><p>${t('cSd')}</p></div></div>
+   <div class="concept"><i class="ti ti-adjustments" aria-hidden="true"></i><div><h3>${t('cI')}</h3><p>${t('cId')}</p></div></div>
+  </div>
+  <div class="key"><i class="ti ti-arrows-exchange" aria-hidden="true"></i><div><h3>${t('cK')}</h3><p>${t('cKd')}</p></div></div>
+  <h2>${t('tryIt')}</h2><p style="color:var(--text2);font-size:15px">${t('tryLead')}</p>
+  <div class="stage">
+   <canvas id="c" width="680" height="420" aria-label="${t('l1')}"></canvas>
+   <div class="meterlbl"><span>${t('dark')}</span><span>${t('good')}</span><span>${t('light')}</span></div>
+   <div class="meter"><div class="mid"></div><div class="mk" id="mk"></div></div>
+   <p class="evtxt" id="ev"></p>
+   <div class="row"><label for="a">${t('aperture')}</label><input type="range" min="0" max="6" step="1" value="3" id="a"><span id="ao"></span></div><p class="hint">${t('hA')}</p>
+   <div class="row"><label for="s">${t('shutter')}</label><input type="range" min="0" max="6" step="1" value="3" id="s"><span id="so"></span></div><p class="hint">${t('hS')}</p>
+   <div class="row"><label for="i">${t('iso')}</label><input type="range" min="0" max="6" step="1" value="0" id="i"><span id="io"></span></div><p class="hint">${t('hI')}</p>
+   <div class="btns"><button class="btn primary" id="tour"></button><button class="btn" id="rst"><i class="ti ti-refresh" aria-hidden="true"></i>${t('reset')}</button></div>
+   <p class="cap" id="cap"></p>
+  </div>
+  <h2>${t('quiz')}</h2><div id="quiz"></div>
+  <div id="asg"></div>
+  ${toolLink('suite','ti-file-info','tool1','belichtingsdriehoek')}`;
+  renderQuiz(document.getElementById('quiz'));
+  renderAssignment(document.getElementById('asg'));
+
+  const c=document.getElementById('c'),x=c.getContext('2d'),W=680,H=420;
+  const AV=['f/1.8','f/2.8','f/4','f/5.6','f/8','f/11','f/16'],SV=['1/1000','1/500','1/250','1/125','1/60','1/30','1/15'],IV=[100,200,400,800,1600,3200,6400];
+  const AN=[1.8,2.8,4,5.6,8,11,16];
+  const BL=[14,10,7,4,2,1,0],ML=[0,3,7,14,28,55,100],NZ=[0,60,160,320,600,950,1400];
+  const A=document.getElementById('a'),S=document.getElementById('s'),I=document.getElementById('i');
+  const $=id=>document.getElementById(id);
+  function mk(f){const o=document.createElement('canvas');o.width=W;o.height=H;f(o.getContext('2d'));return o}
+  const far=mk(g=>{g.fillStyle='#9fd0ee';g.fillRect(0,0,W,300);g.fillStyle='#fff1b8';g.beginPath();g.arc(560,80,38,0,7);g.fill();
+    g.fillStyle='#7aa874';g.beginPath();g.moveTo(0,240);g.quadraticCurveTo(170,150,340,220);g.quadraticCurveTo(500,160,W,230);g.lineTo(W,300);g.lineTo(0,300);g.fill();
+    [[60,230],[130,245],[250,235],[400,240],[470,228],[610,242]].forEach(([tx,ty],k)=>{g.fillStyle='#6b4a2e';g.fillRect(tx-5,ty,10,40);g.fillStyle=k%2?'#2f6b3a':'#3f7d45';g.beginPath();g.arc(tx,ty-10,34,0,7);g.fill()});
+    g.fillStyle='#e8d58a';[[200,120],[330,90],[90,70]].forEach(([bx,by])=>{g.beginPath();g.arc(bx,by,3,0,7);g.fill()})});
+  const gnd=mk(g=>{g.fillStyle='#c9b27c';g.fillRect(0,290,W,130);g.fillStyle='#8f8578';g.fillRect(0,330,W,62);g.fillStyle='#e9e4da';for(let k=0;k<W;k+=70)g.fillRect(k,359,36,4)});
+  function rider(px){x.save();x.translate(px,0);x.lineWidth=5;x.strokeStyle='#222';
+    x.beginPath();x.arc(-32,360,22,0,7);x.stroke();x.beginPath();x.arc(32,360,22,0,7);x.stroke();
+    x.strokeStyle='#d8432f';x.beginPath();x.moveTo(-32,360);x.lineTo(-6,326);x.lineTo(24,326);x.lineTo(32,360);x.moveTo(-6,326);x.lineTo(4,360);x.lineTo(24,326);x.stroke();
+    x.fillStyle='#1f5fa8';x.beginPath();x.moveTo(-8,322);x.lineTo(14,282);x.lineTo(26,288);x.lineTo(8,326);x.fill();
+    x.strokeStyle='#1f5fa8';x.beginPath();x.moveTo(18,290);x.lineTo(28,324);x.stroke();x.beginPath();x.moveTo(0,320);x.lineTo(6,350);x.stroke();
+    x.fillStyle='#f1c39b';x.beginPath();x.arc(24,270,12,0,7);x.fill();x.restore()}
+  const t0=performance.now();let raf;
+  function frame(now){const a=+A.value,s=+S.value,i=+I.value,ev=s+i-a;
+    x.globalAlpha=1;x.clearRect(0,0,W,H);
+    const r=BL[a];if(!r)x.drawImage(far,0,0);else{const n=12;for(let k=0;k<n;k++){const an=k/n*6.283;x.globalAlpha=1/(k+1);x.drawImage(far,Math.cos(an)*r,Math.sin(an)*r)}}
+    x.globalAlpha=1;x.drawImage(gnd,0,0);
+    const px=((now-t0)/1000*240)%(W+200)-100,len=ML[s];
+    if(len<2)rider(px);else{const m=14;for(let k=0;k<m;k++){x.globalAlpha=Math.min(1,2.2/m);rider(px-len*k/m)}}
+    x.globalAlpha=1;
+    if(ev>0){x.fillStyle='rgba(255,255,255,'+Math.min(.88,ev*.24)+')';x.fillRect(0,0,W,H)}
+    if(ev<0){x.fillStyle='rgba(0,0,0,'+Math.min(.92,-ev*.26)+')';x.fillRect(0,0,W,H)}
+    const nz=NZ[i];for(let k=0;k<nz;k++){const v=Math.random()*255|0;x.fillStyle='rgba('+v+','+(v*.9|0)+','+Math.min(255,v*1.1|0)+',.55)';x.fillRect(Math.random()*W,Math.random()*H,3,3)}
+    lens(AN[a]);
+    raf=requestAnimationFrame(frame)}
+  function lens(N){const cx=66,cy=66,R=44,r=Math.max(4,40*1.8/N);
+    x.globalAlpha=1;x.fillStyle='rgba(0,0,0,.55)';x.beginPath();x.arc(cx,cy,R+8,0,7);x.fill();
+    x.fillStyle='#2a2a2a';x.beginPath();x.arc(cx,cy,R,0,7);x.fill();
+    x.fillStyle='#fff6cf';x.beginPath();for(let k=0;k<6;k++){const an=k/6*6.283+.3;const px2=cx+Math.cos(an)*r,py2=cy+Math.sin(an)*r;k?x.lineTo(px2,py2):x.moveTo(px2,py2)}x.closePath();x.fill();
+    x.font='600 20px -apple-system,Segoe UI,Roboto,sans-serif';x.textAlign='center';
+    const lbl='f/'+N;const w=x.measureText(lbl).width+16;
+    x.fillStyle='rgba(0,0,0,.6)';x.fillRect(cx-w/2,cy+R+12,w,28);x.fillStyle='#fff';x.fillText(lbl,cx,cy+R+33)}
+  function ui(){const a=+A.value,s=+S.value,i=+I.value,ev=s+i-a;
+    $('ao').textContent=AV[a];$('so').textContent=SV[s]+' s';$('io').textContent='ISO '+IV[i];
+    $('mk').style.left=((Math.max(-3,Math.min(3,ev))+3)/6*100)+'%';
+    $('ev').textContent=ev===0?t('correct'):(ev>0?'+':'')+ev+' '+(Math.abs(ev)===1?t('stop1'):t('stopN'))+', '+(ev>0?t('over'):t('under'))+' · '+Math.pow(2,Math.abs(ev))+'× '+(ev>0?t('more'):t('less'))}
+  const steps=[[3,3,0],[0,3,0],[0,0,0],[6,0,0],[6,0,6],[6,6,0],[3,3,0]];
+  let tm=null,st=0;const tb=$('tour');
+  const playLbl=()=>`<i class="ti ti-player-play" aria-hidden="true"></i>${t('tour')}`;
+  tb.innerHTML=playLbl();
+  function go(){const [a,s,i]=steps[st];A.value=a;S.value=s;I.value=i;ui();$('cap').textContent=(st+1)+'/'+steps.length+' · '+t('tours')[st];st++;if(st>=steps.length)stop()}
+  function stop(){clearInterval(tm);tm=null;st=0;tb.innerHTML=playLbl()}
+  let slid=false,toured=false;
+  [A,S,I].forEach(e=>e.addEventListener('input',()=>{stop();ui();$('cap').textContent='';
+    if(!slid){slid=true;track('belichtingsdriehoek/slider-used','Slider used',true)}}));
+  tb.onclick=()=>{if(tm){stop();return}if(!toured){toured=true;track('belichtingsdriehoek/tour-start','Tour started',true)}st=0;go();tm=setInterval(go,4200);tb.innerHTML=`<i class="ti ti-player-pause" aria-hidden="true"></i>${t('stop')}`};
+  $('rst').onclick=()=>{stop();A.value=3;S.value=3;I.value=0;ui();$('cap').textContent=''};
+  ui();raf=requestAnimationFrame(frame);
+  cleanup=()=>{cancelAnimationFrame(raf);clearInterval(tm)};
+}
+
+function renderFocus(){
+  app.innerHTML=`${backBtn()}<h1>${t('lf')}</h1><p class="lead">${t('fIntro')}</p>
+  <div class="concepts">
+   <div class="concept"><i class="ti ti-focus-centered" aria-hidden="true"></i><div><h3>${t('fS')}</h3><p>${t('fSd')}</p></div></div>
+   <div class="concept"><i class="ti ti-run" aria-hidden="true"></i><div><h3>${t('fC')}</h3><p>${t('fCd')}</p></div></div>
+   <div class="concept"><i class="ti ti-wand" aria-hidden="true"></i><div><h3>${t('fA')}</h3><p>${t('fAd')}</p></div></div>
+   <div class="concept"><i class="ti ti-hand-finger" aria-hidden="true"></i><div><h3>${t('fM')}</h3><p>${t('fMd')}</p></div></div>
+  </div>
+  <div class="key"><i class="ti ti-camera" aria-hidden="true"></i><div><h3>${t('fKey')}</h3><p>${t('fKeyd')}</p></div></div>
+  <h2>${t('tryIt')}</h2><p style="color:var(--text2);font-size:15px">${t('fTryLead')}</p>
+  <div class="stage">
+   <canvas id="fc" width="680" height="420" aria-label="${t('lf')}"></canvas>
+   <div class="dbar" id="dbar"><div class="tr"></div>
+     <div class="mkr sub" id="mSub"><span>${t('subjLbl')}</span><b style="background:#d8432f"></b></div>
+     <div class="mkr foc" id="mFoc" style="color:var(--accent)"><b style="background:var(--accent);opacity:.85"></b><span>${t('focusLbl')}</span></div>
+   </div>
+   <div class="dends"><span>${t('near')} · 2 m</span><span>30 m · ${t('far')}</span></div>
+   <p class="fstat" id="fstat"></p>
+   <p class="lbl">${t('fMode')}</p>
+   <div class="seg" id="segMode"><button data-m="S">AF-S</button><button data-m="C">AF-C</button><button data-m="A">AF-A</button><button data-m="M">MF</button></div>
+   <p class="lbl">${t('fSubj')}</p>
+   <div class="seg" id="segSub"><button data-s="moving">${t('moving')}</button><button data-s="still">${t('still')}</button></div>
+   <div class="row" id="mfRow" style="display:none"><label for="mf">${t('fDist')}</label><input type="range" min="2" max="30" step="1" value="8" id="mf"><span id="mfo"></span></div>
+   <div class="btns"><button class="btn primary" id="tour"></button></div>
+   <p class="cap" id="cap"></p>
+  </div>
+  ${toolLink('scout','ti-map-pin','tool2','scherpstelmodi','toolGo')}
+  <h2>${t('quiz')}</h2><div id="quiz"></div>`;
+  renderQuiz(document.getElementById('quiz'),'fQs');
+  const $=id=>document.getElementById(id);
+  const c=$('fc'),x=c.getContext('2d'),W=680,H=420;
+  const bg=document.createElement('canvas');bg.width=W;bg.height=H;
+  (g=>{g.fillStyle='#bfe0f2';g.fillRect(0,0,W,240);
+    g.fillStyle='#5b8a52';for(let k=0;k<16;k++){g.beginPath();g.arc(k*46+10,222,30+(k%3)*6,0,7);g.fill()}
+    g.fillStyle='#8fbf5a';g.fillRect(0,228,W,H-228);
+    g.fillStyle='#86b654';[250,275,310,355,410].forEach(y=>g.fillRect(0,y,W,(y-228)/10+2));})(bg.getContext('2d'));
+  const dc=document.createElement('canvas');dc.width=W;dc.height=H;const dx=dc.getContext('2d');
+  function dog(g,cx,fy,s,ph,sit){g.save();g.translate(cx,fy);g.scale(s,s);
+    const lift=sit?0:Math.sin(ph)*7,body='#c98b3c',light='#f0d8a8',dark='#8a5a24';
+    g.fillStyle=body;
+    if(sit){g.fillRect(-20,-30,11,30);g.fillRect(9,-30,11,30)}
+    else{g.fillRect(-20,-40,11,40-Math.max(0,lift));g.fillRect(9,-40,11,40-Math.max(0,-lift));}
+    g.beginPath();g.ellipse(0,sit?-42:-52,30,sit?30:26,0,0,7);g.fill();
+    g.fillStyle=light;g.beginPath();g.ellipse(0,sit?-40:-48,16,18,0,0,7);g.fill();
+    const hy=sit?-82:-90;
+    g.fillStyle=dark;g.beginPath();g.ellipse(-21,hy-4,9,17,.35,0,7);g.fill();g.beginPath();g.ellipse(21,hy-4,9,17,-.35,0,7);g.fill();
+    g.fillStyle=body;g.beginPath();g.arc(0,hy,24,0,7);g.fill();
+    g.fillStyle=light;g.beginPath();g.ellipse(0,hy+11,13,10,0,0,7);g.fill();
+    if(!sit){g.fillStyle='#e8657a';g.beginPath();g.ellipse(0,hy+22,5,7,0,0,7);g.fill();}
+    g.fillStyle='#222';g.beginPath();g.arc(0,hy+6,4.5,0,7);g.fill();
+    g.beginPath();g.arc(-9,hy-5,3.2,0,7);g.fill();g.beginPath();g.arc(9,hy-5,3.2,0,7);g.fill();
+    g.restore()}
+  let mode='S',subj='moving',start=performance.now(),lockF=30,fCur=30,aSw=false,raf,tm=null,st=0,used=false,toured=false;
+  const RUN=4500,HOLD=1300,D0=30,D1=3,pos=d=>((Math.min(30,Math.max(2,d))-2)/28*100)+'%';
+  function restart(){start=performance.now();const d0=subj==='still'?10:D0;lockF=d0;fCur=d0;aSw=false}
+  function frame(now){
+    let tt=now-start;if(subj==='moving'&&tt>RUN+HOLD){restart();tt=0}
+    const d=subj==='still'?10:D0-(D0-D1)*Math.min(tt,RUN)/RUN;
+    const movingNow=subj==='moving'&&tt<RUN;
+    if(mode==='A'&&movingNow&&tt>600)aSw=true;
+    fCur+=(d-fCur)*0.3;
+    let f=mode==='S'?lockF:mode==='C'?fCur:mode==='A'?(aSw?fCur:lockF):+$('mf').value;
+    if(mode==='A'&&!aSw)fCur=lockF;
+    const blur=Math.min(16,Math.abs(1/d-1/f)*70),sharp=blur<1.6;
+    x.globalAlpha=1;x.drawImage(bg,0,0);
+    const s=7/d,fy=228+510/d,cx=340+Math.sin(tt/700)*30*(subj==='moving'?1:0);
+    dx.clearRect(0,0,W,H);dog(dx,cx,fy,s,tt/70,subj==='still'||!movingNow);
+    if(blur<0.8)x.drawImage(dc,0,0);else{const n=12;for(let k=0;k<n;k++){const an=k/n*6.283;x.globalAlpha=1/(k+1);x.drawImage(dc,Math.cos(an)*blur,Math.sin(an)*blur)}x.globalAlpha=1}
+    x.lineWidth=3;x.strokeStyle=sharp?'#3fb950':'#e24b4a';const bw=78*s,bh=122*s;x.strokeRect(cx-bw/2,fy-bh-4*s,bw,bh);
+    const lbl=mode==='S'?'AF-S':mode==='C'?'AF-C':mode==='A'?(aSw?'AF-A → C':'AF-A'):'MF';
+    x.font='600 22px -apple-system,Segoe UI,Roboto,sans-serif';x.textAlign='left';const w=x.measureText(lbl).width+20;
+    x.fillStyle='rgba(0,0,0,.6)';x.fillRect(14,14,w,34);x.fillStyle='#fff';x.fillText(lbl,24,39);
+    $('mSub').style.left=pos(d);$('mFoc').style.left=pos(f);
+    const txt=(sharp?t('sharp'):t('blurry'))+' · '+t('subjLbl')+' '+Math.round(d)+' m · '+t('focusLbl')+' '+Math.round(f)+' m'+(mode==='A'&&aSw?' · AF-A '+t('switched'):'');
+    const fs=$('fstat');if(fs.textContent!==txt)fs.textContent=txt;fs.style.color=sharp?'var(--ok)':'var(--bad)';
+    raf=requestAnimationFrame(frame)}
+  function setMode(m){mode=m;document.querySelectorAll('#segMode button').forEach(b=>b.classList.toggle('on',b.dataset.m===m));$('mfRow').style.display=m==='M'?'flex':'none';restart()}
+  function setSub(v){subj=v;document.querySelectorAll('#segSub button').forEach(b=>b.classList.toggle('on',b.dataset.s===v));restart()}
+  const mfo=()=>{$('mfo').textContent=$('mf').value+' m'};
+  document.querySelectorAll('#segMode button').forEach(b=>b.onclick=()=>{stopT();setMode(b.dataset.m);$('cap').textContent='';if(!used){used=true;track('scherpstelmodi/mode-used','Focus mode used',true)}});
+  document.querySelectorAll('#segSub button').forEach(b=>b.onclick=()=>{stopT();setSub(b.dataset.s);$('cap').textContent=''});
+  $('mf').addEventListener('input',()=>{stopT();mfo()});
+  const steps=[['S','still'],['S','moving'],['C','moving'],['A','moving'],['M','moving',8],['C','moving']];
+  const tb=$('tour'),playLbl=()=>`<i class="ti ti-player-play" aria-hidden="true"></i>${t('tour')}`;tb.innerHTML=playLbl();
+  function go(){const [m,v,mf]=steps[st];if(mf){$('mf').value=mf;mfo()}subj=v;setSub(v);setMode(m);$('cap').textContent=(st+1)+'/'+steps.length+' · '+t('fTours')[st];st++;if(st>=steps.length)stopT()}
+  function stopT(){if(tm){clearInterval(tm);tm=null}st=0;tb.innerHTML=playLbl()}
+  tb.onclick=()=>{if(tm){stopT();return}if(!toured){toured=true;track('scherpstelmodi/tour-start','Focus tour started',true)}st=0;go();tm=setInterval(go,5800);tb.innerHTML=`<i class="ti ti-player-pause" aria-hidden="true"></i>${t('stop')}`};
+  mfo();setSub('moving');setMode('S');raf=requestAnimationFrame(frame);
+  cleanup=()=>{cancelAnimationFrame(raf);if(tm)clearInterval(tm)};
+}
+
+const langBox=document.getElementById('langs');
+langBox.innerHTML=LANGS.map(l=>`<button data-l="${l}" aria-label="${l.toUpperCase()}">${l.toUpperCase()}</button>`).join('');
+function markLang(){langBox.querySelectorAll('button').forEach(b=>b.classList.toggle('on',b.dataset.l===lang));document.documentElement.lang=lang}
+langBox.querySelectorAll('button').forEach(b=>b.onclick=()=>{
+  lang=b.dataset.l;try{localStorage.setItem('pba-lang',lang)}catch(e){}
+  markLang();track('lang/'+lang+'/chosen','Language chosen: '+lang,true);route();
+});
+markLang();
+track('lang/'+lang,'Language: '+lang,true);
+window.addEventListener('hashchange',route);
+route();
+</script>
+</body>
+</html>
