@@ -85,6 +85,9 @@ canvas{width:100%;display:block;border-radius:10px}
 .small{font-size:13px;color:var(--muted);margin:8px 0 12px}
 .pick{display:inline-flex}
 #asgOut img{display:block;max-width:100%;max-height:300px;margin:14px auto 10px;border-radius:10px}
+.imgwrap{position:relative;width:fit-content;max-width:100%;margin:14px auto 10px}
+.imgwrap img{margin:0 !important}
+.imgwrap .sbox{position:absolute;border:3px solid #3fb950;border-radius:4px;box-shadow:0 0 0 1px rgba(0,0,0,.35)}
 .chips{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0 10px}
 .chip{font-size:13px;font-weight:600;background:var(--soft);border-radius:999px;padding:3px 10px}
 .fbk{list-style:none;padding:0;margin:6px 0 12px}
@@ -123,7 +126,7 @@ footer{margin-top:36px;padding-top:14px;border-top:1px solid var(--line);font-si
 <div class="wrap">
   <header>
     <span class="logo">PhotoByArno Academy</span>
-    <span class="badge">v1.10</span>
+    <span class="badge">v1.11</span>
     <div class="lang" id="langs"></div>
   </header>
   <main id="app"></main>
@@ -231,6 +234,20 @@ en:{
   sharpNo:"I can't find any truly sharp details. Check your focus and keep the camera steady.",
   sharpOk:"There are sharp details in your photo.",
   encourage:"Every photo is practice. Try again with these tips and compare the results.",
+  faNoExif:"This photo has no shooting data (EXIF), for example because it was sent through WhatsApp or social media. I did check the sharpness.",
+  fa1:"Still and sharp",
+  fa1d:"Photograph something that stands still, like a flower, a building or an object, in single mode (AF-S). Put the focus point right on your subject.",
+  fa2:"Moving and sharp",
+  fa2d:"Photograph a subject moving towards you, like a dog, a cyclist or a child playing, in continuous mode (AF-C). Keep the button half-pressed and follow your subject.",
+  fa3:"Pre-focus",
+  fa3d:"Pick a spot your subject will pass. Focus there in advance (manual or single) and take the shot as soon as your subject reaches that spot.",
+  faWhere:"The green frame shows where your photo is sharpest. Is it on your subject? Then your focus was right. Is it next to it? Then the camera focused there: next time put your focus point on your subject.",
+  faMode:"Your camera doesn't record which focus mode you used in a standard way. So the tool looks at the result: where is your photo sharp?",
+  faSharpOk:"Your photo has clearly sharp areas.",
+  faSharpNo:"I can't find any truly sharp details. Blur usually has one of three causes: focus in the wrong place, your subject moving, or your hands moving.",
+  fa2ok:"Shutter speed {v}: fast enough, so any blur isn't caused by your subject moving.",
+  fa2slow:"Shutter speed {v}: fairly slow for a moving subject. Motion blur looks a lot like a focus error. Choose 1/500 s or faster so you're only testing your focus.",
+  faPhone:"On a phone, tap your subject on the screen to focus there. For moving subjects, burst mode works well.",
   tryIt:"Try it yourself",tryLead:"Tap Tour for a guided walkthrough, or use the sliders. Each slider step is one stop.",
   dark:"Too dark",good:"Good",light:"Too bright",
   aperture:"Aperture",shutter:"Shutter",iso:"ISO",
@@ -338,6 +355,20 @@ nl:{
   sharpNo:"Ik zie nergens echt scherpe details. Controleer je scherpstelling en houd de camera stil.",
   sharpOk:"Er zijn scherpe details in je foto.",
   encourage:"Elke foto is oefening. Probeer het nog eens met deze tips en vergelijk het resultaat.",
+  faNoExif:"Deze foto bevat geen opnamegegevens (EXIF), bijvoorbeeld omdat hij via WhatsApp of sociale media is verstuurd. De scherpte heb ik wel bekeken.",
+  fa1:"Stilstaand en scherp",
+  fa1d:"Fotografeer iets dat stilstaat, zoals een bloem, een gebouw of een voorwerp, in de enkelvoudige stand (AF-S). Zet het scherpstelpunt precies op je onderwerp.",
+  fa2:"Bewegend en scherp",
+  fa2d:"Fotografeer een onderwerp dat naar je toe beweegt, zoals een hond, fietser of spelend kind, in de continue stand (AF-C). Houd de knop half ingedrukt en volg je onderwerp.",
+  fa3:"Vooraf scherpstellen",
+  fa3d:"Kies een plek waar je onderwerp straks langskomt. Stel daar vooraf scherp (handmatig of enkelvoudig) en druk af zodra je onderwerp die plek bereikt.",
+  faWhere:"Het groene kader toont waar je foto het scherpst is. Ligt het op je onderwerp? Dan zat je scherpstelling goed. Ligt het ernaast, dan stelde de camera daar scherp op: zet je scherpstelpunt de volgende keer op je onderwerp.",
+  faMode:"Je camera slaat niet op een vaste manier op welke scherpstelstand je gebruikte. Daarom kijkt de tool naar het resultaat: waar is je foto scherp?",
+  faSharpOk:"Je foto heeft duidelijk scherpe delen.",
+  faSharpNo:"Ik zie nergens echt scherpe details. Onscherpte heeft meestal een van deze drie oorzaken: scherpstelling op de verkeerde plek, beweging van je onderwerp of beweging van je handen.",
+  fa2ok:"Sluitertijd {v}: snel genoeg, dus eventuele onscherpte komt niet door beweging van je onderwerp.",
+  fa2slow:"Sluitertijd {v}: vrij langzaam voor een bewegend onderwerp. Bewegingsonscherpte lijkt veel op een scherpstelfout. Kies 1/500 s of sneller, zodat je alleen de scherpstelling test.",
+  faPhone:"Op een telefoon tik je op het scherm op je onderwerp om daar scherp te stellen. Voor bewegende onderwerpen werkt de serie- of burstmodus goed.",
   tryIt:"Probeer het zelf",tryLead:"Tik op Rondleiding voor een tour, of schuif zelf. Elke stap op een schuifje is één stop.",
   dark:"Te donker",good:"Goed",light:"Te licht",
   aperture:"Diafragma",shutter:"Sluitertijd",iso:"ISO",
@@ -445,6 +476,20 @@ de:{
   sharpNo:"Ich finde keine wirklich scharfen Details. Prüfe deine Scharfstellung und halte die Kamera ruhig.",
   sharpOk:"Dein Foto hat scharfe Details.",
   encourage:"Jedes Foto ist Übung. Versuch es noch einmal mit diesen Tipps und vergleiche das Ergebnis.",
+  faNoExif:"Dieses Foto enthält keine Aufnahmedaten (EXIF), zum Beispiel weil es über WhatsApp oder soziale Medien verschickt wurde. Die Schärfe habe ich trotzdem geprüft.",
+  fa1:"Ruhig und scharf",
+  fa1d:"Fotografiere etwas Unbewegtes, etwa eine Blume, ein Gebäude oder einen Gegenstand, im Einzel-AF (AF-S). Setz den Fokuspunkt genau auf dein Motiv.",
+  fa2:"Bewegt und scharf",
+  fa2d:"Fotografiere ein Motiv, das sich auf dich zubewegt, etwa einen Hund, einen Radfahrer oder ein spielendes Kind, im kontinuierlichen AF (AF-C). Halte den Auslöser halb gedrückt und folge deinem Motiv.",
+  fa3:"Vorfokussieren",
+  fa3d:"Wähle eine Stelle, an der dein Motiv gleich vorbeikommt. Stell dort vorher scharf (manuell oder Einzel-AF) und löse aus, sobald dein Motiv diese Stelle erreicht.",
+  faWhere:"Der grüne Rahmen zeigt, wo dein Foto am schärfsten ist. Liegt er auf deinem Motiv? Dann saß der Fokus richtig. Liegt er daneben, hat die Kamera dort scharfgestellt: Setz den Fokuspunkt nächstes Mal auf dein Motiv.",
+  faMode:"Deine Kamera speichert nicht einheitlich, welchen Fokusmodus du benutzt hast. Deshalb schaut das Tool auf das Ergebnis: Wo ist dein Foto scharf?",
+  faSharpOk:"Dein Foto hat deutlich scharfe Bereiche.",
+  faSharpNo:"Ich finde keine wirklich scharfen Details. Unschärfe hat meist eine von drei Ursachen: Fokus an der falschen Stelle, Bewegung des Motivs oder Bewegung deiner Hände.",
+  fa2ok:"Belichtungszeit {v}: kurz genug, also kommt eventuelle Unschärfe nicht von der Bewegung deines Motivs.",
+  fa2slow:"Belichtungszeit {v}: ziemlich lang für ein bewegtes Motiv. Bewegungsunschärfe sieht einem Fokusfehler sehr ähnlich. Wähle 1/500 s oder kürzer, damit du nur den Fokus testest.",
+  faPhone:"Am Handy tippst du auf dem Bildschirm auf dein Motiv, um dort scharfzustellen. Für bewegte Motive eignet sich der Serienbildmodus gut.",
   tryIt:"Probier es selbst",tryLead:"Tippe auf Rundgang für eine Führung oder nutze die Schieberegler. Jeder Schritt ist eine Stufe.",
   dark:"Zu dunkel",good:"Gut",light:"Zu hell",
   aperture:"Blende",shutter:"Zeit",iso:"ISO",
@@ -552,6 +597,20 @@ es:{
   sharpNo:"No encuentro detalles realmente nítidos. Revisa el enfoque y mantén la cámara quieta.",
   sharpOk:"Tu foto tiene detalles nítidos.",
   encourage:"Cada foto es práctica. Inténtalo de nuevo con estos consejos y compara el resultado.",
+  faNoExif:"Esta foto no tiene datos de disparo (EXIF), por ejemplo porque se envió por WhatsApp o redes sociales. La nitidez sí la he revisado.",
+  fa1:"Quieto y nítido",
+  fa1d:"Fotografía algo que esté quieto, como una flor, un edificio o un objeto, en modo único (AF-S). Coloca el punto de enfoque justo sobre tu sujeto.",
+  fa2:"En movimiento y nítido",
+  fa2d:"Fotografía un sujeto que se acerque a ti, como un perro, un ciclista o un niño jugando, en modo continuo (AF-C). Mantén el botón pulsado a medias y sigue al sujeto.",
+  fa3:"Enfoque previo",
+  fa3d:"Elige un lugar por donde pasará tu sujeto. Enfoca ahí de antemano (manual o único) y dispara en cuanto el sujeto llegue a ese punto.",
+  faWhere:"El marco verde muestra dónde está más nítida tu foto. ¿Está sobre tu sujeto? Entonces el enfoque fue correcto. ¿Está al lado? Entonces la cámara enfocó ahí: la próxima vez pon el punto de enfoque sobre tu sujeto.",
+  faMode:"Tu cámara no guarda de forma estándar qué modo de enfoque usaste. Por eso la herramienta mira el resultado: ¿dónde está nítida tu foto?",
+  faSharpOk:"Tu foto tiene zonas claramente nítidas.",
+  faSharpNo:"No encuentro detalles realmente nítidos. El desenfoque suele tener una de tres causas: enfoque en el sitio equivocado, movimiento del sujeto o movimiento de tus manos.",
+  fa2ok:"Velocidad {v}: lo bastante rápida, así que el posible desenfoque no se debe al movimiento del sujeto.",
+  fa2slow:"Velocidad {v}: bastante lenta para un sujeto en movimiento. El desenfoque por movimiento se parece mucho a un error de enfoque. Elige 1/500 s o más rápida para probar solo el enfoque.",
+  faPhone:"En el móvil, toca tu sujeto en la pantalla para enfocar ahí. Para sujetos en movimiento, el modo ráfaga funciona bien.",
   tryIt:"Pruébalo tú",tryLead:"Toca Recorrido para una visita guiada o usa los controles. Cada paso del control es un paso de luz.",
   dark:"Muy oscura",good:"Bien",light:"Muy clara",
   aperture:"Apertura",shutter:"Obturador",iso:"ISO",
@@ -698,14 +757,14 @@ function analysePixels(img){
   const d=g.getImageData(0,0,W,H).data,N=W*H,hist=new Array(256).fill(0),gray=new Float32Array(N);let sum=0;
   for(let i=0,j=0;i<d.length;i+=4,j++){const l=Math.round(0.2126*d[i]+0.7152*d[i+1]+0.0722*d[i+2]);hist[l]++;gray[j]=l;sum+=l}
   let hi=0,lo=0;for(let k=252;k<256;k++)hi+=hist[k];for(let k=0;k<4;k++)lo+=hist[k];
-  const G=8,tw=Math.floor(W/G),th=Math.floor(H/G);let best=0;
+  const G=8,tw=Math.floor(W/G),th=Math.floor(H/G);let best=0,bx=0,by=0;
   for(let ty=0;ty<G;ty++)for(let tx=0;tx<G;tx++){
     let s1=0,s2=0,n=0;
     for(let y=Math.max(1,ty*th);y<Math.min(H-1,(ty+1)*th);y++)for(let x=Math.max(1,tx*tw);x<Math.min(W-1,(tx+1)*tw);x++){
       const p=y*W+x,lap=4*gray[p]-gray[p-1]-gray[p+1]-gray[p-W]-gray[p+W];s1+=lap;s2+=lap*lap;n++}
-    if(n){const m=s1/n,va=s2/n-m*m;if(va>best)best=va}
+    if(n){const m=s1/n,va=s2/n-m*m;if(va>best){best=va;bx=tx;by=ty}}
   }
-  return{hist:hist,hi:hi/N,lo:lo/N,mean:sum/N,sharp:best};
+  return{hist:hist,hi:hi/N,lo:lo/N,mean:sum/N,sharp:best,bx:bx,by:by,G:G};
 }
 function drawHisto(cv,hist){
   const g=cv.getContext('2d'),W=cv.width=600,H=cv.height=140,mx=Math.max(...hist.slice(2,254))||1;
@@ -864,6 +923,60 @@ function renderExposure(){
   cleanup=()=>{cancelAnimationFrame(raf);clearInterval(tm)};
 }
 
+function renderFocusAssignment(box){
+  box.innerHTML=`<h2>${t('asgTitle')}</h2><p style="color:var(--text2);font-size:15px">${t('asgLead')}</p>
+   <div class="seg wrap" id="faSeg"><button data-a="1">${t('fa1')}</button><button data-a="2">${t('fa2')}</button><button data-a="3">${t('fa3')}</button></div>
+   <div class="concept"><i class="ti ti-target" aria-hidden="true"></i><div><p id="faDesc"></p></div></div>
+   <p class="small">${t('asgFileHint')}</p>
+   <label class="btn primary pick" for="faFile"><i class="ti ti-photo-up" aria-hidden="true"></i>${t('choose')}</label>
+   <input type="file" id="faFile" accept="image/jpeg,image/png,image/webp" style="display:none">
+   <div id="asgOut"></div>`;
+  let asg=1,last=null,url=null;
+  const seg=box.querySelector('#faSeg'),out=box.querySelector('#asgOut');
+  const fail=()=>{out.innerHTML=`<ul class="fbk"><li class="n"><i class="ti ti-alert-circle" aria-hidden="true"></i><span>${t('badFile')}</span></li></ul>`};
+  function setA(n){asg=n;seg.querySelectorAll('button').forEach(b=>b.classList.toggle('on',+b.dataset.a===n));box.querySelector('#faDesc').textContent=t('fa'+n+'d');if(last)evaluate()}
+  seg.querySelectorAll('button').forEach(b=>b.onclick=()=>setA(+b.dataset.a));
+  box.querySelector('#faFile').addEventListener('change',e=>{
+    const f=e.target.files&&e.target.files[0];if(!f)return;
+    out.innerHTML=`<p class="small">${t('analyzing')}</p>`;
+    const rd=new FileReader();
+    rd.onload=()=>{
+      const exif=parseExif(rd.result);
+      if(url)URL.revokeObjectURL(url);url=URL.createObjectURL(f);
+      const img=new Image();
+      img.onload=()=>{try{last={exif:exif,px:analysePixels(img),url:url};evaluate();track('scherpstelmodi/assignment-'+asg,'Assignment photo checked',true)}catch(err){fail()}};
+      img.onerror=fail;img.src=url;
+    };
+    rd.onerror=fail;rd.readAsArrayBuffer(f);e.target.value='';
+  });
+  function evaluate(){
+    const ex=last.exif,px=last.px,good=[],tips=[],notes=[];
+    const fill=(k,o)=>t(k).replace('{v}',o.v||'').replace('{f}',o.f||'');
+    const phone=ex&&/apple|iphone|pixel|google|samsung|xiaomi|redmi|oneplus|huawei|oppo|vivo|motorola|realme|nothing|honor/i.test((ex.make||'')+' '+(ex.model||''));
+    const sharp=px.sharp>=40;
+    if(!ex)notes.push(t('faNoExif'));
+    notes.push(t('faMode'));
+    if(sharp){good.push(t('faSharpOk'));notes.push(t('faWhere'))}else tips.push(t('faSharpNo'));
+    if(ex&&ex.exp){
+      if(asg!==1){if(ex.exp<=1/500+1e-6)good.push(fill('fa2ok',{v:fmtExp(ex.exp)}));else tips.push(fill('fa2slow',{v:fmtExp(ex.exp)}))}
+      const fl=ex.fl35||(phone?0:ex.fl);
+      if(asg===1&&fl&&ex.exp>1/fl+1e-6)tips.push(fill('shake',{v:fmtExp(ex.exp),f:Math.round(fl)}));
+    }
+    if(phone)tips.push(t('faPhone'));
+    const li=(arr,c,ic)=>arr.map(x=>`<li class="${c}"><i class="ti ${ic}" aria-hidden="true"></i><span>${x}</span></li>`).join('');
+    const chips=ex?[ex.fn?fmtFn(ex.fn):'',ex.exp?fmtExp(ex.exp):'',ex.iso?'ISO '+ex.iso:'',(ex.fl35||ex.fl)?Math.round(ex.fl35||ex.fl)+' mm':''].filter(Boolean).map(c=>`<span class="chip">${c}</span>`).join(''):'';
+    const pct=100/px.G,boxHtml=sharp?`<div class="sbox" style="left:${px.bx*pct}%;top:${px.by*pct}%;width:${pct}%;height:${pct}%"></div>`:'';
+    out.innerHTML=`<div class="imgwrap"><img src="${last.url}" alt="">${boxHtml}</div>
+     ${chips?`<p class="lbl">${t('yourSettings')}</p><div class="chips">${chips}</div>`:''}
+     ${notes.length?`<ul class="fbk">${li(notes,'n','ti-info-circle')}</ul>`:''}
+     ${good.length?`<h3>${t('goodH')}</h3><ul class="fbk">${li(good,'g','ti-circle-check')}</ul>`:''}
+     ${tips.length?`<h3>${t('tipsH')}</h3><ul class="fbk">${li(tips,'t','ti-bulb')}</ul>`:''}
+     <p class="small">${t('encourage')}</p>`;
+    postHeight();
+  }
+  setA(1);
+}
+
 function renderFocus(){
   app.innerHTML=`${backBtn()}<h1>${t('lf')}</h1><p class="lead">${t('fIntro')}</p>
   <div class="concepts">
@@ -890,9 +1003,11 @@ function renderFocus(){
    <div class="btns"><button class="btn primary" id="tour"></button></div>
    <p class="cap" id="cap"></p>
   </div>
-  ${toolLink('scout','ti-map-pin','tool2','scherpstelmodi','toolGo')}
-  <h2>${t('quiz')}</h2><div id="quiz"></div>`;
+  <h2>${t('quiz')}</h2><div id="quiz"></div>
+  <div id="asg"></div>
+  ${toolLink('scout','ti-map-pin','tool2','scherpstelmodi','toolGo')}`;
   renderQuiz(document.getElementById('quiz'),'fQs');
+  renderFocusAssignment(document.getElementById('asg'));
   const $=id=>document.getElementById(id);
   const c=$('fc'),x=c.getContext('2d'),W=680,H=420;
   const bg=document.createElement('canvas');bg.width=W;bg.height=H;
