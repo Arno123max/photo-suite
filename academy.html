@@ -88,6 +88,14 @@ canvas{width:100%;display:block;border-radius:10px}
 .imgwrap{position:relative;width:fit-content;max-width:100%;margin:14px auto 10px}
 .imgwrap img{margin:0 !important}
 .imgwrap .sbox{position:absolute;border:3px solid #3fb950;border-radius:4px;box-shadow:0 0 0 1px rgba(0,0,0,.35)}
+.imgwrap .tbox{position:absolute;background:rgba(63,185,80,.32);outline:1px solid rgba(63,185,80,.9);outline-offset:-1px}
+.dofbar{position:relative;height:58px;margin:14px 10px 0}
+.dofbar .tr{position:absolute;left:0;right:0;top:30px;height:6px;border-radius:3px;background:var(--soft);border:1px solid var(--line)}
+.dofbar .band{position:absolute;top:29px;height:8px;border-radius:4px;background:#3fb950;opacity:.85}
+.dofbar .obj{position:absolute;top:0;transform:translateX(-50%);font-size:11px;color:var(--text2);white-space:nowrap;text-align:center}
+.dofbar .obj b{display:block;width:2px;height:10px;background:var(--text2);margin:2px auto 0}
+.dofbar .fm{position:absolute;top:40px;transform:translateX(-50%);font-size:11px;color:var(--accent);white-space:nowrap}
+.chk{display:flex;align-items:center;gap:8px;font-size:14px;color:var(--text2);margin:2px 0 10px}
 .chips{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0 10px}
 .chip{font-size:13px;font-weight:600;background:var(--soft);border-radius:999px;padding:3px 10px}
 .fbk{list-style:none;padding:0;margin:6px 0 12px}
@@ -126,7 +134,7 @@ footer{margin-top:36px;padding-top:14px;border-top:1px solid var(--line);font-si
 <div class="wrap">
   <header>
     <span class="logo">PhotoByArno Academy</span>
-    <span class="badge">v1.12</span>
+    <span class="badge">v1.13</span>
     <div class="lang" id="langs"></div>
   </header>
   <main id="app"></main>
@@ -248,6 +256,49 @@ en:{
   fa2ok:"Shutter speed {v}: fast enough, so any blur isn't caused by your subject moving.",
   fa2slow:"Shutter speed {v}: fairly slow for a moving subject. Motion blur looks a lot like a focus error. Choose 1/500 s or faster so you're only testing your focus.",
   faPhone:"On a phone, tap your subject on the screen to focus there. For moving subjects, burst mode works well.",
+  dIntro:"Depth of field is the zone in front of and behind your focus point that still looks sharp. Sometimes you want everything sharp, like in a landscape. Sometimes only your subject, like in a portrait. Three things decide how deep that zone is.",
+  dA:"Aperture",
+  dAd:"Large f-number (f/11, f/16) = lots of depth of field. Small f-number (f/1.8, f/2.8) = little depth of field and a soft background.",
+  dD:"Distance to your subject",
+  dDd:"The closer you focus, the thinner the sharp zone. Up close, sometimes only a few millimetres are sharp.",
+  dF:"Focal length",
+  dFd:"Zooming in (for example 200 mm) gives less depth of field and a blurrier background than zooming out (for example 24 mm).",
+  dKey:"The background matters too",
+  dKeyd:"The further the background is behind your subject, the blurrier it gets. So don't put someone against a wall, but a few metres in front of it.",
+  dTryLead:"Use the sliders and watch which posts become sharp. The green band shows where the sharpness is.",
+  dFocus:"Focus at",
+  dFL:"Focal length",
+  dZone:"Show sharp zone",
+  dRange:"Sharp from {a} to {b}",
+  dInf:"infinity",
+  dObjF:"Flower",
+  dObjP:"Walker",
+  dObjT:"Trees",
+  dTours:["Starting point: f/2.8, focused on the walker at 5 metres. She is sharp, the flower in front and the trees behind are soft.", "Aperture to f/16: the sharp zone gets much deeper. Almost everything is sharp now.", "Aperture to f/1.4: only the walker is sharp, the rest melts away.", "Focus on the flower at 2 metres: now the flower is sharp and the walker is soft. You choose where attention goes.", "Zoom in to 200 mm, focused at 5 metres: the sharp zone is paper-thin and the background dissolves into a soft haze.", "Zoom out to 24 mm at f/8, focused at 3 metres: sharp from close by to far away. Ideal for landscapes.", "In short: small f-number, close and zoomed in = little depth of field. Large f-number, further away and zoomed out = lots of depth of field."],
+  dQs:[{"q": "You want a landscape sharp from front to back. What do you choose?", "o": ["f/1.8 and zoom in", "f/11 and zoom out", "f/4 and focus close"], "a": 1, "e": "A large f-number and a short focal length give lots of depth of field."}, {"q": "In a portrait the background isn't blurry enough. What helps most?", "o": ["Background further away and a small f-number", "Higher ISO", "Faster shutter speed"], "a": 0, "e": "A small f-number and more distance between subject and background make the background softer."}, {"q": "You photograph a flower very close up and only an edge is sharp. What do you do?", "o": ["Larger f-number, for example f/8", "Smaller f-number, for example f/1.8", "Slower shutter speed"], "a": 0, "e": "Up close, depth of field is very small. A larger f-number makes it deeper."}],
+  da1:"Everything sharp",
+  da1d:"Photograph a landscape or street where everything should be sharp from front to back. Goal: f/8 to f/16.",
+  da2:"Only your subject",
+  da2d:"Photograph a person, animal or object with a soft background. Goal: f/2.8 or lower, with your subject well in front of the background.",
+  da3:"Up close",
+  da3d:"Photograph a flower or small object as close as your camera can focus. Discover how thin the sharp zone becomes.",
+  dMap:"The green squares show where your photo is sharp. That way you see at a glance how much depth of field you had.",
+  dShare:"{p}% of your photo is sharp.",
+  d1apOk:"Aperture {v}: a nice small opening, which gives lots of depth of field.",
+  d1apMid:"Aperture {v}: decent. For even more front-to-back sharpness, try f/11.",
+  d1apBad:"Aperture {v}: this keeps depth of field small. Choose f/8 to f/16 in A or Av mode.",
+  d1fracOk:"A large part of your photo is sharp, exactly what you wanted.",
+  d1fracBad:"Only a small part is sharp. Use a larger f-number, zoom out a bit and focus about a third into the scene, not on the far distance.",
+  d1fl:"Focal length {v}: zooming in gives less depth of field. Try zooming out.",
+  d1phone:"Phones naturally have lots of depth of field, so getting everything sharp is usually easy.",
+  d2apOk:"Aperture {v}: nicely open, which gives little depth of field.",
+  d2apMid:"Aperture {v}: fairly open already. Can your lens do f/2.8 or lower? Give it a try.",
+  d2apBad:"Aperture {v}: this keeps a lot sharp. Choose your lens's lowest f-number.",
+  d2fracOk:"Only a small part is sharp: your subject stands out.",
+  d2fracBad:"A large part of your photo is sharp. Get closer to your subject, move the background further away or zoom in.",
+  d3fracOk:"This close, the sharp zone is very thin, and your photo shows it well.",
+  d3thin:"Very little is sharp. Want more of your subject sharp? Choose f/8 or step back a little.",
+  d3info:"Aperture {v}: very close up, even f/8 still gives little depth of field.",
   tryIt:"Try it yourself",tryLead:"Tap Tour for a guided walkthrough, or use the sliders. Each slider step is one stop.",
   dark:"Too dark",good:"Good",light:"Too bright",
   aperture:"Aperture",shutter:"Shutter",iso:"ISO",
@@ -369,6 +420,49 @@ nl:{
   fa2ok:"Sluitertijd {v}: snel genoeg, dus eventuele onscherpte komt niet door beweging van je onderwerp.",
   fa2slow:"Sluitertijd {v}: vrij langzaam voor een bewegend onderwerp. Bewegingsonscherpte lijkt veel op een scherpstelfout. Kies 1/500 s of sneller, zodat je alleen de scherpstelling test.",
   faPhone:"Op een telefoon tik je op het scherm op je onderwerp om daar scherp te stellen. Voor bewegende onderwerpen werkt de serie- of burstmodus goed.",
+  dIntro:"Scherptediepte is het gebied vóór en achter je scherpstelpunt dat er nog scherp uitziet. Soms wil je alles scherp, zoals bij een landschap. Soms juist alleen je onderwerp, zoals bij een portret. Drie dingen bepalen hoe diep dat gebied is.",
+  dA:"Diafragma",
+  dAd:"Groot f-getal (f/11, f/16) = veel scherptediepte. Klein f-getal (f/1.8, f/2.8) = weinig scherptediepte en een zachte achtergrond.",
+  dD:"Afstand tot je onderwerp",
+  dDd:"Hoe dichterbij je scherpstelt, hoe dunner het scherpe gebied. Van heel dichtbij is soms maar een paar millimeter scherp.",
+  dF:"Brandpuntsafstand",
+  dFd:"Inzoomen (bijvoorbeeld 200 mm) geeft minder scherptediepte en een wazigere achtergrond dan uitzoomen (bijvoorbeeld 24 mm).",
+  dKey:"De achtergrond telt mee",
+  dKeyd:"Hoe verder de achtergrond achter je onderwerp ligt, hoe waziger hij wordt. Zet iemand dus niet tegen een muur, maar een paar meter ervoor.",
+  dTryLead:"Schuif en kijk welke paaltjes scherp worden. De groene band laat zien waar de scherpte ligt.",
+  dFocus:"Scherp op",
+  dFL:"Brandpunt",
+  dZone:"Toon scherpe zone",
+  dRange:"Scherp van {a} tot {b}",
+  dInf:"oneindig",
+  dObjF:"Bloem",
+  dObjP:"Wandelaar",
+  dObjT:"Bomen",
+  dTours:["Startpunt: f/2.8, scherpgesteld op de wandelaar op 5 meter. Zij is scherp, de bloem vooraan en de bomen achteraan zijn zacht.", "Diafragma naar f/16: het scherpe gebied wordt veel dieper. Bijna alles is nu scherp.", "Diafragma naar f/1.4: alleen de wandelaar is scherp, de rest smelt weg.", "Scherpstellen op de bloem op 2 meter: nu is de bloem scherp en de wandelaar zacht. Jij kiest waar de aandacht heen gaat.", "Inzoomen naar 200 mm, scherp op 5 meter: het scherpe gebied is flinterdun en de achtergrond verdwijnt in een zachte waas.", "Uitzoomen naar 24 mm met f/8, scherp op 3 meter: scherp van dichtbij tot ver weg. Ideaal voor landschappen.", "Samengevat: klein f-getal, dichtbij en ingezoomd = weinig scherptediepte. Groot f-getal, verder weg en uitgezoomd = veel scherptediepte."],
+  dQs:[{"q": "Je wilt een landschap van voor tot achter scherp. Wat kies je?", "o": ["f/1.8 en inzoomen", "f/11 en uitzoomen", "f/4 en dichtbij scherpstellen"], "a": 1, "e": "Een groot f-getal en een korte brandpuntsafstand geven veel scherptediepte."}, {"q": "Bij een portret is de achtergrond niet wazig genoeg. Wat helpt het meest?", "o": ["Achtergrond verder weg en een klein f-getal", "Hogere ISO", "Kortere sluitertijd"], "a": 0, "e": "Een klein f-getal en meer afstand tussen onderwerp en achtergrond maken de achtergrond zachter."}, {"q": "Je fotografeert een bloem van heel dichtbij en maar een randje is scherp. Wat doe je?", "o": ["Groter f-getal, bijvoorbeeld f/8", "Kleiner f-getal, bijvoorbeeld f/1.8", "Langere sluitertijd"], "a": 0, "e": "Van dichtbij is de scherptediepte heel klein. Een groter f-getal maakt hem dieper."}],
+  da1:"Alles scherp",
+  da1d:"Fotografeer een landschap of straat waarin alles van voor tot achter scherp moet zijn. Doel: f/8 tot f/16.",
+  da2:"Alleen je onderwerp",
+  da2d:"Fotografeer een persoon, dier of voorwerp met een zachte achtergrond. Doel: f/2.8 of lager, met je onderwerp een flink stuk voor de achtergrond.",
+  da3:"Van dichtbij",
+  da3d:"Fotografeer een bloem of klein voorwerp van zo dichtbij als je camera scherp kan stellen. Ontdek hoe dun het scherpe gebied dan wordt.",
+  dMap:"De groene vakjes laten zien waar je foto scherp is. Zo zie je in één oogopslag hoe groot je scherptediepte was.",
+  dShare:"{p}% van je foto is scherp.",
+  d1apOk:"Diafragma {v}: mooi klein gaatje, dat geeft veel scherptediepte.",
+  d1apMid:"Diafragma {v}: redelijk. Voor nog meer scherpte van voor tot achter: probeer f/11.",
+  d1apBad:"Diafragma {v}: daarmee blijft de scherptediepte klein. Kies f/8 tot f/16 met de A- of Av-stand.",
+  d1fracOk:"Een groot deel van je foto is scherp, precies wat je wilde.",
+  d1fracBad:"Nog maar een klein deel is scherp. Gebruik een groter f-getal, zoom iets uit en stel scherp op ongeveer een derde van je beeld, niet op de verte.",
+  d1fl:"Brandpunt {v}: ingezoomd geeft minder scherptediepte. Zoom eens uit.",
+  d1phone:"Telefoons hebben van nature veel scherptediepte, dus alles scherp lukt daarmee meestal makkelijk.",
+  d2apOk:"Diafragma {v}: mooi open, dat geeft weinig scherptediepte.",
+  d2apMid:"Diafragma {v}: al redelijk open. Kan je lens f/2.8 of lager? Probeer dat eens.",
+  d2apBad:"Diafragma {v}: daarmee blijft veel scherp. Kies het laagste f-getal van je lens.",
+  d2fracOk:"Maar een klein deel is scherp: je onderwerp springt eruit.",
+  d2fracBad:"Een groot deel van je foto is scherp. Ga dichter bij je onderwerp staan, zet de achtergrond verder weg of zoom in.",
+  d3fracOk:"Zo dichtbij is het scherpe gebied heel dun, en dat zie je goed in je foto.",
+  d3thin:"Er is maar heel weinig scherp. Wil je meer van je onderwerp scherp? Kies f/8 of ga een klein stukje verder weg.",
+  d3info:"Diafragma {v}: van heel dichtbij geeft zelfs f/8 nog weinig scherptediepte.",
   tryIt:"Probeer het zelf",tryLead:"Tik op Rondleiding voor een tour, of schuif zelf. Elke stap op een schuifje is één stop.",
   dark:"Te donker",good:"Goed",light:"Te licht",
   aperture:"Diafragma",shutter:"Sluitertijd",iso:"ISO",
@@ -490,6 +584,49 @@ de:{
   fa2ok:"Belichtungszeit {v}: kurz genug, also kommt eventuelle Unschärfe nicht von der Bewegung deines Motivs.",
   fa2slow:"Belichtungszeit {v}: ziemlich lang für ein bewegtes Motiv. Bewegungsunschärfe sieht einem Fokusfehler sehr ähnlich. Wähle 1/500 s oder kürzer, damit du nur den Fokus testest.",
   faPhone:"Am Handy tippst du auf dem Bildschirm auf dein Motiv, um dort scharfzustellen. Für bewegte Motive eignet sich der Serienbildmodus gut.",
+  dIntro:"Schärfentiefe ist der Bereich vor und hinter deinem Fokuspunkt, der noch scharf aussieht. Manchmal willst du alles scharf, etwa bei einer Landschaft. Manchmal nur dein Motiv, etwa bei einem Porträt. Drei Dinge bestimmen, wie tief dieser Bereich ist.",
+  dA:"Blende",
+  dAd:"Große Blendenzahl (f/11, f/16) = viel Schärfentiefe. Kleine Blendenzahl (f/1.8, f/2.8) = wenig Schärfentiefe und ein weicher Hintergrund.",
+  dD:"Abstand zum Motiv",
+  dDd:"Je näher du scharfstellst, desto dünner der scharfe Bereich. Ganz nah sind manchmal nur ein paar Millimeter scharf.",
+  dF:"Brennweite",
+  dFd:"Hineinzoomen (zum Beispiel 200 mm) gibt weniger Schärfentiefe und einen unschärferen Hintergrund als Herauszoomen (zum Beispiel 24 mm).",
+  dKey:"Der Hintergrund zählt mit",
+  dKeyd:"Je weiter der Hintergrund hinter deinem Motiv liegt, desto unschärfer wird er. Stell jemanden also nicht an eine Wand, sondern ein paar Meter davor.",
+  dTryLead:"Bewege die Regler und schau, welche Pfosten scharf werden. Das grüne Band zeigt, wo die Schärfe liegt.",
+  dFocus:"Fokus auf",
+  dFL:"Brennweite",
+  dZone:"Scharfen Bereich zeigen",
+  dRange:"Scharf von {a} bis {b}",
+  dInf:"unendlich",
+  dObjF:"Blume",
+  dObjP:"Wanderin",
+  dObjT:"Bäume",
+  dTours:["Ausgangspunkt: f/2.8, scharfgestellt auf die Wanderin in 5 Metern. Sie ist scharf, die Blume vorne und die Bäume hinten sind weich.", "Blende auf f/16: Der scharfe Bereich wird viel tiefer. Fast alles ist jetzt scharf.", "Blende auf f/1.4: Nur die Wanderin ist scharf, der Rest verschwimmt.", "Scharfstellen auf die Blume in 2 Metern: Jetzt ist die Blume scharf und die Wanderin weich. Du entscheidest, wohin der Blick geht.", "Hineinzoomen auf 200 mm, scharf auf 5 Meter: Der scharfe Bereich ist hauchdünn und der Hintergrund löst sich in einem weichen Schleier auf.", "Herauszoomen auf 24 mm mit f/8, scharf auf 3 Meter: scharf von nah bis fern. Ideal für Landschaften.", "Kurz gesagt: kleine Blendenzahl, nah und hineingezoomt = wenig Schärfentiefe. Große Blendenzahl, weiter weg und herausgezoomt = viel Schärfentiefe."],
+  dQs:[{"q": "Du willst eine Landschaft von vorne bis hinten scharf. Was wählst du?", "o": ["f/1.8 und hineinzoomen", "f/11 und herauszoomen", "f/4 und nah scharfstellen"], "a": 1, "e": "Eine große Blendenzahl und eine kurze Brennweite geben viel Schärfentiefe."}, {"q": "Bei einem Porträt ist der Hintergrund nicht unscharf genug. Was hilft am meisten?", "o": ["Hintergrund weiter weg und eine kleine Blendenzahl", "Höhere ISO", "Kürzere Belichtungszeit"], "a": 0, "e": "Eine kleine Blendenzahl und mehr Abstand zwischen Motiv und Hintergrund machen den Hintergrund weicher."}, {"q": "Du fotografierst eine Blume ganz nah und nur ein Rand ist scharf. Was tust du?", "o": ["Größere Blendenzahl, zum Beispiel f/8", "Kleinere Blendenzahl, zum Beispiel f/1.8", "Längere Belichtungszeit"], "a": 0, "e": "Ganz nah ist die Schärfentiefe sehr gering. Eine größere Blendenzahl macht sie tiefer."}],
+  da1:"Alles scharf",
+  da1d:"Fotografiere eine Landschaft oder Straße, in der alles von vorne bis hinten scharf sein soll. Ziel: f/8 bis f/16.",
+  da2:"Nur dein Motiv",
+  da2d:"Fotografiere eine Person, ein Tier oder einen Gegenstand vor weichem Hintergrund. Ziel: f/2.8 oder kleiner, mit deinem Motiv ein gutes Stück vor dem Hintergrund.",
+  da3:"Ganz nah",
+  da3d:"Fotografiere eine Blume oder einen kleinen Gegenstand so nah, wie deine Kamera scharfstellen kann. Entdecke, wie dünn der scharfe Bereich dann wird.",
+  dMap:"Die grünen Kästchen zeigen, wo dein Foto scharf ist. So siehst du auf einen Blick, wie groß deine Schärfentiefe war.",
+  dShare:"{p}% deines Fotos sind scharf.",
+  d1apOk:"Blende {v}: schön kleine Öffnung, das gibt viel Schärfentiefe.",
+  d1apMid:"Blende {v}: ordentlich. Für noch mehr Schärfe von vorne bis hinten: versuche f/11.",
+  d1apBad:"Blende {v}: Damit bleibt die Schärfentiefe gering. Wähle f/8 bis f/16 im A- oder Av-Modus.",
+  d1fracOk:"Ein großer Teil deines Fotos ist scharf, genau wie gewollt.",
+  d1fracBad:"Nur ein kleiner Teil ist scharf. Nutze eine größere Blendenzahl, zoome etwas heraus und stell auf etwa ein Drittel ins Bild scharf, nicht auf die Ferne.",
+  d1fl:"Brennweite {v}: Hineinzoomen gibt weniger Schärfentiefe. Zoome mal heraus.",
+  d1phone:"Handys haben von Natur aus viel Schärfentiefe, alles scharf gelingt damit meist leicht.",
+  d2apOk:"Blende {v}: schön offen, das gibt wenig Schärfentiefe.",
+  d2apMid:"Blende {v}: schon ziemlich offen. Schafft dein Objektiv f/2.8 oder weniger? Probier es aus.",
+  d2apBad:"Blende {v}: Damit bleibt viel scharf. Wähle die kleinste Blendenzahl deines Objektivs.",
+  d2fracOk:"Nur ein kleiner Teil ist scharf: Dein Motiv sticht heraus.",
+  d2fracBad:"Ein großer Teil deines Fotos ist scharf. Geh näher an dein Motiv, sorge für mehr Abstand zum Hintergrund oder zoome hinein.",
+  d3fracOk:"So nah ist der scharfe Bereich sehr dünn, und dein Foto zeigt das gut.",
+  d3thin:"Es ist nur sehr wenig scharf. Willst du mehr von deinem Motiv scharf? Wähle f/8 oder geh ein kleines Stück zurück.",
+  d3info:"Blende {v}: Ganz nah gibt selbst f/8 noch wenig Schärfentiefe.",
   tryIt:"Probier es selbst",tryLead:"Tippe auf Rundgang für eine Führung oder nutze die Schieberegler. Jeder Schritt ist eine Stufe.",
   dark:"Zu dunkel",good:"Gut",light:"Zu hell",
   aperture:"Blende",shutter:"Zeit",iso:"ISO",
@@ -611,6 +748,49 @@ es:{
   fa2ok:"Velocidad {v}: lo bastante rápida, así que el posible desenfoque no se debe al movimiento del sujeto.",
   fa2slow:"Velocidad {v}: bastante lenta para un sujeto en movimiento. El desenfoque por movimiento se parece mucho a un error de enfoque. Elige 1/500 s o más rápida para probar solo el enfoque.",
   faPhone:"En el móvil, toca tu sujeto en la pantalla para enfocar ahí. Para sujetos en movimiento, el modo ráfaga funciona bien.",
+  dIntro:"La profundidad de campo es la zona delante y detrás de tu punto de enfoque que todavía se ve nítida. A veces quieres todo nítido, como en un paisaje. A veces solo tu sujeto, como en un retrato. Tres cosas deciden lo profunda que es esa zona.",
+  dA:"Apertura",
+  dAd:"Número f grande (f/11, f/16) = mucha profundidad de campo. Número f pequeño (f/1.8, f/2.8) = poca profundidad de campo y fondo suave.",
+  dD:"Distancia al sujeto",
+  dDd:"Cuanto más cerca enfocas, más fina es la zona nítida. Muy de cerca, a veces solo unos milímetros están nítidos.",
+  dF:"Distancia focal",
+  dFd:"Hacer zoom (por ejemplo 200 mm) da menos profundidad de campo y un fondo más desenfocado que abrir el plano (por ejemplo 24 mm).",
+  dKey:"El fondo también cuenta",
+  dKeyd:"Cuanto más lejos está el fondo detrás de tu sujeto, más desenfocado sale. Así que no pongas a alguien contra una pared, sino unos metros por delante.",
+  dTryLead:"Mueve los controles y mira qué postes se vuelven nítidos. La banda verde muestra dónde está la nitidez.",
+  dFocus:"Enfoque a",
+  dFL:"Focal",
+  dZone:"Mostrar zona nítida",
+  dRange:"Nítido de {a} a {b}",
+  dInf:"infinito",
+  dObjF:"Flor",
+  dObjP:"Caminante",
+  dObjT:"Árboles",
+  dTours:["Punto de partida: f/2.8, enfocado en la caminante a 5 metros. Ella está nítida, la flor delante y los árboles detrás están suaves.", "Apertura a f/16: la zona nítida se vuelve mucho más profunda. Casi todo está nítido ahora.", "Apertura a f/1.4: solo la caminante está nítida, el resto se difumina.", "Enfoca la flor a 2 metros: ahora la flor está nítida y la caminante suave. Tú decides adónde va la atención.", "Zoom a 200 mm, enfocado a 5 metros: la zona nítida es finísima y el fondo se disuelve en una bruma suave.", "Abre a 24 mm con f/8, enfocado a 3 metros: nítido desde cerca hasta lejos. Ideal para paisajes.", "En resumen: número f pequeño, cerca y con zoom = poca profundidad de campo. Número f grande, más lejos y sin zoom = mucha profundidad de campo."],
+  dQs:[{"q": "Quieres un paisaje nítido de delante a atrás. ¿Qué eliges?", "o": ["f/1.8 y zoom", "f/11 y focal corta", "f/4 y enfocar cerca"], "a": 1, "e": "Un número f grande y una focal corta dan mucha profundidad de campo."}, {"q": "En un retrato el fondo no está lo bastante desenfocado. ¿Qué ayuda más?", "o": ["Fondo más lejos y un número f pequeño", "ISO más alto", "Velocidad más rápida"], "a": 0, "e": "Un número f pequeño y más distancia entre sujeto y fondo suavizan el fondo."}, {"q": "Fotografías una flor muy de cerca y solo un borde está nítido. ¿Qué haces?", "o": ["Número f mayor, por ejemplo f/8", "Número f menor, por ejemplo f/1.8", "Velocidad más lenta"], "a": 0, "e": "De cerca la profundidad de campo es muy pequeña. Un número f mayor la hace más profunda."}],
+  da1:"Todo nítido",
+  da1d:"Fotografía un paisaje o una calle donde todo deba estar nítido de delante a atrás. Objetivo: f/8 a f/16.",
+  da2:"Solo tu sujeto",
+  da2d:"Fotografía una persona, un animal o un objeto con el fondo suave. Objetivo: f/2.8 o menos, con el sujeto bien por delante del fondo.",
+  da3:"Muy de cerca",
+  da3d:"Fotografía una flor o un objeto pequeño tan cerca como tu cámara pueda enfocar. Descubre lo fina que se vuelve la zona nítida.",
+  dMap:"Los cuadros verdes muestran dónde está nítida tu foto. Así ves de un vistazo cuánta profundidad de campo tenías.",
+  dShare:"El {p}% de tu foto está nítido.",
+  d1apOk:"Apertura {v}: una abertura pequeña, eso da mucha profundidad de campo.",
+  d1apMid:"Apertura {v}: bien. Para aún más nitidez de delante a atrás, prueba f/11.",
+  d1apBad:"Apertura {v}: así la profundidad de campo es pequeña. Elige f/8 a f/16 en modo A o Av.",
+  d1fracOk:"Gran parte de tu foto está nítida, justo lo que querías.",
+  d1fracBad:"Solo una pequeña parte está nítida. Usa un número f mayor, reduce el zoom y enfoca a un tercio de la escena, no al fondo.",
+  d1fl:"Focal {v}: con zoom hay menos profundidad de campo. Prueba a reducir el zoom.",
+  d1phone:"Los móviles tienen de forma natural mucha profundidad de campo, así que tenerlo todo nítido suele ser fácil.",
+  d2apOk:"Apertura {v}: bien abierta, eso da poca profundidad de campo.",
+  d2apMid:"Apertura {v}: ya bastante abierta. ¿Tu objetivo llega a f/2.8 o menos? Pruébalo.",
+  d2apBad:"Apertura {v}: así queda mucho nítido. Elige el número f más bajo de tu objetivo.",
+  d2fracOk:"Solo una pequeña parte está nítida: tu sujeto destaca.",
+  d2fracBad:"Gran parte de tu foto está nítida. Acércate al sujeto, aleja el fondo o haz zoom.",
+  d3fracOk:"Tan de cerca, la zona nítida es muy fina, y tu foto lo muestra bien.",
+  d3thin:"Hay muy poco nítido. ¿Quieres más del sujeto nítido? Elige f/8 o aléjate un poco.",
+  d3info:"Apertura {v}: muy de cerca, incluso f/8 da poca profundidad de campo.",
   tryIt:"Pruébalo tú",tryLead:"Toca Recorrido para una visita guiada o usa los controles. Cada paso del control es un paso de luz.",
   dark:"Muy oscura",good:"Bien",light:"Muy clara",
   aperture:"Apertura",shutter:"Obturador",iso:"ISO",
@@ -663,7 +843,7 @@ function track(path,title,isEvent){
 const LESSONS=[
   {id:'belichtingsdriehoek',icon:'ti-aperture',t:'l1',d:'l1d',ready:true,render:renderExposure},
   {id:'scherpstelmodi',icon:'ti-focus-centered',t:'lf',d:'lfd',ready:true,render:renderFocus},
-  {id:'scherptediepte',icon:'ti-focus-2',t:'l2',d:'l2d'},
+  {id:'scherptediepte',icon:'ti-focus-2',t:'l2',d:'l2d',ready:true,render:renderDof},
   {id:'brandpuntsafstand',icon:'ti-zoom-in',t:'l3',d:'l3d'},
   {id:'histogram',icon:'ti-chart-histogram',t:'l4',d:'l4d'},
   {id:'witbalans',icon:'ti-temperature',t:'l5',d:'l5d'},
@@ -758,14 +938,14 @@ function analysePixels(img){
   const d=g.getImageData(0,0,W,H).data,N=W*H,hist=new Array(256).fill(0),gray=new Float32Array(N);let sum=0;
   for(let i=0,j=0;i<d.length;i+=4,j++){const l=Math.round(0.2126*d[i]+0.7152*d[i+1]+0.0722*d[i+2]);hist[l]++;gray[j]=l;sum+=l}
   let hi=0,lo=0;for(let k=252;k<256;k++)hi+=hist[k];for(let k=0;k<4;k++)lo+=hist[k];
-  const G=8,tw=Math.floor(W/G),th=Math.floor(H/G);let best=0,bx=0,by=0;
+  const G=8,tw=Math.floor(W/G),th=Math.floor(H/G);let best=0,bx=0,by=0;const tiles=[],flat=[];
   for(let ty=0;ty<G;ty++)for(let tx=0;tx<G;tx++){
-    let s1=0,s2=0,n=0;
+    let s1=0,s2=0,n=0,g1=0,g2=0;
     for(let y=Math.max(1,ty*th);y<Math.min(H-1,(ty+1)*th);y++)for(let x=Math.max(1,tx*tw);x<Math.min(W-1,(tx+1)*tw);x++){
-      const p=y*W+x,lap=4*gray[p]-gray[p-1]-gray[p+1]-gray[p-W]-gray[p+W];s1+=lap;s2+=lap*lap;n++}
-    if(n){const m=s1/n,va=s2/n-m*m;if(va>best){best=va;bx=tx;by=ty}}
+      const p=y*W+x,lap=4*gray[p]-gray[p-1]-gray[p+1]-gray[p-W]-gray[p+W];s1+=lap;s2+=lap*lap;g1+=gray[p];g2+=gray[p]*gray[p];n++}
+    if(n){const m=s1/n,va=s2/n-m*m,gm=g1/n;tiles.push(va);flat.push(g2/n-gm*gm<60&&va<40);if(va>best){best=va;bx=tx;by=ty}}else{tiles.push(0);flat.push(true)}
   }
-  return{hist:hist,hi:hi/N,lo:lo/N,mean:sum/N,sharp:best,bx:bx,by:by,G:G};
+  return{hist:hist,hi:hi/N,lo:lo/N,mean:sum/N,sharp:best,bx:bx,by:by,G:G,tiles:tiles,flat:flat};
 }
 function drawHisto(cv,hist){
   const g=cv.getContext('2d'),W=cv.width=600,H=cv.height=140,mx=Math.max(...hist.slice(2,254))||1;
@@ -976,6 +1156,153 @@ function renderFocusAssignment(box){
     postHeight();
   }
   setA(1);
+}
+
+function renderDofAssignment(box){
+  box.innerHTML=`<h2>${t('asgTitle')}</h2><p style="color:var(--text2);font-size:15px">${t('asgLead')}</p>
+   <div class="seg wrap" id="daSeg"><button data-a="1">${t('da1')}</button><button data-a="2">${t('da2')}</button><button data-a="3">${t('da3')}</button></div>
+   <div class="concept"><i class="ti ti-target" aria-hidden="true"></i><div><p id="daDesc"></p></div></div>
+   <p class="small">${t('asgFileHint')}</p>
+   <label class="btn primary pick" for="daFile"><i class="ti ti-photo-up" aria-hidden="true"></i>${t('choose')}</label>
+   <input type="file" id="daFile" accept="image/jpeg,image/png,image/webp" style="display:none">
+   <div id="asgOut"></div>`;
+  let asg=1,last=null,url=null;
+  const seg=box.querySelector('#daSeg'),out=box.querySelector('#asgOut');
+  const fail=()=>{out.innerHTML=`<ul class="fbk"><li class="n"><i class="ti ti-alert-circle" aria-hidden="true"></i><span>${t('badFile')}</span></li></ul>`};
+  function setA(n){asg=n;seg.querySelectorAll('button').forEach(b=>b.classList.toggle('on',+b.dataset.a===n));box.querySelector('#daDesc').textContent=t('da'+n+'d');if(last)evaluate()}
+  seg.querySelectorAll('button').forEach(b=>b.onclick=()=>setA(+b.dataset.a));
+  box.querySelector('#daFile').addEventListener('change',e=>{
+    const f=e.target.files&&e.target.files[0];if(!f)return;
+    out.innerHTML=`<p class="small">${t('analyzing')}</p>`;
+    const rd=new FileReader();
+    rd.onload=()=>{
+      const exif=parseExif(rd.result);
+      if(url)URL.revokeObjectURL(url);url=URL.createObjectURL(f);
+      const img=new Image();
+      img.onload=()=>{try{last={exif:exif,px:analysePixels(img),url:url};evaluate();track('scherptediepte/assignment-'+asg,'Assignment photo checked',true)}catch(err){fail()}};
+      img.onerror=fail;img.src=url;
+    };
+    rd.onerror=fail;rd.readAsArrayBuffer(f);e.target.value='';
+  });
+  function evaluate(){
+    const ex=last.exif,px=last.px,good=[],tips=[],notes=[];
+    const fill=(k,o)=>t(k).replace('{v}',o.v||'').replace('{p}',o.p||'');
+    const phone=ex&&/apple|iphone|pixel|google|samsung|xiaomi|redmi|oneplus|huawei|oppo|vivo|motorola|realme|nothing|honor/i.test((ex.make||'')+' '+(ex.model||''));
+    const anySharp=px.sharp>=40,thr=Math.max(40,px.sharp*0.3);
+    const sharpTiles=px.tiles.map(v=>v>=thr);const counted=px.flat.filter(f=>!f).length||1;const frac=anySharp?Math.min(1,sharpTiles.filter(Boolean).length/counted):0;
+    const p=Math.round(frac*100);
+    if(!ex)notes.push(t('faNoExif'));
+    if(phone)notes.push(t('phoneNote'));
+    if(anySharp){notes.push(t('dMap'));notes.push(fill('dShare',{p:p}))}
+    const fn=ex&&ex.fn,flm=ex&&(ex.fl35||ex.fl);
+    if(asg===1){
+      if(fn&&!phone){const v=fmtFn(fn);if(fn>=8)good.push(fill('d1apOk',{v:v}));else if(fn>=5.6)tips.push(fill('d1apMid',{v:v}));else tips.push(fill('d1apBad',{v:v}))}
+      if(phone)good.push(t('d1phone'));
+      if(!anySharp)tips.push(t('faSharpNo'));else if(frac>=0.4)good.push(t('d1fracOk'));else tips.push(t('d1fracBad'));
+      if(flm&&flm>=100)tips.push(fill('d1fl',{v:Math.round(flm)+' mm'}));
+    }
+    if(asg===2){
+      if(phone)tips.push(t('a1phone'));
+      else if(fn){const v=fmtFn(fn);if(fn<=2.8)good.push(fill('d2apOk',{v:v}));else if(fn<=4)tips.push(fill('d2apMid',{v:v}));else tips.push(fill('d2apBad',{v:v}))}
+      if(!anySharp)tips.push(t('faSharpNo'));else if(frac<=0.35)good.push(t('d2fracOk'));else tips.push(t('d2fracBad'));
+    }
+    if(asg===3){
+      if(!anySharp||frac<0.04)tips.push(t('d3thin'));else if(frac<=0.3)good.push(t('d3fracOk'));
+      if(fn&&!phone)notes.push(fill('d3info',{v:fmtFn(fn)}));
+    }
+    const li=(arr,c,ic)=>arr.map(x=>`<li class="${c}"><i class="ti ${ic}" aria-hidden="true"></i><span>${x}</span></li>`).join('');
+    const chips=ex?[ex.fn?fmtFn(ex.fn):'',ex.exp?fmtExp(ex.exp):'',ex.iso?'ISO '+ex.iso:'',flm?Math.round(flm)+' mm':''].filter(Boolean).map(c=>`<span class="chip">${c}</span>`).join(''):'';
+    const pct=100/px.G;let boxes='';
+    if(anySharp)sharpTiles.forEach((sh,i)=>{if(sh){const tx=i%px.G,ty=Math.floor(i/px.G);boxes+=`<div class="tbox" style="left:${tx*pct}%;top:${ty*pct}%;width:${pct}%;height:${pct}%"></div>`}});
+    out.innerHTML=`<div class="imgwrap"><img src="${last.url}" alt="">${boxes}</div>
+     ${chips?`<p class="lbl">${t('yourSettings')}</p><div class="chips">${chips}</div>`:''}
+     ${notes.length?`<ul class="fbk">${li(notes,'n','ti-info-circle')}</ul>`:''}
+     ${good.length?`<h3>${t('goodH')}</h3><ul class="fbk">${li(good,'g','ti-circle-check')}</ul>`:''}
+     ${tips.length?`<h3>${t('tipsH')}</h3><ul class="fbk">${li(tips,'t','ti-bulb')}</ul>`:''}
+     <p class="small">${t('encourage')}</p>`;
+    postHeight();
+  }
+  setA(1);
+}
+function renderDof(){
+  app.innerHTML=`${backBtn()}<h1>${t('l2')}</h1><p class="lead">${t('dIntro')}</p>
+  <div class="concepts">
+   <div class="concept"><i class="ti ti-aperture" aria-hidden="true"></i><div><h3>${t('dA')}</h3><p>${t('dAd')}</p></div></div>
+   <div class="concept"><i class="ti ti-ruler-measure" aria-hidden="true"></i><div><h3>${t('dD')}</h3><p>${t('dDd')}</p></div></div>
+   <div class="concept"><i class="ti ti-zoom-in" aria-hidden="true"></i><div><h3>${t('dF')}</h3><p>${t('dFd')}</p></div></div>
+  </div>
+  <div class="key"><i class="ti ti-trees" aria-hidden="true"></i><div><h3>${t('dKey')}</h3><p>${t('dKeyd')}</p></div></div>
+  <h2>${t('tryIt')}</h2><p style="color:var(--text2);font-size:15px">${t('dTryLead')}</p>
+  <div class="stage">
+   <canvas id="dc" width="680" height="420" aria-label="${t('l2')}"></canvas>
+   <div class="dofbar" id="dbar"><div class="tr"></div><div class="band" id="dband"></div><div class="fm" id="dfm">▲</div></div>
+   <p class="evtxt" id="drange"></p>
+   <label class="chk"><input type="checkbox" id="dzone" checked>${t('dZone')}</label>
+   <div class="row"><label for="dn">${t('aperture')}</label><input type="range" min="0" max="8" step="1" value="2" id="dn"><span id="dno"></span></div><p class="hint">${t('hA')}</p>
+   <div class="row"><label for="ds">${t('dFocus')}</label><input type="range" min="1" max="20" step="0.5" value="5" id="ds"><span id="dso"></span></div><p class="hint"></p>
+   <div class="row"><label for="df">${t('dFL')}</label><input type="range" min="0" max="5" step="1" value="2" id="df"><span id="dfo"></span></div><p class="hint"></p>
+   <div class="btns"><button class="btn primary" id="tour"></button><button class="btn" id="rst"><i class="ti ti-refresh" aria-hidden="true"></i>${t('reset')}</button></div>
+   <p class="cap" id="cap"></p>
+  </div>
+  <h2>${t('quiz')}</h2><div id="quiz"></div>
+  <div id="asg"></div>
+  ${toolLink('suite','ti-file-info','tool1','scherptediepte')}`;
+  renderQuiz(document.getElementById('quiz'),'dQs');
+  renderDofAssignment(document.getElementById('asg'));
+  const $=id=>document.getElementById(id);
+  const c=$('dc'),x=c.getContext('2d'),W=680,H=420,HZ=205,CAM=1.6,COC=0.03;
+  const AV=[1.4,2,2.8,4,5.6,8,11,16,22],FLV=[24,35,50,85,135,200];
+  const sc=document.createElement('canvas');sc.width=W;sc.height=H;const g=sc.getContext('2d');
+  const nf=v=>v.toLocaleString(lang,{maximumFractionDigits:v>=10?0:1});
+  const objs=[];
+  for(let k=-48;k<=48;k+=5)objs.push({type:'tree',x:k+(k%3),d:46+(Math.abs(k)%7)});
+  for(let d=2;d<=26;d+=1.5)objs.push({type:'post',x:-1.4,d:d});
+  objs.push({type:'person',x:0.5,d:5});
+  objs.push({type:'flower',x:0.75,d:2});
+  objs.sort((a,b)=>b.d-a.d);
+  function drawObj(o,F){
+    const s=F/o.d,sx=W/2+o.x*s,by=HZ+CAM*s;
+    if(sx<-200||sx>W+200)return;
+    g.save();g.translate(sx,by);g.scale(s,s);
+    if(o.type==='tree'){g.fillStyle='#6b4a2e';g.fillRect(-0.3,-3,0.6,3);g.fillStyle=(o.x%2?'#2f6b3a':'#3f7d45');g.beginPath();g.arc(0,-5.5,3,0,7);g.fill();g.beginPath();g.arc(-1.6,-4.2,2,0,7);g.arc(1.7,-4.4,2.1,0,7);g.fill()}
+    if(o.type==='post'){g.fillStyle='#7a5532';g.fillRect(-0.06,-1.1,0.12,1.1);g.fillStyle='#e9e2d0';g.fillRect(-0.06,-0.95,0.12,0.12);g.fillStyle='#5c3f24';g.fillRect(-0.075,-1.13,0.15,0.05)}
+    if(o.type==='person'){g.fillStyle='#2d3e5c';g.fillRect(-0.16,-0.85,0.13,0.85);g.fillRect(0.03,-0.85,0.13,0.85);g.fillStyle='#d8432f';g.beginPath();g.moveTo(-0.24,-0.82);g.lineTo(0.24,-0.82);g.lineTo(0.2,-1.45);g.lineTo(-0.2,-1.45);g.fill();g.fillStyle='#f1c39b';g.beginPath();g.arc(0,-1.58,0.13,0,7);g.fill();g.fillStyle='#3a2a1e';g.beginPath();g.arc(0,-1.63,0.13,Math.PI,0);g.fill()}
+    if(o.type==='flower'){g.strokeStyle='#3b7d2a';g.lineWidth=0.025;g.beginPath();g.moveTo(0,0);g.lineTo(0,-0.38);g.stroke();g.fillStyle='#4f9a3a';g.beginPath();g.ellipse(0.05,-0.15,0.06,0.025,-0.5,0,7);g.fill();
+      g.fillStyle='#f2c230';for(let k=0;k<8;k++){const a=k/8*6.283;g.beginPath();g.ellipse(Math.cos(a)*0.06,-0.42+Math.sin(a)*0.06,0.05,0.025,a,0,7);g.fill()}g.fillStyle='#8a5a24';g.beginPath();g.arc(0,-0.42,0.035,0,7);g.fill()}
+    g.restore();
+  }
+  function limits(f,N,s){const sm=s*1000,Hh=f*f/(N*COC)+f;const near=sm*(Hh-f)/(Hh+sm-2*f)/1000;const far=sm<Hh-f?sm*(Hh-f)/(Hh-f-sm+f)/1000:Infinity;return[near,far>2000?Infinity:far]}
+  function blurPx(f,N,s,d){const sm=s*1000,dm=d*1000;const b=f*f/(N*(sm-f))*Math.abs(dm-sm)/dm;return Math.min(16,b/36*W*3)}
+  const LMIN=Math.log(1),LMAX=Math.log(60),pos=d=>Math.max(0,Math.min(100,(Math.log(Math.max(1,Math.min(60,d)))-LMIN)/(LMAX-LMIN)*100));
+  const bar=$('dbar');[[2,'dObjF'],[5,'dObjP'],[46,'dObjT']].forEach(([d,k])=>{const e=document.createElement('div');e.className='obj';e.style.left=pos(d)+'%';e.innerHTML=t(k)+'<b></b>';bar.appendChild(e)});
+  function draw(){
+    const N=AV[+$('dn').value],f=FLV[+$('df').value],s=+$('ds').value,F=f/50*220;
+    $('dno').textContent='f/'+N;$('dso').textContent=nf(s)+' m';$('dfo').textContent=f+' mm';
+    const [near,far]=limits(f,N,s);
+    x.globalAlpha=1;x.fillStyle='#a9d4ee';x.fillRect(0,0,W,HZ);
+    x.fillStyle='#fff1b8';x.beginPath();x.arc(560,70,30,0,7);x.fill();
+    x.fillStyle='#93c06a';x.fillRect(0,HZ,W,H-HZ);
+    const pb=W/2;x.fillStyle='#d9c79a';x.beginPath();x.moveTo(pb-0.9*F/0.6,H+HZ);x.lineTo(pb+0.9*F/0.6,H+HZ);x.lineTo(pb,HZ);x.closePath();x.fill();
+    if($('dzone').checked){const yN=Math.min(H,HZ+CAM*F/near),yF=far===Infinity?HZ:HZ+CAM*F/far;x.fillStyle='rgba(63,185,80,.28)';x.fillRect(0,yF,W,Math.max(1,yN-yF))}
+    const hb=blurPx(f,N,s,1000);g.clearRect(0,0,W,H);g.fillStyle='#7fa86a';g.beginPath();g.moveTo(0,HZ);g.quadraticCurveTo(170,HZ-60,340,HZ-18);g.quadraticCurveTo(520,HZ-70,W,HZ-10);g.lineTo(W,HZ+2);g.lineTo(0,HZ+2);g.fill();ghost(hb);
+    let i=0;while(i<objs.length){const d=objs[i].d,b=blurPx(f,N,s,d);g.clearRect(0,0,W,H);let j=i;while(j<objs.length&&Math.abs(blurPx(f,N,s,objs[j].d)-b)<0.6&&Math.abs(objs[j].d-d)<8){drawObj(objs[j],F);j++}ghost(b);i=j}
+    x.font='600 20px -apple-system,Segoe UI,Roboto,sans-serif';x.textAlign='left';const lbl='f/'+N+' · '+f+' mm';const w=x.measureText(lbl).width+20;x.fillStyle='rgba(0,0,0,.6)';x.fillRect(14,14,w,32);x.fillStyle='#fff';x.fillText(lbl,24,37);
+    const fs=far===Infinity?t('dInf'):nf(far)+' m';
+    $('drange').textContent=t('dRange').replace('{a}',nf(near)+' m').replace('{b}',fs);
+    const a=pos(near),b2=far===Infinity?100:pos(far);const band=$('dband');band.style.left=a+'%';band.style.width=Math.max(0.6,b2-a)+'%';
+    $('dfm').style.left=pos(s)+'%';$('dfm').textContent='▲ '+nf(s)+' m';
+  }
+  function ghost(b){if(b<1.2){x.globalAlpha=1;x.drawImage(sc,0,0);return}const n=b>6?24:14;for(let k=0;k<n;k++){const an=k*2.399,r=b*Math.sqrt((k+0.5)/n);x.globalAlpha=1/(k+1);x.drawImage(sc,Math.cos(an)*r,Math.sin(an)*r)}x.globalAlpha=1}
+  let slid=false;
+  ['dn','ds','df','dzone'].forEach(id=>$(id).addEventListener('input',()=>{stopT();$('cap').textContent='';draw();if(!slid){slid=true;track('scherptediepte/slider-used','Slider used',true)}}));
+  const steps=[[2,5,2],[7,5,2],[0,5,2],[2,2,2],[2,5,5],[5,3,0],[2,5,2]];
+  let tm=null,st=0,toured=false;const tb=$('tour'),playLbl=()=>`<i class="ti ti-player-play" aria-hidden="true"></i>${t('tour')}`;tb.innerHTML=playLbl();
+  function go(){const [n,sd,fl]=steps[st];$('dn').value=n;$('ds').value=sd;$('df').value=fl;draw();$('cap').textContent=(st+1)+'/'+steps.length+' · '+t('dTours')[st];st++;if(st>=steps.length)stopT()}
+  function stopT(){if(tm){clearInterval(tm);tm=null}st=0;tb.innerHTML=playLbl()}
+  tb.onclick=()=>{if(tm){stopT();return}if(!toured){toured=true;track('scherptediepte/tour-start','Tour started',true)}st=0;go();tm=setInterval(go,5200);tb.innerHTML=`<i class="ti ti-player-pause" aria-hidden="true"></i>${t('stop')}`};
+  $('rst').onclick=()=>{stopT();$('dn').value=2;$('ds').value=5;$('df').value=2;$('cap').textContent='';draw()};
+  draw();
+  cleanup=()=>{if(tm)clearInterval(tm)};
 }
 
 function renderFocus(){
