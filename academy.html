@@ -96,6 +96,19 @@ canvas{width:100%;display:block;border-radius:10px}
 .dofbar .obj b{display:block;width:2px;height:10px;background:var(--text2);margin:2px auto 0}
 .dofbar .fm{position:absolute;top:40px;transform:translateX(-50%);font-size:11px;color:var(--accent);white-space:nowrap}
 .chk{display:flex;align-items:center;gap:8px;font-size:14px;color:var(--text2);margin:2px 0 10px}
+.seg.grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}
+.seg.grid2 button{border-left:0}
+.seg.grid2 button:nth-child(2n){border-left:1px solid var(--line)}
+.seg.grid2 button:nth-child(n+3){border-top:1px solid var(--line)}
+.lfoot{display:flex;flex-wrap:wrap;align-items:center;gap:10px 16px;margin-top:22px;padding-top:16px;border-top:1px solid var(--line)}
+.lfoot .lbl{margin:0}
+.thumbs{display:flex;gap:6px}
+.thumbs .btn{padding:7px 12px}
+.thumbs .btn i{font-size:18px}
+.lfoot .share{margin-left:auto}
+.lmsg{width:100%;font-size:13px;color:var(--text2);margin:0}
+.lmsg input{width:100%;margin-top:6px;padding:8px;border:1px solid var(--line2);border-radius:8px;font:inherit;font-size:13px;background:var(--card);color:var(--text)}
+@media (max-width:520px){.lfoot .share{margin-left:0}}
 .chips{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0 10px}
 .chip{font-size:13px;font-weight:600;background:var(--soft);border-radius:999px;padding:3px 10px}
 .fbk{list-style:none;padding:0;margin:6px 0 12px}
@@ -134,7 +147,7 @@ footer{margin-top:36px;padding-top:14px;border-top:1px solid var(--line);font-si
 <div class="wrap">
   <header>
     <span class="logo">PhotoByArno Academy</span>
-    <span class="badge">v1.13</span>
+    <span class="badge">v1.14</span>
     <div class="lang" id="langs"></div>
   </header>
   <main id="app"></main>
@@ -199,7 +212,14 @@ en:{
   focusLbl:"Focus",
   switched:"switches to continuous",
   fTours:["A dog sitting still, in single mode: focusing once is enough. Sharp.", "Now the dog runs towards you. Single keeps focus locked at the starting distance, so the dog gets blurrier and blurrier.", "Continuous moves along with the dog. It stays sharp, all the way in.", "Automatic starts in single and switches as soon as the dog moves. Watch the short moment before it does.", "Manual at 8 metres: the dog is only sharp when it's exactly there. This is how pre-focusing works.", "Rule of thumb: still = single, moving = continuous."],
-  fQs:[{"q": "You're shooting a landscape from a tripod. Which mode?", "o": ["Continuous", "Single", "Manual is required"], "a": 1, "e": "A landscape doesn't move, so focusing once is enough."}, {"q": "Your child runs towards you during a football match. Which mode?", "o": ["Single", "Continuous", "Automatic is always better"], "a": 1, "e": "Continuous keeps following the moving subject."}, {"q": "Autofocus keeps hunting when you shoot through a window. What helps?", "o": ["Manual focus", "Higher ISO", "Faster shutter speed"], "a": 0, "e": "With manual focus you set it yourself, so the glass can't distract the camera."}],
+  fQs:[{"q": "You're shooting a landscape from a tripod. Which mode?", "o": ["Continuous", "Single", "Manual is required"], "a": 1, "e": "A landscape doesn't move, so focusing once is enough."}, {"q": "Your child runs towards you during a football match. Which mode?", "o": ["Single", "Continuous", "Automatic is always better"], "a": 1, "e": "Continuous keeps following the moving subject."}, {"q": "Autofocus keeps hunting when you shoot through a window. What helps?", "o": ["Manual focus", "Higher ISO", "Faster shutter speed"], "a": 0, "e": "With manual focus you set it yourself, so the glass can't distract the camera."},
+   {"q": "What does the camera do in continuous mode (AF-C) while you half-press the button?", "o": ["Keeps focusing on the moving subject", "Focuses once and locks", "Doesn't focus at all"], "a": 0, "e": "Continuous keeps following your subject as long as you hold the button half-pressed."},
+   {"q": "How do you start focusing on most cameras?", "o": ["Half-press the shutter button", "Press the shutter button twice quickly", "Take the lens off and put it back on"], "a": 0, "e": "Half-press focuses, a full press takes the photo."},
+   {"q": "You're photographing someone sitting still for a portrait. Which mode is simplest?", "o": ["Single (AF-S)", "Continuous (AF-C)", "Always manual"], "a": 0, "e": "Someone sitting still hardly moves, so focusing once is enough."},
+   {"q": "You want to photograph the night sky and autofocus can't find anything. What do you do?", "o": ["Focus manually on a bright star", "Use continuous mode", "Lower the ISO"], "a": 0, "e": "In the dark autofocus often finds nothing. By hand, with magnification on a bright star, it works."},
+   {"q": "What is a drawback of automatic mode (AF-A)?", "o": ["It sometimes switches to continuous just too late", "It only works in daylight", "It makes the photo darker"], "a": 0, "e": "AF-A first has to notice movement, and that short delay can cost you a sharp photo."},
+   {"q": "What does 'pre-focusing' mean?", "o": ["Focusing on a spot your subject will pass", "Focusing before turning the camera on", "Focusing after taking the photo"], "a": 0, "e": "You set focus on the right spot in advance and shoot as soon as your subject gets there."},
+   {"q": "In single mode you focus on a dog at 10 metres, which then runs towards you. What happens?", "o": ["The dog gets blurry, because focus stays at 10 metres", "The dog stays sharp", "The photo gets darker"], "a": 0, "e": "Single locks focus. When the dog comes closer, it falls outside the sharp zone."}],
   toolTry:"Continue with your own photos",tool1:"See which aperture, shutter speed and ISO your own photos were taken with, in the EXIF tab of the Photography Suite.",toolGo:"Go and practise",tool2:"Want to practise with moving subjects? Find wildlife and nature spots in PhotoByArno Scout.",
   asgTitle:"Assignment: your turn",
   asgLead:"Pick an assignment, take the photo and choose it below. You'll get tips right away. Your photo stays on your own device: nobody else sees it.",
@@ -275,18 +295,25 @@ en:{
   dObjP:"Walker",
   dObjT:"Trees",
   dTours:["Starting point: f/2.8, focused on the walker at 5 metres. She is sharp, the flower in front and the trees behind are soft.", "Aperture to f/16: the sharp zone gets much deeper. Almost everything is sharp now.", "Aperture to f/1.4: only the walker is sharp, the rest melts away.", "Focus on the flower at 2 metres: now the flower is sharp and the walker is soft. You choose where attention goes.", "Zoom in to 200 mm, focused at 5 metres: the sharp zone is paper-thin and the background dissolves into a soft haze.", "Zoom out to 24 mm at f/8, focused at 3 metres: sharp from close by to far away. Ideal for landscapes.", "In short: small f-number, close and zoomed in = little depth of field. Large f-number, further away and zoomed out = lots of depth of field."],
-  dQs:[{"q": "You want a landscape sharp from front to back. What do you choose?", "o": ["f/1.8 and zoom in", "f/11 and zoom out", "f/4 and focus close"], "a": 1, "e": "A large f-number and a short focal length give lots of depth of field."}, {"q": "In a portrait the background isn't blurry enough. What helps most?", "o": ["Background further away and a small f-number", "Higher ISO", "Faster shutter speed"], "a": 0, "e": "A small f-number and more distance between subject and background make the background softer."}, {"q": "You photograph a flower very close up and only an edge is sharp. What do you do?", "o": ["Larger f-number, for example f/8", "Smaller f-number, for example f/1.8", "Slower shutter speed"], "a": 0, "e": "Up close, depth of field is very small. A larger f-number makes it deeper."}],
+  dQs:[{"q": "You want a landscape sharp from front to back. What do you choose?", "o": ["f/1.8 and zoom in", "f/11 and zoom out", "f/4 and focus close"], "a": 1, "e": "A large f-number and a short focal length give lots of depth of field."}, {"q": "In a portrait the background isn't blurry enough. What helps most?", "o": ["Background further away and a small f-number", "Higher ISO", "Faster shutter speed"], "a": 0, "e": "A small f-number and more distance between subject and background make the background softer."}, {"q": "You photograph a flower very close up and only an edge is sharp. What do you do?", "o": ["Larger f-number, for example f/8", "Smaller f-number, for example f/1.8", "Slower shutter speed"], "a": 0, "e": "Up close, depth of field is very small. A larger f-number makes it deeper."},
+   {"q": "Which combination gives the LEAST depth of field?", "o": ["f/2, close and zoomed in", "f/11, far away and zoomed out", "f/8, far away and zoomed out"], "a": 0, "e": "A small f-number, short distance and zooming in all make the sharp zone thinner."},
+   {"q": "Why isn't f/22 always the sharpest choice?", "o": ["Diffraction makes the whole photo slightly softer", "Because the photo gets too bright", "Because autofocus stops working"], "a": 0, "e": "With a very small opening, light bends. That makes the whole photo a little less sharp."},
+   {"q": "Where is the sharpest setting for many lenses, roughly?", "o": ["Around f/5.6 to f/8", "Always at the smallest f-number", "Always at f/22"], "a": 0, "e": "Most lenses are sharpest two to three stops below their widest opening."},
+   {"q": "You photograph a mushroom up close. How do you get it fully sharp with a soft background?", "o": ["f/5.6 to f/8 and a mushroom with lots of space behind it", "f/1.8 and as close as possible", "f/22 with the background right behind it"], "a": 0, "e": "A medium f-number makes the mushroom sharp. Distance to the background makes it soft."},
+   {"q": "Someone stands against a wall and the wall stays sharp. What helps most?", "o": ["Have the person stand a few metres in front of the wall", "A higher ISO", "A faster shutter speed"], "a": 0, "e": "The further the background is behind your subject, the blurrier it gets."},
+   {"q": "You only change the focus distance from 2 to 10 metres. What happens to depth of field?", "o": ["It gets larger", "It gets smaller", "It stays the same"], "a": 0, "e": "The further away you focus, the deeper the sharp zone."},
+   {"q": "What does zooming in to 200 mm do to the background?", "o": ["It gets blurrier", "It gets sharper", "Nothing changes"], "a": 0, "e": "Zoomed in you have less depth of field, so the background gets softer."}],
   da1:"Everything sharp",
-  da1d:"Photograph a landscape or street where everything should be sharp from front to back. Goal: f/8 to f/16.",
+  da1d:"Photograph a landscape or street where everything should be sharp from front to back. Goal: f/8 to f/11.",
   da2:"Only your subject",
   da2d:"Photograph a person, animal or object with a soft background. Goal: f/2.8 or lower, with your subject well in front of the background.",
   da3:"Up close",
   da3d:"Photograph a flower or small object as close as your camera can focus. Discover how thin the sharp zone becomes.",
   dMap:"The green squares show where your photo is sharp. That way you see at a glance how much depth of field you had.",
   dShare:"{p}% of your photo is sharp.",
-  d1apOk:"Aperture {v}: a nice small opening, which gives lots of depth of field.",
-  d1apMid:"Aperture {v}: decent. For even more front-to-back sharpness, try f/11.",
-  d1apBad:"Aperture {v}: this keeps depth of field small. Choose f/8 to f/16 in A or Av mode.",
+  d1apOk:"Aperture {v}: nice, that gives lots of depth of field and your lens is at its sharpest here.",
+  d1apMid:"Aperture {v}: decent. For more front-to-back sharpness, try f/8 to f/11.",
+  d1apBad:"Aperture {v}: this keeps depth of field small. Choose f/8 to f/11 in A or Av mode.",
   d1fracOk:"A large part of your photo is sharp, exactly what you wanted.",
   d1fracBad:"Only a small part is sharp. Use a larger f-number, zoom out a bit and focus about a third into the scene, not on the far distance.",
   d1fl:"Focal length {v}: zooming in gives less depth of field. Try zooming out.",
@@ -299,6 +326,24 @@ en:{
   d3fracOk:"This close, the sharp zone is very thin, and your photo shows it well.",
   d3thin:"Very little is sharp. Want more of your subject sharp? Choose f/8 or step back a little.",
   d3info:"Aperture {v}: very close up, even f/8 still gives little depth of field.",
+  newQs:"New questions",
+  shareBtn:"Share this lesson",
+  copied:"Link copied",
+  copyFail:"Copy this link:",
+  useful:"Was this lesson useful?",
+  thanks:"Thanks for your feedback!",
+  dSweet:"A bigger number isn't always sharper",
+  dSweetd:"Most lenses are sharpest around f/5.6 to f/8. At f/16 and above the whole photo gets slightly softer through diffraction: light bends around the tiny opening. If you want lots of depth of field, f/8 to f/11 is usually the safe choice.",
+  d1diff:"Aperture {v}: lots of depth of field, but from f/16 the whole photo gets slightly softer through diffraction. Try f/8 or f/11 and compare.",
+  da4:"Mushroom",
+  da4d:"Photograph a mushroom up close: the whole mushroom sharp, the background soft. Get down to its eye level, choose f/5.6 to f/8 and pick one with lots of space behind it.",
+  d4apOk:"Aperture {v}: just right, so the whole mushroom can be sharp.",
+  d4apOpen:"Aperture {v}: this close, the sharp zone is paper-thin. Choose f/5.6 to f/8 so both cap and stem are sharp.",
+  d4apClosed:"Aperture {v}: this makes the background sharper too, and the photo slightly softer through diffraction. Try f/8.",
+  d4fracOk:"Your mushroom stands out: the background is soft.",
+  d4fracBad:"A large part of your photo is sharp, so the background distracts. Pick a mushroom with more space behind it, or step back a bit and zoom in.",
+  d4slow:"Shutter speed {v}: fairly long. Use a tripod, a beanbag or your bag on the ground, the mushroom isn't going anywhere. Wait until the wind dies down too.",
+  d4phone:"Use your phone's macro or portrait mode and hold it at the mushroom's eye level.",
   tryIt:"Try it yourself",tryLead:"Tap Tour for a guided walkthrough, or use the sliders. Each slider step is one stop.",
   dark:"Too dark",good:"Good",light:"Too bright",
   aperture:"Aperture",shutter:"Shutter",iso:"ISO",
@@ -316,7 +361,14 @@ en:{
   qs:[
    {q:"You want a blurry background for a portrait. What do you change?",o:["Aperture to f/16","Aperture to f/1.8","ISO to 6400"],a:1,e:"A small f-number gives a shallow depth of field."},
    {q:"Your photo of a running dog is blurred by motion. What helps?",o:["Longer shutter speed","Shorter shutter speed","Larger f-number"],a:1,e:"A short shutter speed freezes motion."},
-   {q:"You go from f/4 to f/8, two stops less light. How do you keep the same exposure without changing the shutter?",o:["ISO 400 to 1600","ISO 400 to 800","ISO 400 to 100"],a:0,e:"Two stops means doubling twice: 400, 800, 1600."}]
+   {q:"You go from f/4 to f/8, two stops less light. How do you keep the same exposure without changing the shutter?",o:["ISO 400 to 1600","ISO 400 to 800","ISO 400 to 100"],a:0,e:"Two stops means doubling twice: 400, 800, 1600."},
+   {"q": "Your photo is too dark and you don't want to change shutter speed or aperture. What do you do?", "o": ["Raise the ISO", "Lower the ISO", "Turn off the flash"], "a": 0, "e": "A higher ISO makes your photo brighter, with a bit more noise as a side effect."},
+   {"q": "What is the side effect of a high ISO?", "o": ["More noise", "A blurry background", "Motion blur"], "a": 0, "e": "The higher the ISO, the more grain or noise you see in your photo."},
+   {"q": "How much more light do you get when you open the aperture by one stop?", "o": ["Twice as much", "Ten percent more", "Four times as much"], "a": 0, "e": "One stop always doubles or halves the light."},
+   {"q": "Which shutter speed lets in more light?", "o": ["1/60 s", "1/500 s", "Both the same"], "a": 0, "e": "1/60 s stays open longer than 1/500 s, so more light comes in."},
+   {"q": "Which aperture lets in the most light?", "o": ["f/16", "f/8", "f/2"], "a": 2, "e": "Smaller number = bigger opening = more light."},
+   {"q": "You want to capture flowing water as soft and silky. Which shutter speed fits best?", "o": ["1/1000 s", "1/2 s", "1/250 s"], "a": 1, "e": "A long shutter speed shows motion as soft streaks."},
+   {"q": "You go from 1/250 s to 1/500 s. How do you keep the same brightness without changing ISO?", "o": ["Open the aperture one stop, for example from f/8 to f/5.6", "Close the aperture one stop, from f/8 to f/11", "Nothing, it stays the same"], "a": 0, "e": "1/500 s gives one stop less light. You make up for it with one stop wider aperture."}]
 },
 nl:{
   title:"PhotoByArno Academy – gratis fotografie leren met animaties",
@@ -363,7 +415,14 @@ nl:{
   focusLbl:"Scherpte",
   switched:"schakelt naar continu",
   fTours:["Een stilstaande hond in enkelvoudige stand: één keer scherpstellen is genoeg. Scherp.", "Nu rent de hond op je af. Enkelvoudig houdt de scherpte vast op de beginafstand, dus de hond wordt steeds onscherper.", "Continu schuift mee met de hond. Hij blijft scherp, tot dichtbij.", "Automatisch begint enkelvoudig en schakelt over zodra de hond beweegt. Let op het korte moment ervoor.", "Handmatig op 8 meter: de hond is alleen scherp als hij precies daar is. Zo werkt ook 'vooraf scherpstellen'.", "Vuistregel: stilstaand = enkelvoudig, bewegend = continu."],
-  fQs:[{"q": "Je fotografeert een landschap vanaf statief. Welke stand?", "o": ["Continu", "Enkelvoudig", "Handmatig is verplicht"], "a": 1, "e": "Een landschap beweegt niet, één keer scherpstellen is genoeg."}, {"q": "Je kind rent op je af tijdens een voetbalwedstrijd. Welke stand?", "o": ["Enkelvoudig", "Continu", "Automatisch is altijd beter"], "a": 1, "e": "Continu blijft het bewegende onderwerp volgen."}, {"q": "De autofocus blijft zoeken bij een foto door een raam. Wat helpt?", "o": ["Handmatig scherpstellen", "Hogere ISO", "Snellere sluitertijd"], "a": 0, "e": "Met de hand stel jij zelf scherp, zodat het glas de camera niet afleidt."}],
+  fQs:[{"q": "Je fotografeert een landschap vanaf statief. Welke stand?", "o": ["Continu", "Enkelvoudig", "Handmatig is verplicht"], "a": 1, "e": "Een landschap beweegt niet, één keer scherpstellen is genoeg."}, {"q": "Je kind rent op je af tijdens een voetbalwedstrijd. Welke stand?", "o": ["Enkelvoudig", "Continu", "Automatisch is altijd beter"], "a": 1, "e": "Continu blijft het bewegende onderwerp volgen."}, {"q": "De autofocus blijft zoeken bij een foto door een raam. Wat helpt?", "o": ["Handmatig scherpstellen", "Hogere ISO", "Snellere sluitertijd"], "a": 0, "e": "Met de hand stel jij zelf scherp, zodat het glas de camera niet afleidt."},
+   {"q": "Wat doet de camera in de continue stand (AF-C) zolang je de knop half indrukt?", "o": ["Blijft scherpstellen op het bewegende onderwerp", "Stelt één keer scherp en zet het vast", "Stelt helemaal niet scherp"], "a": 0, "e": "Continu blijft je onderwerp volgen zolang je de knop half ingedrukt houdt."},
+   {"q": "Hoe start je bij de meeste camera's het scherpstellen?", "o": ["Ontspanknop half indrukken", "Ontspanknop twee keer snel indrukken", "De lens eraf en weer erop zetten"], "a": 0, "e": "Half indrukken stelt scherp, helemaal indrukken maakt de foto."},
+   {"q": "Je fotografeert iemand die stilzit voor een portret. Welke stand is het eenvoudigst?", "o": ["Enkelvoudig (AF-S)", "Continu (AF-C)", "Altijd handmatig"], "a": 0, "e": "Iemand die stilzit beweegt nauwelijks, dus één keer scherpstellen is genoeg."},
+   {"q": "Je wilt de sterrenhemel fotograferen en de autofocus vindt niets. Wat doe je?", "o": ["Handmatig scherpstellen op een heldere ster", "De continue stand gebruiken", "De ISO verlagen"], "a": 0, "e": "In het donker vindt autofocus vaak niets. Met de hand en vergroting op een heldere ster lukt het wel."},
+   {"q": "Wat is een nadeel van de automatische stand (AF-A)?", "o": ["Hij schakelt soms net te laat over naar continu", "Hij werkt alleen bij daglicht", "Hij maakt de foto donkerder"], "a": 0, "e": "AF-A moet eerst zien dat iets beweegt, en die korte vertraging kan je een scherpe foto kosten."},
+   {"q": "Wat betekent 'vooraf scherpstellen'?", "o": ["Scherpstellen op een plek waar je onderwerp straks langskomt", "Scherpstellen voordat je de camera aanzet", "Scherpstellen nadat je de foto hebt gemaakt"], "a": 0, "e": "Je zet de scherpte alvast op de juiste plek en drukt af zodra je onderwerp daar is."},
+   {"q": "Je stelt in de enkelvoudige stand scherp op een hond op 10 meter, die daarna naar je toe rent. Wat gebeurt er?", "o": ["De hond wordt onscherp, want de scherpte blijft op 10 meter", "De hond blijft scherp", "De foto wordt donkerder"], "a": 0, "e": "Enkelvoudig zet de scherpte vast. Komt de hond dichterbij, dan valt hij buiten het scherpe gebied."}],
   toolTry:"Verder met je eigen foto's",tool1:"Bekijk met welk diafragma, welke sluitertijd en ISO je eigen foto's zijn gemaakt, in de EXIF-tab van de Photography Suite.",toolGo:"Ga zelf oefenen",tool2:"Oefenen met bewegende onderwerpen? Vind plekken voor wildlife en natuur in PhotoByArno Scout.",
   asgTitle:"Opdracht: nu jij",
   asgLead:"Kies een opdracht, maak de foto en kies hem hieronder. Je krijgt meteen tips. Je foto blijft op je eigen apparaat: niemand anders ziet hem.",
@@ -439,18 +498,25 @@ nl:{
   dObjP:"Wandelaar",
   dObjT:"Bomen",
   dTours:["Startpunt: f/2.8, scherpgesteld op de wandelaar op 5 meter. Zij is scherp, de bloem vooraan en de bomen achteraan zijn zacht.", "Diafragma naar f/16: het scherpe gebied wordt veel dieper. Bijna alles is nu scherp.", "Diafragma naar f/1.4: alleen de wandelaar is scherp, de rest smelt weg.", "Scherpstellen op de bloem op 2 meter: nu is de bloem scherp en de wandelaar zacht. Jij kiest waar de aandacht heen gaat.", "Inzoomen naar 200 mm, scherp op 5 meter: het scherpe gebied is flinterdun en de achtergrond verdwijnt in een zachte waas.", "Uitzoomen naar 24 mm met f/8, scherp op 3 meter: scherp van dichtbij tot ver weg. Ideaal voor landschappen.", "Samengevat: klein f-getal, dichtbij en ingezoomd = weinig scherptediepte. Groot f-getal, verder weg en uitgezoomd = veel scherptediepte."],
-  dQs:[{"q": "Je wilt een landschap van voor tot achter scherp. Wat kies je?", "o": ["f/1.8 en inzoomen", "f/11 en uitzoomen", "f/4 en dichtbij scherpstellen"], "a": 1, "e": "Een groot f-getal en een korte brandpuntsafstand geven veel scherptediepte."}, {"q": "Bij een portret is de achtergrond niet wazig genoeg. Wat helpt het meest?", "o": ["Achtergrond verder weg en een klein f-getal", "Hogere ISO", "Kortere sluitertijd"], "a": 0, "e": "Een klein f-getal en meer afstand tussen onderwerp en achtergrond maken de achtergrond zachter."}, {"q": "Je fotografeert een bloem van heel dichtbij en maar een randje is scherp. Wat doe je?", "o": ["Groter f-getal, bijvoorbeeld f/8", "Kleiner f-getal, bijvoorbeeld f/1.8", "Langere sluitertijd"], "a": 0, "e": "Van dichtbij is de scherptediepte heel klein. Een groter f-getal maakt hem dieper."}],
+  dQs:[{"q": "Je wilt een landschap van voor tot achter scherp. Wat kies je?", "o": ["f/1.8 en inzoomen", "f/11 en uitzoomen", "f/4 en dichtbij scherpstellen"], "a": 1, "e": "Een groot f-getal en een korte brandpuntsafstand geven veel scherptediepte."}, {"q": "Bij een portret is de achtergrond niet wazig genoeg. Wat helpt het meest?", "o": ["Achtergrond verder weg en een klein f-getal", "Hogere ISO", "Kortere sluitertijd"], "a": 0, "e": "Een klein f-getal en meer afstand tussen onderwerp en achtergrond maken de achtergrond zachter."}, {"q": "Je fotografeert een bloem van heel dichtbij en maar een randje is scherp. Wat doe je?", "o": ["Groter f-getal, bijvoorbeeld f/8", "Kleiner f-getal, bijvoorbeeld f/1.8", "Langere sluitertijd"], "a": 0, "e": "Van dichtbij is de scherptediepte heel klein. Een groter f-getal maakt hem dieper."},
+   {"q": "Welke combinatie geeft de MINSTE scherptediepte?", "o": ["f/2, dichtbij en ingezoomd", "f/11, ver weg en uitgezoomd", "f/8, ver weg en uitgezoomd"], "a": 0, "e": "Een klein f-getal, korte afstand en inzoomen maken het scherpe gebied allemaal dunner."},
+   {"q": "Waarom is f/22 niet altijd de scherpste keuze?", "o": ["Door diffractie wordt de hele foto iets zachter", "Omdat de foto dan te licht wordt", "Omdat de autofocus dan niet werkt"], "a": 0, "e": "Bij een heel klein gaatje buigt het licht af. Daardoor wordt de hele foto iets minder scherp."},
+   {"q": "Waar ligt bij veel lenzen ongeveer de scherpste stand?", "o": ["Rond f/5.6 tot f/8", "Altijd op het kleinste f-getal", "Altijd op f/22"], "a": 0, "e": "De meeste lenzen zijn het scherpst twee à drie stops onder hun grootste opening."},
+   {"q": "Je fotografeert een paddenstoel van dichtbij. Hoe krijg je hem helemaal scherp en de achtergrond toch zacht?", "o": ["f/5.6 tot f/8 en een paddenstoel met veel ruimte erachter", "f/1.8 en zo dicht mogelijk erbovenop", "f/22 met de achtergrond vlak erachter"], "a": 0, "e": "Een middelgroot f-getal maakt de paddenstoel scherp. De afstand tot de achtergrond maakt die zacht."},
+   {"q": "Iemand staat tegen een muur en de muur blijft scherp. Wat helpt het meest?", "o": ["De persoon een paar meter voor de muur laten staan", "Een hogere ISO", "Een kortere sluitertijd"], "a": 0, "e": "Hoe verder de achtergrond achter je onderwerp ligt, hoe waziger hij wordt."},
+   {"q": "Je verandert alleen de scherpstelafstand van 2 naar 10 meter. Wat gebeurt er met de scherptediepte?", "o": ["Die wordt groter", "Die wordt kleiner", "Die blijft gelijk"], "a": 0, "e": "Hoe verder weg je scherpstelt, hoe dieper het scherpe gebied."},
+   {"q": "Wat doet inzoomen naar 200 mm met de achtergrond?", "o": ["Die wordt waziger", "Die wordt scherper", "Er verandert niets"], "a": 0, "e": "Ingezoomd heb je minder scherptediepte, dus de achtergrond wordt zachter."}],
   da1:"Alles scherp",
-  da1d:"Fotografeer een landschap of straat waarin alles van voor tot achter scherp moet zijn. Doel: f/8 tot f/16.",
+  da1d:"Fotografeer een landschap of straat waarin alles van voor tot achter scherp moet zijn. Doel: f/8 tot f/11.",
   da2:"Alleen je onderwerp",
   da2d:"Fotografeer een persoon, dier of voorwerp met een zachte achtergrond. Doel: f/2.8 of lager, met je onderwerp een flink stuk voor de achtergrond.",
   da3:"Van dichtbij",
   da3d:"Fotografeer een bloem of klein voorwerp van zo dichtbij als je camera scherp kan stellen. Ontdek hoe dun het scherpe gebied dan wordt.",
   dMap:"De groene vakjes laten zien waar je foto scherp is. Zo zie je in één oogopslag hoe groot je scherptediepte was.",
   dShare:"{p}% van je foto is scherp.",
-  d1apOk:"Diafragma {v}: mooi klein gaatje, dat geeft veel scherptediepte.",
-  d1apMid:"Diafragma {v}: redelijk. Voor nog meer scherpte van voor tot achter: probeer f/11.",
-  d1apBad:"Diafragma {v}: daarmee blijft de scherptediepte klein. Kies f/8 tot f/16 met de A- of Av-stand.",
+  d1apOk:"Diafragma {v}: mooi, dat geeft veel scherptediepte en je lens is hier op zijn scherpst.",
+  d1apMid:"Diafragma {v}: redelijk. Voor meer scherpte van voor tot achter: probeer f/8 tot f/11.",
+  d1apBad:"Diafragma {v}: daarmee blijft de scherptediepte klein. Kies f/8 tot f/11 met de A- of Av-stand.",
   d1fracOk:"Een groot deel van je foto is scherp, precies wat je wilde.",
   d1fracBad:"Nog maar een klein deel is scherp. Gebruik een groter f-getal, zoom iets uit en stel scherp op ongeveer een derde van je beeld, niet op de verte.",
   d1fl:"Brandpunt {v}: ingezoomd geeft minder scherptediepte. Zoom eens uit.",
@@ -463,6 +529,24 @@ nl:{
   d3fracOk:"Zo dichtbij is het scherpe gebied heel dun, en dat zie je goed in je foto.",
   d3thin:"Er is maar heel weinig scherp. Wil je meer van je onderwerp scherp? Kies f/8 of ga een klein stukje verder weg.",
   d3info:"Diafragma {v}: van heel dichtbij geeft zelfs f/8 nog weinig scherptediepte.",
+  newQs:"Andere vragen",
+  shareBtn:"Deel deze les",
+  copied:"Link gekopieerd",
+  copyFail:"Kopieer deze link:",
+  useful:"Was deze les nuttig?",
+  thanks:"Bedankt voor je reactie!",
+  dSweet:"Groter getal is niet altijd scherper",
+  dSweetd:"De meeste lenzen zijn het scherpst rond f/5.6 tot f/8. Bij f/16 en hoger wordt de hele foto iets zachter door diffractie: het licht buigt af langs het kleine gaatje. Wil je veel scherptediepte, dan is f/8 tot f/11 meestal de veilige keuze.",
+  d1diff:"Diafragma {v}: veel scherptediepte, maar vanaf f/16 wordt de hele foto iets zachter door diffractie. Probeer eens f/8 of f/11 en vergelijk.",
+  da4:"Paddenstoel",
+  da4d:"Fotografeer een paddenstoel van dichtbij: de hele paddenstoel scherp, de achtergrond zacht. Ga op ooghoogte liggen, kies f/5.6 tot f/8 en zoek er een uit met veel ruimte erachter.",
+  d4apOk:"Diafragma {v}: precies goed, zo kan de hele paddenstoel scherp worden.",
+  d4apOpen:"Diafragma {v}: van zo dichtbij is het scherpe gebied dan flinterdun. Kies f/5.6 tot f/8, zodat hoed en steel allebei scherp worden.",
+  d4apClosed:"Diafragma {v}: daarmee wordt de achtergrond ook scherper en de foto door diffractie iets zachter. Probeer f/8.",
+  d4fracOk:"Je paddenstoel springt eruit: de achtergrond is zacht.",
+  d4fracBad:"Een groot deel van je foto is scherp, dus de achtergrond leidt af. Kies een paddenstoel met meer ruimte erachter, of ga iets verder weg en zoom in.",
+  d4slow:"Sluitertijd {v}: vrij lang. Gebruik een statief, een boonzak of je tas op de grond, de paddenstoel loopt toch niet weg. Wacht ook tot de wind even stilvalt.",
+  d4phone:"Gebruik de macro- of portretmodus van je telefoon en houd hem op ooghoogte van de paddenstoel.",
   tryIt:"Probeer het zelf",tryLead:"Tik op Rondleiding voor een tour, of schuif zelf. Elke stap op een schuifje is één stop.",
   dark:"Te donker",good:"Goed",light:"Te licht",
   aperture:"Diafragma",shutter:"Sluitertijd",iso:"ISO",
@@ -480,7 +564,14 @@ nl:{
   qs:[
    {q:"Je wilt een wazige achtergrond bij een portret. Wat verander je?",o:["Diafragma naar f/16","Diafragma naar f/1.8","ISO naar 6400"],a:1,e:"Een klein f-getal geeft een kleine scherptediepte."},
    {q:"Je foto van een rennende hond is onscherp door beweging. Wat helpt?",o:["Langere sluitertijd","Kortere sluitertijd","Groter f-getal"],a:1,e:"Een korte sluitertijd bevriest beweging."},
-   {q:"Je gaat van f/4 naar f/8, twee stops minder licht. Hoe houd je dezelfde belichting zonder de sluitertijd te veranderen?",o:["ISO 400 naar 1600","ISO 400 naar 800","ISO 400 naar 100"],a:0,e:"Twee stops is twee keer verdubbelen: 400, 800, 1600."}]
+   {q:"Je gaat van f/4 naar f/8, twee stops minder licht. Hoe houd je dezelfde belichting zonder de sluitertijd te veranderen?",o:["ISO 400 naar 1600","ISO 400 naar 800","ISO 400 naar 100"],a:0,e:"Twee stops is twee keer verdubbelen: 400, 800, 1600."},
+   {"q": "Je foto is te donker en je wilt sluitertijd en diafragma niet veranderen. Wat doe je?", "o": ["ISO verhogen", "ISO verlagen", "Flitser uitzetten"], "a": 0, "e": "Een hogere ISO maakt je foto lichter, met wat meer ruis als bijwerking."},
+   {"q": "Wat is de bijwerking van een hoge ISO?", "o": ["Meer ruis", "Een wazige achtergrond", "Bewegingsonscherpte"], "a": 0, "e": "Hoe hoger de ISO, hoe meer korrel of ruis je in je foto ziet."},
+   {"q": "Hoeveel licht krijg je erbij als je het diafragma één stop opent?", "o": ["Twee keer zoveel", "Tien procent meer", "Vier keer zoveel"], "a": 0, "e": "Eén stop is altijd een verdubbeling of halvering van het licht."},
+   {"q": "Welke sluitertijd laat meer licht binnen?", "o": ["1/60 s", "1/500 s", "Allebei evenveel"], "a": 0, "e": "1/60 s staat langer open dan 1/500 s, dus er komt meer licht binnen."},
+   {"q": "Welk diafragma laat het meeste licht door?", "o": ["f/16", "f/8", "f/2"], "a": 2, "e": "Kleiner getal = grotere opening = meer licht."},
+   {"q": "Je wilt stromend water zacht en vloeiend vastleggen. Welke sluitertijd past het best?", "o": ["1/1000 s", "1/2 s", "1/250 s"], "a": 1, "e": "Een lange sluitertijd laat beweging zien als zachte vegen."},
+   {"q": "Je gaat van 1/250 s naar 1/500 s. Hoe houd je dezelfde helderheid zonder de ISO te veranderen?", "o": ["Diafragma één stop opener, bijvoorbeeld van f/8 naar f/5.6", "Diafragma één stop dichter, van f/8 naar f/11", "Niets, het blijft gelijk"], "a": 0, "e": "1/500 s geeft één stop minder licht. Dat maak je goed met één stop opener diafragma."}]
 },
 de:{
   title:"PhotoByArno Academy – Fotografie lernen mit kostenlosen Animationen",
@@ -527,7 +618,14 @@ de:{
   focusLbl:"Fokus",
   switched:"wechselt zu kontinuierlich",
   fTours:["Ein sitzender Hund im Einzel-AF: Einmal scharfstellen reicht. Scharf.", "Jetzt rennt der Hund auf dich zu. Einzel-AF hält die Schärfe auf der Anfangsentfernung, also wird der Hund immer unschärfer.", "Kontinuierlich geht mit dem Hund mit. Er bleibt scharf, bis ganz nah.", "Automatisch beginnt mit Einzel-AF und wechselt, sobald sich der Hund bewegt. Achte auf den kurzen Moment davor.", "Manuell auf 8 Meter: Der Hund ist nur scharf, wenn er genau dort ist. So funktioniert auch das Vorfokussieren.", "Faustregel: ruhig = Einzel, bewegt = kontinuierlich."],
-  fQs:[{"q": "Du fotografierst eine Landschaft vom Stativ. Welcher Modus?", "o": ["Kontinuierlich", "Einzel", "Manuell ist Pflicht"], "a": 1, "e": "Eine Landschaft bewegt sich nicht, einmal scharfstellen reicht."}, {"q": "Dein Kind rennt beim Fußball auf dich zu. Welcher Modus?", "o": ["Einzel", "Kontinuierlich", "Automatisch ist immer besser"], "a": 1, "e": "Kontinuierlich folgt dem bewegten Motiv."}, {"q": "Der Autofokus pumpt beim Fotografieren durch ein Fenster. Was hilft?", "o": ["Manuell scharfstellen", "Höhere ISO", "Kürzere Belichtungszeit"], "a": 0, "e": "Manuell stellst du selbst scharf, so kann das Glas die Kamera nicht ablenken."}],
+  fQs:[{"q": "Du fotografierst eine Landschaft vom Stativ. Welcher Modus?", "o": ["Kontinuierlich", "Einzel", "Manuell ist Pflicht"], "a": 1, "e": "Eine Landschaft bewegt sich nicht, einmal scharfstellen reicht."}, {"q": "Dein Kind rennt beim Fußball auf dich zu. Welcher Modus?", "o": ["Einzel", "Kontinuierlich", "Automatisch ist immer besser"], "a": 1, "e": "Kontinuierlich folgt dem bewegten Motiv."}, {"q": "Der Autofokus pumpt beim Fotografieren durch ein Fenster. Was hilft?", "o": ["Manuell scharfstellen", "Höhere ISO", "Kürzere Belichtungszeit"], "a": 0, "e": "Manuell stellst du selbst scharf, so kann das Glas die Kamera nicht ablenken."},
+   {"q": "Was macht die Kamera im kontinuierlichen AF (AF-C), solange du den Auslöser halb drückst?", "o": ["Stellt weiter auf das bewegte Motiv scharf", "Stellt einmal scharf und speichert", "Stellt gar nicht scharf"], "a": 0, "e": "Kontinuierlich folgt deinem Motiv, solange du den Auslöser halb gedrückt hältst."},
+   {"q": "Wie startest du bei den meisten Kameras das Scharfstellen?", "o": ["Auslöser halb drücken", "Auslöser zweimal schnell drücken", "Objektiv ab- und wieder ansetzen"], "a": 0, "e": "Halb drücken stellt scharf, ganz drücken löst aus."},
+   {"q": "Du fotografierst eine ruhig sitzende Person für ein Porträt. Welcher Modus ist am einfachsten?", "o": ["Einzel (AF-S)", "Kontinuierlich (AF-C)", "Immer manuell"], "a": 0, "e": "Wer ruhig sitzt, bewegt sich kaum, also reicht einmal scharfstellen."},
+   {"q": "Du willst den Sternenhimmel fotografieren und der Autofokus findet nichts. Was tust du?", "o": ["Manuell auf einen hellen Stern scharfstellen", "Den kontinuierlichen Modus nutzen", "Die ISO senken"], "a": 0, "e": "Im Dunkeln findet der Autofokus oft nichts. Von Hand, mit Vergrößerung auf einem hellen Stern, klappt es."},
+   {"q": "Was ist ein Nachteil des automatischen Modus (AF-A)?", "o": ["Er wechselt manchmal knapp zu spät zu kontinuierlich", "Er funktioniert nur bei Tageslicht", "Er macht das Foto dunkler"], "a": 0, "e": "AF-A muss erst Bewegung erkennen, und diese kurze Verzögerung kann dich ein scharfes Foto kosten."},
+   {"q": "Was bedeutet 'Vorfokussieren'?", "o": ["Auf eine Stelle scharfstellen, an der dein Motiv gleich vorbeikommt", "Scharfstellen, bevor du die Kamera einschaltest", "Scharfstellen, nachdem du das Foto gemacht hast"], "a": 0, "e": "Du legst die Schärfe vorab auf die richtige Stelle und löst aus, sobald dein Motiv dort ist."},
+   {"q": "Im Einzel-AF stellst du auf einen Hund in 10 Metern scharf, der dann auf dich zurennt. Was passiert?", "o": ["Der Hund wird unscharf, weil die Schärfe bei 10 Metern bleibt", "Der Hund bleibt scharf", "Das Foto wird dunkler"], "a": 0, "e": "Einzel-AF speichert die Schärfe. Kommt der Hund näher, fällt er aus dem scharfen Bereich."}],
   toolTry:"Weiter mit deinen eigenen Fotos",tool1:"Sieh dir im EXIF-Tab der Photography Suite an, mit welcher Blende, Belichtungszeit und ISO deine eigenen Fotos entstanden sind.",toolGo:"Geh selbst üben",tool2:"Willst du mit bewegten Motiven üben? Finde Orte für Wildtiere und Natur in PhotoByArno Scout.",
   asgTitle:"Aufgabe: jetzt du",
   asgLead:"Wähle eine Aufgabe, mach das Foto und wähle es unten aus. Du bekommst sofort Tipps. Dein Foto bleibt auf deinem Gerät: Niemand sonst sieht es.",
@@ -603,18 +701,25 @@ de:{
   dObjP:"Wanderin",
   dObjT:"Bäume",
   dTours:["Ausgangspunkt: f/2.8, scharfgestellt auf die Wanderin in 5 Metern. Sie ist scharf, die Blume vorne und die Bäume hinten sind weich.", "Blende auf f/16: Der scharfe Bereich wird viel tiefer. Fast alles ist jetzt scharf.", "Blende auf f/1.4: Nur die Wanderin ist scharf, der Rest verschwimmt.", "Scharfstellen auf die Blume in 2 Metern: Jetzt ist die Blume scharf und die Wanderin weich. Du entscheidest, wohin der Blick geht.", "Hineinzoomen auf 200 mm, scharf auf 5 Meter: Der scharfe Bereich ist hauchdünn und der Hintergrund löst sich in einem weichen Schleier auf.", "Herauszoomen auf 24 mm mit f/8, scharf auf 3 Meter: scharf von nah bis fern. Ideal für Landschaften.", "Kurz gesagt: kleine Blendenzahl, nah und hineingezoomt = wenig Schärfentiefe. Große Blendenzahl, weiter weg und herausgezoomt = viel Schärfentiefe."],
-  dQs:[{"q": "Du willst eine Landschaft von vorne bis hinten scharf. Was wählst du?", "o": ["f/1.8 und hineinzoomen", "f/11 und herauszoomen", "f/4 und nah scharfstellen"], "a": 1, "e": "Eine große Blendenzahl und eine kurze Brennweite geben viel Schärfentiefe."}, {"q": "Bei einem Porträt ist der Hintergrund nicht unscharf genug. Was hilft am meisten?", "o": ["Hintergrund weiter weg und eine kleine Blendenzahl", "Höhere ISO", "Kürzere Belichtungszeit"], "a": 0, "e": "Eine kleine Blendenzahl und mehr Abstand zwischen Motiv und Hintergrund machen den Hintergrund weicher."}, {"q": "Du fotografierst eine Blume ganz nah und nur ein Rand ist scharf. Was tust du?", "o": ["Größere Blendenzahl, zum Beispiel f/8", "Kleinere Blendenzahl, zum Beispiel f/1.8", "Längere Belichtungszeit"], "a": 0, "e": "Ganz nah ist die Schärfentiefe sehr gering. Eine größere Blendenzahl macht sie tiefer."}],
+  dQs:[{"q": "Du willst eine Landschaft von vorne bis hinten scharf. Was wählst du?", "o": ["f/1.8 und hineinzoomen", "f/11 und herauszoomen", "f/4 und nah scharfstellen"], "a": 1, "e": "Eine große Blendenzahl und eine kurze Brennweite geben viel Schärfentiefe."}, {"q": "Bei einem Porträt ist der Hintergrund nicht unscharf genug. Was hilft am meisten?", "o": ["Hintergrund weiter weg und eine kleine Blendenzahl", "Höhere ISO", "Kürzere Belichtungszeit"], "a": 0, "e": "Eine kleine Blendenzahl und mehr Abstand zwischen Motiv und Hintergrund machen den Hintergrund weicher."}, {"q": "Du fotografierst eine Blume ganz nah und nur ein Rand ist scharf. Was tust du?", "o": ["Größere Blendenzahl, zum Beispiel f/8", "Kleinere Blendenzahl, zum Beispiel f/1.8", "Längere Belichtungszeit"], "a": 0, "e": "Ganz nah ist die Schärfentiefe sehr gering. Eine größere Blendenzahl macht sie tiefer."},
+   {"q": "Welche Kombination gibt die GERINGSTE Schärfentiefe?", "o": ["f/2, nah und hineingezoomt", "f/11, weit weg und herausgezoomt", "f/8, weit weg und herausgezoomt"], "a": 0, "e": "Kleine Blendenzahl, kurzer Abstand und Hineinzoomen machen den scharfen Bereich jeweils dünner."},
+   {"q": "Warum ist f/22 nicht immer die schärfste Wahl?", "o": ["Durch Beugung wird das ganze Foto etwas weicher", "Weil das Foto dann zu hell wird", "Weil der Autofokus dann nicht funktioniert"], "a": 0, "e": "Bei einer sehr kleinen Öffnung wird das Licht gebeugt. Dadurch wird das ganze Foto etwas weniger scharf."},
+   {"q": "Wo liegt bei vielen Objektiven ungefähr die schärfste Blende?", "o": ["Um f/5.6 bis f/8", "Immer bei der kleinsten Blendenzahl", "Immer bei f/22"], "a": 0, "e": "Die meisten Objektive sind zwei bis drei Stufen unter ihrer größten Öffnung am schärfsten."},
+   {"q": "Du fotografierst einen Pilz aus der Nähe. Wie wird er ganz scharf und der Hintergrund trotzdem weich?", "o": ["f/5.6 bis f/8 und ein Pilz mit viel Raum dahinter", "f/1.8 und so nah wie möglich", "f/22 mit dem Hintergrund direkt dahinter"], "a": 0, "e": "Eine mittlere Blendenzahl macht den Pilz scharf. Der Abstand zum Hintergrund macht ihn weich."},
+   {"q": "Jemand steht an einer Wand und die Wand bleibt scharf. Was hilft am meisten?", "o": ["Die Person ein paar Meter vor die Wand stellen", "Eine höhere ISO", "Eine kürzere Belichtungszeit"], "a": 0, "e": "Je weiter der Hintergrund hinter deinem Motiv liegt, desto unschärfer wird er."},
+   {"q": "Du änderst nur die Fokusentfernung von 2 auf 10 Meter. Was passiert mit der Schärfentiefe?", "o": ["Sie wird größer", "Sie wird kleiner", "Sie bleibt gleich"], "a": 0, "e": "Je weiter weg du scharfstellst, desto tiefer der scharfe Bereich."},
+   {"q": "Was macht Hineinzoomen auf 200 mm mit dem Hintergrund?", "o": ["Er wird unschärfer", "Er wird schärfer", "Es ändert sich nichts"], "a": 0, "e": "Hineingezoomt hast du weniger Schärfentiefe, also wird der Hintergrund weicher."}],
   da1:"Alles scharf",
-  da1d:"Fotografiere eine Landschaft oder Straße, in der alles von vorne bis hinten scharf sein soll. Ziel: f/8 bis f/16.",
+  da1d:"Fotografiere eine Landschaft oder Straße, in der alles von vorne bis hinten scharf sein soll. Ziel: f/8 bis f/11.",
   da2:"Nur dein Motiv",
   da2d:"Fotografiere eine Person, ein Tier oder einen Gegenstand vor weichem Hintergrund. Ziel: f/2.8 oder kleiner, mit deinem Motiv ein gutes Stück vor dem Hintergrund.",
   da3:"Ganz nah",
   da3d:"Fotografiere eine Blume oder einen kleinen Gegenstand so nah, wie deine Kamera scharfstellen kann. Entdecke, wie dünn der scharfe Bereich dann wird.",
   dMap:"Die grünen Kästchen zeigen, wo dein Foto scharf ist. So siehst du auf einen Blick, wie groß deine Schärfentiefe war.",
   dShare:"{p}% deines Fotos sind scharf.",
-  d1apOk:"Blende {v}: schön kleine Öffnung, das gibt viel Schärfentiefe.",
-  d1apMid:"Blende {v}: ordentlich. Für noch mehr Schärfe von vorne bis hinten: versuche f/11.",
-  d1apBad:"Blende {v}: Damit bleibt die Schärfentiefe gering. Wähle f/8 bis f/16 im A- oder Av-Modus.",
+  d1apOk:"Blende {v}: schön, das gibt viel Schärfentiefe und dein Objektiv ist hier am schärfsten.",
+  d1apMid:"Blende {v}: ordentlich. Für mehr Schärfe von vorne bis hinten: versuche f/8 bis f/11.",
+  d1apBad:"Blende {v}: Damit bleibt die Schärfentiefe gering. Wähle f/8 bis f/11 im A- oder Av-Modus.",
   d1fracOk:"Ein großer Teil deines Fotos ist scharf, genau wie gewollt.",
   d1fracBad:"Nur ein kleiner Teil ist scharf. Nutze eine größere Blendenzahl, zoome etwas heraus und stell auf etwa ein Drittel ins Bild scharf, nicht auf die Ferne.",
   d1fl:"Brennweite {v}: Hineinzoomen gibt weniger Schärfentiefe. Zoome mal heraus.",
@@ -627,6 +732,24 @@ de:{
   d3fracOk:"So nah ist der scharfe Bereich sehr dünn, und dein Foto zeigt das gut.",
   d3thin:"Es ist nur sehr wenig scharf. Willst du mehr von deinem Motiv scharf? Wähle f/8 oder geh ein kleines Stück zurück.",
   d3info:"Blende {v}: Ganz nah gibt selbst f/8 noch wenig Schärfentiefe.",
+  newQs:"Andere Fragen",
+  shareBtn:"Lektion teilen",
+  copied:"Link kopiert",
+  copyFail:"Kopiere diesen Link:",
+  useful:"War diese Lektion hilfreich?",
+  thanks:"Danke für deine Rückmeldung!",
+  dSweet:"Größere Zahl ist nicht immer schärfer",
+  dSweetd:"Die meisten Objektive sind um f/5.6 bis f/8 am schärfsten. Ab f/16 wird das ganze Foto durch Beugung etwas weicher: Das Licht wird an der kleinen Öffnung abgelenkt. Willst du viel Schärfentiefe, ist f/8 bis f/11 meist die sichere Wahl.",
+  d1diff:"Blende {v}: viel Schärfentiefe, aber ab f/16 wird das ganze Foto durch Beugung etwas weicher. Versuche mal f/8 oder f/11 und vergleiche.",
+  da4:"Pilz",
+  da4d:"Fotografiere einen Pilz aus der Nähe: der ganze Pilz scharf, der Hintergrund weich. Geh auf Augenhöhe, wähle f/5.6 bis f/8 und such dir einen mit viel Raum dahinter.",
+  d4apOk:"Blende {v}: genau richtig, so kann der ganze Pilz scharf werden.",
+  d4apOpen:"Blende {v}: So nah ist der scharfe Bereich hauchdünn. Wähle f/5.6 bis f/8, damit Hut und Stiel beide scharf werden.",
+  d4apClosed:"Blende {v}: Damit wird auch der Hintergrund schärfer und das Foto durch Beugung etwas weicher. Versuche f/8.",
+  d4fracOk:"Dein Pilz sticht heraus: Der Hintergrund ist weich.",
+  d4fracBad:"Ein großer Teil deines Fotos ist scharf, also lenkt der Hintergrund ab. Such dir einen Pilz mit mehr Raum dahinter oder geh etwas zurück und zoome hinein.",
+  d4slow:"Belichtungszeit {v}: ziemlich lang. Nutze ein Stativ, einen Bohnensack oder deine Tasche auf dem Boden, der Pilz läuft nicht weg. Warte auch, bis der Wind kurz nachlässt.",
+  d4phone:"Nutze den Makro- oder Porträtmodus deines Handys und halte es auf Augenhöhe des Pilzes.",
   tryIt:"Probier es selbst",tryLead:"Tippe auf Rundgang für eine Führung oder nutze die Schieberegler. Jeder Schritt ist eine Stufe.",
   dark:"Zu dunkel",good:"Gut",light:"Zu hell",
   aperture:"Blende",shutter:"Zeit",iso:"ISO",
@@ -644,7 +767,14 @@ de:{
   qs:[
    {q:"Du willst bei einem Porträt einen unscharfen Hintergrund. Was änderst du?",o:["Blende auf f/16","Blende auf f/1.8","ISO auf 6400"],a:1,e:"Eine kleine Blendenzahl ergibt eine geringe Schärfentiefe."},
    {q:"Dein Foto eines rennenden Hundes ist durch Bewegung unscharf. Was hilft?",o:["Längere Belichtungszeit","Kürzere Belichtungszeit","Größere Blendenzahl"],a:1,e:"Eine kurze Belichtungszeit friert Bewegung ein."},
-   {q:"Du gehst von f/4 auf f/8, zwei Stufen weniger Licht. Wie hältst du die Belichtung gleich, ohne die Zeit zu ändern?",o:["ISO 400 auf 1600","ISO 400 auf 800","ISO 400 auf 100"],a:0,e:"Zwei Stufen heißt zweimal verdoppeln: 400, 800, 1600."}]
+   {q:"Du gehst von f/4 auf f/8, zwei Stufen weniger Licht. Wie hältst du die Belichtung gleich, ohne die Zeit zu ändern?",o:["ISO 400 auf 1600","ISO 400 auf 800","ISO 400 auf 100"],a:0,e:"Zwei Stufen heißt zweimal verdoppeln: 400, 800, 1600."},
+   {"q": "Dein Foto ist zu dunkel und du willst Zeit und Blende nicht ändern. Was tust du?", "o": ["ISO erhöhen", "ISO senken", "Blitz ausschalten"], "a": 0, "e": "Eine höhere ISO macht dein Foto heller, mit etwas mehr Rauschen als Nebenwirkung."},
+   {"q": "Was ist die Nebenwirkung einer hohen ISO?", "o": ["Mehr Rauschen", "Ein unscharfer Hintergrund", "Bewegungsunschärfe"], "a": 0, "e": "Je höher die ISO, desto mehr Korn oder Rauschen siehst du im Foto."},
+   {"q": "Wie viel mehr Licht bekommst du, wenn du die Blende um eine Stufe öffnest?", "o": ["Doppelt so viel", "Zehn Prozent mehr", "Viermal so viel"], "a": 0, "e": "Eine Stufe verdoppelt oder halbiert das Licht immer."},
+   {"q": "Welche Belichtungszeit lässt mehr Licht herein?", "o": ["1/60 s", "1/500 s", "Beide gleich viel"], "a": 0, "e": "1/60 s ist länger offen als 1/500 s, also kommt mehr Licht herein."},
+   {"q": "Welche Blende lässt das meiste Licht durch?", "o": ["f/16", "f/8", "f/2"], "a": 2, "e": "Kleinere Zahl = größere Öffnung = mehr Licht."},
+   {"q": "Du willst fließendes Wasser weich und seidig festhalten. Welche Belichtungszeit passt am besten?", "o": ["1/1000 s", "1/2 s", "1/250 s"], "a": 1, "e": "Eine lange Belichtungszeit zeigt Bewegung als weiche Wischer."},
+   {"q": "Du gehst von 1/250 s auf 1/500 s. Wie hältst du die Helligkeit gleich, ohne die ISO zu ändern?", "o": ["Blende eine Stufe öffnen, zum Beispiel von f/8 auf f/5.6", "Blende eine Stufe schließen, von f/8 auf f/11", "Nichts, es bleibt gleich"], "a": 0, "e": "1/500 s gibt eine Stufe weniger Licht. Das gleichst du mit einer Stufe offenerer Blende aus."}]
 },
 es:{
   title:"PhotoByArno Academy – aprende fotografía con animaciones gratuitas",
@@ -691,7 +821,14 @@ es:{
   focusLbl:"Enfoque",
   switched:"cambia a continuo",
   fTours:["Un perro sentado, en modo único: enfocar una vez basta. Nítido.", "Ahora el perro corre hacia ti. El modo único mantiene el enfoque a la distancia inicial, así que el perro sale cada vez más desenfocado.", "El continuo acompaña al perro. Se mantiene nítido hasta muy cerca.", "El automático empieza en único y cambia en cuanto el perro se mueve. Fíjate en el breve momento anterior.", "Manual a 8 metros: el perro solo está nítido cuando pasa justo por ahí. Así funciona el enfoque previo.", "Regla práctica: quieto = único, en movimiento = continuo."],
-  fQs:[{"q": "Fotografías un paisaje con trípode. ¿Qué modo?", "o": ["Continuo", "Único", "El manual es obligatorio"], "a": 1, "e": "Un paisaje no se mueve, enfocar una vez basta."}, {"q": "Tu hijo corre hacia ti en un partido de fútbol. ¿Qué modo?", "o": ["Único", "Continuo", "El automático siempre es mejor"], "a": 1, "e": "El continuo sigue al sujeto en movimiento."}, {"q": "El autoenfoque no deja de buscar al disparar a través de una ventana. ¿Qué ayuda?", "o": ["Enfoque manual", "ISO más alto", "Obturación más rápida"], "a": 0, "e": "Con el enfoque manual lo fijas tú y el cristal no confunde a la cámara."}],
+  fQs:[{"q": "Fotografías un paisaje con trípode. ¿Qué modo?", "o": ["Continuo", "Único", "El manual es obligatorio"], "a": 1, "e": "Un paisaje no se mueve, enfocar una vez basta."}, {"q": "Tu hijo corre hacia ti en un partido de fútbol. ¿Qué modo?", "o": ["Único", "Continuo", "El automático siempre es mejor"], "a": 1, "e": "El continuo sigue al sujeto en movimiento."}, {"q": "El autoenfoque no deja de buscar al disparar a través de una ventana. ¿Qué ayuda?", "o": ["Enfoque manual", "ISO más alto", "Obturación más rápida"], "a": 0, "e": "Con el enfoque manual lo fijas tú y el cristal no confunde a la cámara."},
+   {"q": "¿Qué hace la cámara en modo continuo (AF-C) mientras pulsas el botón a medias?", "o": ["Sigue enfocando al sujeto en movimiento", "Enfoca una vez y lo fija", "No enfoca nada"], "a": 0, "e": "El continuo sigue a tu sujeto mientras mantienes el botón pulsado a medias."},
+   {"q": "¿Cómo empiezas a enfocar en la mayoría de cámaras?", "o": ["Pulsando el disparador a medias", "Pulsando el disparador dos veces rápido", "Quitando y volviendo a poner el objetivo"], "a": 0, "e": "A medias enfoca, a fondo hace la foto."},
+   {"q": "Fotografías a alguien sentado y quieto para un retrato. ¿Qué modo es más sencillo?", "o": ["Único (AF-S)", "Continuo (AF-C)", "Siempre manual"], "a": 0, "e": "Alguien quieto apenas se mueve, así que enfocar una vez basta."},
+   {"q": "Quieres fotografiar el cielo estrellado y el autoenfoque no encuentra nada. ¿Qué haces?", "o": ["Enfocar a mano en una estrella brillante", "Usar el modo continuo", "Bajar el ISO"], "a": 0, "e": "En la oscuridad el autoenfoque a menudo no encuentra nada. A mano, con ampliación sobre una estrella brillante, funciona."},
+   {"q": "¿Qué desventaja tiene el modo automático (AF-A)?", "o": ["A veces cambia a continuo justo demasiado tarde", "Solo funciona con luz de día", "Oscurece la foto"], "a": 0, "e": "AF-A primero tiene que notar el movimiento, y ese pequeño retraso puede costarte una foto nítida."},
+   {"q": "¿Qué significa 'enfoque previo'?", "o": ["Enfocar en un sitio por donde pasará tu sujeto", "Enfocar antes de encender la cámara", "Enfocar después de hacer la foto"], "a": 0, "e": "Dejas el enfoque listo en el punto correcto y disparas en cuanto llega tu sujeto."},
+   {"q": "En modo único enfocas a un perro a 10 metros, que luego corre hacia ti. ¿Qué pasa?", "o": ["El perro sale desenfocado, porque el enfoque se queda a 10 metros", "El perro sigue nítido", "La foto se oscurece"], "a": 0, "e": "El modo único fija el enfoque. Cuando el perro se acerca, sale de la zona nítida."}],
   toolTry:"Sigue con tus propias fotos",tool1:"Consulta en la pestaña EXIF de Photography Suite con qué apertura, velocidad e ISO hiciste tus propias fotos.",toolGo:"Sal a practicar",tool2:"¿Quieres practicar con sujetos en movimiento? Encuentra lugares de fauna y naturaleza en PhotoByArno Scout.",
   asgTitle:"Tarea: ahora tú",
   asgLead:"Elige una tarea, haz la foto y selecciónala abajo. Recibirás consejos al momento. Tu foto se queda en tu dispositivo: nadie más la ve.",
@@ -767,18 +904,25 @@ es:{
   dObjP:"Caminante",
   dObjT:"Árboles",
   dTours:["Punto de partida: f/2.8, enfocado en la caminante a 5 metros. Ella está nítida, la flor delante y los árboles detrás están suaves.", "Apertura a f/16: la zona nítida se vuelve mucho más profunda. Casi todo está nítido ahora.", "Apertura a f/1.4: solo la caminante está nítida, el resto se difumina.", "Enfoca la flor a 2 metros: ahora la flor está nítida y la caminante suave. Tú decides adónde va la atención.", "Zoom a 200 mm, enfocado a 5 metros: la zona nítida es finísima y el fondo se disuelve en una bruma suave.", "Abre a 24 mm con f/8, enfocado a 3 metros: nítido desde cerca hasta lejos. Ideal para paisajes.", "En resumen: número f pequeño, cerca y con zoom = poca profundidad de campo. Número f grande, más lejos y sin zoom = mucha profundidad de campo."],
-  dQs:[{"q": "Quieres un paisaje nítido de delante a atrás. ¿Qué eliges?", "o": ["f/1.8 y zoom", "f/11 y focal corta", "f/4 y enfocar cerca"], "a": 1, "e": "Un número f grande y una focal corta dan mucha profundidad de campo."}, {"q": "En un retrato el fondo no está lo bastante desenfocado. ¿Qué ayuda más?", "o": ["Fondo más lejos y un número f pequeño", "ISO más alto", "Velocidad más rápida"], "a": 0, "e": "Un número f pequeño y más distancia entre sujeto y fondo suavizan el fondo."}, {"q": "Fotografías una flor muy de cerca y solo un borde está nítido. ¿Qué haces?", "o": ["Número f mayor, por ejemplo f/8", "Número f menor, por ejemplo f/1.8", "Velocidad más lenta"], "a": 0, "e": "De cerca la profundidad de campo es muy pequeña. Un número f mayor la hace más profunda."}],
+  dQs:[{"q": "Quieres un paisaje nítido de delante a atrás. ¿Qué eliges?", "o": ["f/1.8 y zoom", "f/11 y focal corta", "f/4 y enfocar cerca"], "a": 1, "e": "Un número f grande y una focal corta dan mucha profundidad de campo."}, {"q": "En un retrato el fondo no está lo bastante desenfocado. ¿Qué ayuda más?", "o": ["Fondo más lejos y un número f pequeño", "ISO más alto", "Velocidad más rápida"], "a": 0, "e": "Un número f pequeño y más distancia entre sujeto y fondo suavizan el fondo."}, {"q": "Fotografías una flor muy de cerca y solo un borde está nítido. ¿Qué haces?", "o": ["Número f mayor, por ejemplo f/8", "Número f menor, por ejemplo f/1.8", "Velocidad más lenta"], "a": 0, "e": "De cerca la profundidad de campo es muy pequeña. Un número f mayor la hace más profunda."},
+   {"q": "¿Qué combinación da la MENOR profundidad de campo?", "o": ["f/2, cerca y con zoom", "f/11, lejos y sin zoom", "f/8, lejos y sin zoom"], "a": 0, "e": "Un número f pequeño, poca distancia y el zoom hacen más fina la zona nítida."},
+   {"q": "¿Por qué f/22 no siempre es la opción más nítida?", "o": ["Por la difracción toda la foto se vuelve algo más suave", "Porque la foto sale demasiado clara", "Porque el autoenfoque deja de funcionar"], "a": 0, "e": "Con una abertura muy pequeña la luz se dobla. Eso hace toda la foto algo menos nítida."},
+   {"q": "¿Dónde está, más o menos, la apertura más nítida en muchos objetivos?", "o": ["Entre f/5.6 y f/8", "Siempre en el número f más pequeño", "Siempre en f/22"], "a": 0, "e": "La mayoría de objetivos son más nítidos dos o tres pasos por debajo de su máxima abertura."},
+   {"q": "Fotografías una seta muy de cerca. ¿Cómo la consigues totalmente nítida con el fondo suave?", "o": ["f/5.6 a f/8 y una seta con mucho espacio detrás", "f/1.8 y lo más cerca posible", "f/22 con el fondo justo detrás"], "a": 0, "e": "Un número f medio deja la seta nítida. La distancia al fondo lo suaviza."},
+   {"q": "Alguien está contra una pared y la pared sale nítida. ¿Qué ayuda más?", "o": ["Poner a la persona unos metros delante de la pared", "Un ISO más alto", "Una velocidad más rápida"], "a": 0, "e": "Cuanto más lejos está el fondo detrás de tu sujeto, más desenfocado sale."},
+   {"q": "Solo cambias la distancia de enfoque de 2 a 10 metros. ¿Qué pasa con la profundidad de campo?", "o": ["Aumenta", "Disminuye", "Sigue igual"], "a": 0, "e": "Cuanto más lejos enfocas, más profunda es la zona nítida."},
+   {"q": "¿Qué hace el zoom a 200 mm con el fondo?", "o": ["Se desenfoca más", "Se vuelve más nítido", "No cambia nada"], "a": 0, "e": "Con zoom tienes menos profundidad de campo, así que el fondo se suaviza."}],
   da1:"Todo nítido",
-  da1d:"Fotografía un paisaje o una calle donde todo deba estar nítido de delante a atrás. Objetivo: f/8 a f/16.",
+  da1d:"Fotografía un paisaje o una calle donde todo deba estar nítido de delante a atrás. Objetivo: f/8 a f/11.",
   da2:"Solo tu sujeto",
   da2d:"Fotografía una persona, un animal o un objeto con el fondo suave. Objetivo: f/2.8 o menos, con el sujeto bien por delante del fondo.",
   da3:"Muy de cerca",
   da3d:"Fotografía una flor o un objeto pequeño tan cerca como tu cámara pueda enfocar. Descubre lo fina que se vuelve la zona nítida.",
   dMap:"Los cuadros verdes muestran dónde está nítida tu foto. Así ves de un vistazo cuánta profundidad de campo tenías.",
   dShare:"El {p}% de tu foto está nítido.",
-  d1apOk:"Apertura {v}: una abertura pequeña, eso da mucha profundidad de campo.",
-  d1apMid:"Apertura {v}: bien. Para aún más nitidez de delante a atrás, prueba f/11.",
-  d1apBad:"Apertura {v}: así la profundidad de campo es pequeña. Elige f/8 a f/16 en modo A o Av.",
+  d1apOk:"Apertura {v}: bien, eso da mucha profundidad de campo y tu objetivo está en su punto más nítido.",
+  d1apMid:"Apertura {v}: bien. Para más nitidez de delante a atrás, prueba f/8 a f/11.",
+  d1apBad:"Apertura {v}: así la profundidad de campo es pequeña. Elige f/8 a f/11 en modo A o Av.",
   d1fracOk:"Gran parte de tu foto está nítida, justo lo que querías.",
   d1fracBad:"Solo una pequeña parte está nítida. Usa un número f mayor, reduce el zoom y enfoca a un tercio de la escena, no al fondo.",
   d1fl:"Focal {v}: con zoom hay menos profundidad de campo. Prueba a reducir el zoom.",
@@ -791,6 +935,24 @@ es:{
   d3fracOk:"Tan de cerca, la zona nítida es muy fina, y tu foto lo muestra bien.",
   d3thin:"Hay muy poco nítido. ¿Quieres más del sujeto nítido? Elige f/8 o aléjate un poco.",
   d3info:"Apertura {v}: muy de cerca, incluso f/8 da poca profundidad de campo.",
+  newQs:"Otras preguntas",
+  shareBtn:"Compartir esta lección",
+  copied:"Enlace copiado",
+  copyFail:"Copia este enlace:",
+  useful:"¿Te ha sido útil esta lección?",
+  thanks:"¡Gracias por tu opinión!",
+  dSweet:"Un número mayor no siempre es más nítido",
+  dSweetd:"La mayoría de objetivos son más nítidos entre f/5.6 y f/8. A partir de f/16 toda la foto se vuelve algo más suave por la difracción: la luz se dobla al pasar por la abertura pequeña. Si quieres mucha profundidad de campo, f/8 a f/11 suele ser la opción segura.",
+  d1diff:"Apertura {v}: mucha profundidad de campo, pero desde f/16 toda la foto se suaviza algo por la difracción. Prueba f/8 o f/11 y compara.",
+  da4:"Seta",
+  da4d:"Fotografía una seta de cerca: toda la seta nítida y el fondo suave. Ponte a su altura, elige f/5.6 a f/8 y busca una con mucho espacio detrás.",
+  d4apOk:"Apertura {v}: justo lo adecuado para que toda la seta salga nítida.",
+  d4apOpen:"Apertura {v}: tan de cerca, la zona nítida es finísima. Elige f/5.6 a f/8 para que sombrero y pie salgan nítidos.",
+  d4apClosed:"Apertura {v}: así el fondo también sale más nítido y la foto algo más suave por la difracción. Prueba f/8.",
+  d4fracOk:"Tu seta destaca: el fondo está suave.",
+  d4fracBad:"Gran parte de tu foto está nítida, así que el fondo distrae. Busca una seta con más espacio detrás, o aléjate un poco y haz zoom.",
+  d4slow:"Velocidad {v}: bastante lenta. Usa un trípode, un saco de arena o tu mochila en el suelo, la seta no se va a mover. Espera también a que pare el viento.",
+  d4phone:"Usa el modo macro o retrato del móvil y sostenlo a la altura de la seta.",
   tryIt:"Pruébalo tú",tryLead:"Toca Recorrido para una visita guiada o usa los controles. Cada paso del control es un paso de luz.",
   dark:"Muy oscura",good:"Bien",light:"Muy clara",
   aperture:"Apertura",shutter:"Obturador",iso:"ISO",
@@ -808,7 +970,14 @@ es:{
   qs:[
    {q:"Quieres un fondo desenfocado en un retrato. ¿Qué cambias?",o:["Apertura a f/16","Apertura a f/1.8","ISO a 6400"],a:1,e:"Un número f pequeño da poca profundidad de campo."},
    {q:"Tu foto de un perro corriendo sale movida. ¿Qué ayuda?",o:["Velocidad de obturación más lenta","Velocidad de obturación más rápida","Número f mayor"],a:1,e:"Una velocidad rápida congela el movimiento."},
-   {q:"Pasas de f/4 a f/8, dos pasos menos de luz. ¿Cómo mantienes la exposición sin cambiar la velocidad?",o:["ISO de 400 a 1600","ISO de 400 a 800","ISO de 400 a 100"],a:0,e:"Dos pasos es duplicar dos veces: 400, 800, 1600."}]
+   {q:"Pasas de f/4 a f/8, dos pasos menos de luz. ¿Cómo mantienes la exposición sin cambiar la velocidad?",o:["ISO de 400 a 1600","ISO de 400 a 800","ISO de 400 a 100"],a:0,e:"Dos pasos es duplicar dos veces: 400, 800, 1600."},
+   {"q": "Tu foto sale demasiado oscura y no quieres cambiar la velocidad ni la apertura. ¿Qué haces?", "o": ["Subir el ISO", "Bajar el ISO", "Apagar el flash"], "a": 0, "e": "Un ISO más alto aclara la foto, con algo más de ruido como efecto secundario."},
+   {"q": "¿Cuál es el efecto secundario de un ISO alto?", "o": ["Más ruido", "Un fondo desenfocado", "Desenfoque de movimiento"], "a": 0, "e": "Cuanto más alto el ISO, más grano o ruido ves en la foto."},
+   {"q": "¿Cuánta luz más obtienes al abrir el diafragma un paso?", "o": ["El doble", "Un diez por ciento más", "Cuatro veces más"], "a": 0, "e": "Un paso siempre duplica o reduce a la mitad la luz."},
+   {"q": "¿Qué velocidad deja entrar más luz?", "o": ["1/60 s", "1/500 s", "Las dos igual"], "a": 0, "e": "1/60 s está abierta más tiempo que 1/500 s, así que entra más luz."},
+   {"q": "¿Qué apertura deja pasar más luz?", "o": ["f/16", "f/8", "f/2"], "a": 2, "e": "Número menor = abertura mayor = más luz."},
+   {"q": "Quieres captar agua que fluye suave y sedosa. ¿Qué velocidad encaja mejor?", "o": ["1/1000 s", "1/2 s", "1/250 s"], "a": 1, "e": "Una velocidad lenta muestra el movimiento como estelas suaves."},
+   {"q": "Pasas de 1/250 s a 1/500 s. ¿Cómo mantienes el mismo brillo sin cambiar el ISO?", "o": ["Abrir el diafragma un paso, por ejemplo de f/8 a f/5.6", "Cerrar el diafragma un paso, de f/8 a f/11", "Nada, sigue igual"], "a": 0, "e": "1/500 s da un paso menos de luz. Lo compensas abriendo el diafragma un paso."}]
 }};
 
 function pickLang(){
@@ -863,7 +1032,7 @@ function route(){
   document.title=L?t(L.t)+' – PhotoByArno Academy':t('title');
   track('/academy/'+(L?L.id:'home'),L?T.en[L.t]:'Academy home');
   window.scrollTo(0,0);
-  postToParent({pbaTop:true});
+  postToParent({pbaTop:true,pbaRoute:L?L.id:''});
   postHeight();
 }
 /* Geeft de hoogte door aan de JouwWeb-pagina, zodat de iframe meegroeit. */
@@ -881,9 +1050,13 @@ function renderHome(){
 function backBtn(){return `<button class="back" onclick="location.hash=''"><i class="ti ti-arrow-left" aria-hidden="true"></i>${t('back')}</button>`}
 
 function renderQuiz(box,key){
-  const qs=t(key||'qs');let answered={};
+  const pool=t(key||'qs'),SHOW=5;
+  const shuffle=a=>{for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+  const qs=shuffle(pool.map((_,i)=>i)).slice(0,Math.min(SHOW,pool.length)).map(i=>{const q=pool[i];const order=shuffle(q.o.map((_,k)=>k));return{q:q.q,e:q.e,o:order.map(k=>q.o[k]),a:order.indexOf(q.a)}});
+  let answered={};
   box.innerHTML=qs.map((q,n)=>`<div class="q" data-n="${n}"><h3>${n+1}. ${q.q}</h3>${q.o.map((o,k)=>`<label class="opt"><input type="radio" name="q${n}" value="${k}">${o}</label>`).join('')}
-  <button class="btn" data-check="${n}">${t('check')}</button><div class="err">${t('pick')}</div><div class="fb"></div></div>`).join('')+`<div class="score" id="score"></div>`;
+  <button class="btn" data-check="${n}">${t('check')}</button><div class="err">${t('pick')}</div><div class="fb"></div></div>`).join('')+`<div class="score" id="score"></div>
+  <div class="btns" style="margin-top:10px"><button class="btn" id="newQs"><i class="ti ti-refresh" aria-hidden="true"></i>${t('newQs')}</button></div>`;
   box.querySelectorAll('[data-check]').forEach(b=>b.onclick=()=>{
     const n=+b.dataset.check,el=box.querySelector(`.q[data-n="${n}"]`),sel=el.querySelector('input:checked'),err=el.querySelector('.err'),fb=el.querySelector('.fb');
     if(!sel){err.style.display='block';return}
@@ -892,8 +1065,10 @@ function renderQuiz(box,key){
     const done=Object.keys(answered).length;
     if(done===qs.length){const sc=Object.values(answered).filter(Boolean).length;box.querySelector('#score').textContent=`${t('score')}: ${sc} / ${qs.length}`;
       if(!box.dataset.tracked){box.dataset.tracked='1';track((location.hash.slice(1)||'home')+'/quiz-done','Quiz done, score '+sc+'/'+qs.length,true)}}
+    postHeight();
   });
   box.querySelectorAll('input[type=radio]').forEach(r=>r.onchange=()=>{r.closest('.q').querySelector('.err').style.display='none'});
+  box.querySelector('#newQs').onclick=()=>{delete box.dataset.tracked;renderQuiz(box,key);box.scrollIntoView({block:'start'});postToParent({pbaTop:true});postHeight()};
 }
 
 function parseExif(buf){
@@ -1043,7 +1218,8 @@ function renderExposure(){
   </div>
   <h2>${t('quiz')}</h2><div id="quiz"></div>
   <div id="asg"></div>
-  ${toolLink('suite','ti-file-info','tool1','belichtingsdriehoek')}`;
+  ${toolLink('suite','ti-file-info','tool1','belichtingsdriehoek')}
+  ${lessonFooter('belichtingsdriehoek','l1')}`;
   renderQuiz(document.getElementById('quiz'));
   renderAssignment(document.getElementById('asg'));
 
@@ -1158,9 +1334,35 @@ function renderFocusAssignment(box){
   setA(1);
 }
 
+const SITE_URL='https://photobyarno.com/tools/academy';
+function lessonFooter(id,titleKey){
+  let voted=null;try{voted=localStorage.getItem('pba-vote-'+id)}catch(e){}
+  return `<div class="lfoot" data-lesson="${id}" data-title="${titleKey}">
+    <p class="lbl">${t('useful')}</p>
+    <div class="thumbs">${voted?`<span class="lmsg" style="width:auto">${t('thanks')}</span>`:`<button class="btn" data-vote="up" aria-label="👍"><i class="ti ti-thumb-up" aria-hidden="true"></i></button><button class="btn" data-vote="down" aria-label="👎"><i class="ti ti-thumb-down" aria-hidden="true"></i></button>`}</div>
+    <button class="btn share"><i class="ti ti-share" aria-hidden="true"></i>${t('shareBtn')}</button>
+    <div class="lmsg" id="lmsg"></div>
+  </div>`;
+}
+document.addEventListener('click',async e=>{
+  const foot=e.target.closest&&e.target.closest('.lfoot');if(!foot)return;
+  const id=foot.dataset.lesson,msg=foot.querySelector('#lmsg');
+  const vb=e.target.closest('[data-vote]');
+  if(vb){const v=vb.dataset.vote;try{localStorage.setItem('pba-vote-'+id,v)}catch(err){}
+    track(id+'/feedback-'+v,v==='up'?'Lesson useful':'Lesson not useful',true);
+    foot.querySelector('.thumbs').innerHTML=`<span class="lmsg" style="width:auto">${t('thanks')}</span>`;postHeight();return}
+  if(e.target.closest('.share')){
+    const url=SITE_URL+'#'+id,title=t(foot.dataset.title)+' – PhotoByArno Academy';
+    try{if(navigator.share){await navigator.share({title:title,url:url});track(id+'/share','Lesson shared',true);return}}catch(err){if(err&&err.name==='AbortError')return}
+    try{await navigator.clipboard.writeText(url);msg.textContent=t('copied');track(id+'/share-copy','Lesson link copied',true)}
+    catch(err){msg.innerHTML=`${t('copyFail')}<input type="text" readonly value="${url}">`;const inp=msg.querySelector('input');inp.focus();inp.select()}
+    postHeight();
+  }
+});
+
 function renderDofAssignment(box){
   box.innerHTML=`<h2>${t('asgTitle')}</h2><p style="color:var(--text2);font-size:15px">${t('asgLead')}</p>
-   <div class="seg wrap" id="daSeg"><button data-a="1">${t('da1')}</button><button data-a="2">${t('da2')}</button><button data-a="3">${t('da3')}</button></div>
+   <div class="seg wrap grid2" id="daSeg"><button data-a="1">${t('da1')}</button><button data-a="2">${t('da2')}</button><button data-a="3">${t('da3')}</button><button data-a="4">${t('da4')}</button></div>
    <div class="concept"><i class="ti ti-target" aria-hidden="true"></i><div><p id="daDesc"></p></div></div>
    <p class="small">${t('asgFileHint')}</p>
    <label class="btn primary pick" for="daFile"><i class="ti ti-photo-up" aria-hidden="true"></i>${t('choose')}</label>
@@ -1196,7 +1398,7 @@ function renderDofAssignment(box){
     if(anySharp){notes.push(t('dMap'));notes.push(fill('dShare',{p:p}))}
     const fn=ex&&ex.fn,flm=ex&&(ex.fl35||ex.fl);
     if(asg===1){
-      if(fn&&!phone){const v=fmtFn(fn);if(fn>=8)good.push(fill('d1apOk',{v:v}));else if(fn>=5.6)tips.push(fill('d1apMid',{v:v}));else tips.push(fill('d1apBad',{v:v}))}
+      if(fn&&!phone){const v=fmtFn(fn);if(fn>=15.5)tips.push(fill('d1diff',{v:v}));else if(fn>=8)good.push(fill('d1apOk',{v:v}));else if(fn>=5.6)tips.push(fill('d1apMid',{v:v}));else tips.push(fill('d1apBad',{v:v}))}
       if(phone)good.push(t('d1phone'));
       if(!anySharp)tips.push(t('faSharpNo'));else if(frac>=0.4)good.push(t('d1fracOk'));else tips.push(t('d1fracBad'));
       if(flm&&flm>=100)tips.push(fill('d1fl',{v:Math.round(flm)+' mm'}));
@@ -1209,6 +1411,12 @@ function renderDofAssignment(box){
     if(asg===3){
       if(!anySharp||frac<0.04)tips.push(t('d3thin'));else if(frac<=0.3)good.push(t('d3fracOk'));
       if(fn&&!phone)notes.push(fill('d3info',{v:fmtFn(fn)}));
+    }
+    if(asg===4){
+      if(phone)tips.push(t('d4phone'));
+      else if(fn){const v=fmtFn(fn);if(fn<5.5)tips.push(fill('d4apOpen',{v:v}));else if(fn<=11.5)good.push(fill('d4apOk',{v:v}));else tips.push(fill('d4apClosed',{v:v}))}
+      if(!anySharp)tips.push(t('faSharpNo'));else if(frac<=0.45)good.push(t('d4fracOk'));else tips.push(t('d4fracBad'));
+      if(ex&&ex.exp&&ex.exp>=1/30-1e-6)tips.push(fill('d4slow',{v:fmtExp(ex.exp)}));
     }
     const li=(arr,c,ic)=>arr.map(x=>`<li class="${c}"><i class="ti ${ic}" aria-hidden="true"></i><span>${x}</span></li>`).join('');
     const chips=ex?[ex.fn?fmtFn(ex.fn):'',ex.exp?fmtExp(ex.exp):'',ex.iso?'ISO '+ex.iso:'',flm?Math.round(flm)+' mm':''].filter(Boolean).map(c=>`<span class="chip">${c}</span>`).join(''):'';
@@ -1232,6 +1440,7 @@ function renderDof(){
    <div class="concept"><i class="ti ti-zoom-in" aria-hidden="true"></i><div><h3>${t('dF')}</h3><p>${t('dFd')}</p></div></div>
   </div>
   <div class="key"><i class="ti ti-trees" aria-hidden="true"></i><div><h3>${t('dKey')}</h3><p>${t('dKeyd')}</p></div></div>
+  <div class="key" style="margin-top:10px"><i class="ti ti-target-arrow" aria-hidden="true"></i><div><h3>${t('dSweet')}</h3><p>${t('dSweetd')}</p></div></div>
   <h2>${t('tryIt')}</h2><p style="color:var(--text2);font-size:15px">${t('dTryLead')}</p>
   <div class="stage">
    <canvas id="dc" width="680" height="420" aria-label="${t('l2')}"></canvas>
@@ -1246,7 +1455,8 @@ function renderDof(){
   </div>
   <h2>${t('quiz')}</h2><div id="quiz"></div>
   <div id="asg"></div>
-  ${toolLink('suite','ti-file-info','tool1','scherptediepte')}`;
+  ${toolLink('suite','ti-file-info','tool1','scherptediepte')}
+  ${lessonFooter('scherptediepte','l2')}`;
   renderQuiz(document.getElementById('quiz'),'dQs');
   renderDofAssignment(document.getElementById('asg'));
   const $=id=>document.getElementById(id);
@@ -1333,7 +1543,8 @@ function renderFocus(){
   </div>
   <h2>${t('quiz')}</h2><div id="quiz"></div>
   <div id="asg"></div>
-  ${toolLink('scout','ti-map-pin','tool2','scherpstelmodi','toolGo')}`;
+  ${toolLink('scout','ti-map-pin','tool2','scherpstelmodi','toolGo')}
+  ${lessonFooter('scherpstelmodi','lf')}`;
   renderQuiz(document.getElementById('quiz'),'fQs');
   renderFocusAssignment(document.getElementById('asg'));
   const $=id=>document.getElementById(id);
