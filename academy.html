@@ -96,6 +96,10 @@ canvas{width:100%;display:block;border-radius:10px}
 .dofbar .obj b{display:block;width:2px;height:10px;background:var(--text2);margin:2px auto 0}
 .dofbar .fm{position:absolute;top:40px;transform:translateX(-50%);font-size:11px;color:var(--accent);white-space:nowrap}
 .chk{display:flex;align-items:center;gap:8px;font-size:14px;color:var(--text2);margin:2px 0 10px}
+.pair{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:14px 0 10px}
+.pair figure{margin:0}
+.pair img{display:block;width:100%;border-radius:8px}
+.pair figcaption{font-size:13px;color:var(--text2);margin-top:4px;text-align:center}
 .seg.grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}
 .seg.grid2 button{border-left:0}
 .seg.grid2 button:nth-child(2n){border-left:1px solid var(--line)}
@@ -147,7 +151,7 @@ footer{margin-top:36px;padding-top:14px;border-top:1px solid var(--line);font-si
 <div class="wrap">
   <header>
     <span class="logo">PhotoByArno Academy</span>
-    <span class="badge">v1.14</span>
+    <span class="badge">v1.15</span>
     <div class="lang" id="langs"></div>
   </header>
   <main id="app"></main>
@@ -344,6 +348,51 @@ en:{
   d4fracBad:"A large part of your photo is sharp, so the background distracts. Pick a mushroom with more space behind it, or step back a bit and zoom in.",
   d4slow:"Shutter speed {v}: fairly long. Use a tripod, a beanbag or your bag on the ground, the mushroom isn't going anywhere. Wait until the wind dies down too.",
   d4phone:"Use your phone's macro or portrait mode and hold it at the mushroom's eye level.",
+  bIntro:"Focal length, in millimetres, decides how much of the world fits in your frame. A small number is wide angle: lots of space in the picture. A large number is telephoto: like zooming in. But more happens than just bringing things closer.",
+  bA:"Angle of view",
+  bAd:"At 24 mm you see a wide angle of about 84°, at 50 mm about 47° and at 200 mm only 12°. The bigger the number, the smaller the slice of the world you capture.",
+  bP:"Perspective",
+  bPd:"With a wide angle, things close by look big and the background far away. With a telephoto, the background looks closer and bigger. That's called compression.",
+  bU:"What do you use when?",
+  bUd:"Wide angle (14–35 mm): landscapes, architecture and interiors. Standard (around 50 mm): roughly how your eye sees it. Portrait (85–135 mm): natural-looking faces. Telephoto (200 mm and up): wildlife, sports and details from afar.",
+  bKey:"Perspective comes from your distance",
+  bKeyd:"It's not really the lens that creates compression, but your distance to the subject. A telephoto lets you stand further back, and from there the background looks bigger. Try it yourself with 'Subject same size' below.",
+  bKey2:"Phone or smaller sensor?",
+  bKey2d:"The millimetres in this lesson apply to a full-frame camera. On your phone you see 0.5×, 1× or 3×; 1× usually matches about 24 to 28 mm. If your camera has a smaller sensor (APS-C), a lens looks about 1.5× more zoomed in: 50 mm then feels like roughly 75 mm.",
+  bTryLead:"Choose what you want to see and move the focal length. At the top right you see from above where the camera stands and how wide it looks.",
+  bModeLbl:"What do you want to see?",
+  bMode1:"Same spot",
+  bMode2:"Subject same size",
+  bFL:"Focal length",
+  bAngle:"angle of view",
+  bDist:"distance to walker",
+  bWalker:"Walker",
+  bMtn:"Mountain",
+  bTours:["Same spot, 24 mm: you see the walker, the path, the trees and the mountain. Lots of space in the frame.", "50 mm: the view gets narrower, roughly how your eye sees it.", "200 mm from the same spot: you bring the walker close without walking. Only her upper body still fits.", "Now the walker stays the same size. At 24 mm you stand right next to her, and the mountain is a small bump in the distance.", "85 mm: you've walked back to keep her the same size. Watch the mountain grow.", "200 mm, more than 40 metres back: the mountain seems right behind her. That's compression, created by your distance.", "In short: focal length decides how much you see, your distance decides the perspective."],
+  bQs:[{"q": "Which focal length shows the most of your surroundings?", "o": ["14 mm", "50 mm", "200 mm"], "a": 0, "e": "The smaller the number, the wider the angle of view."}, {"q": "What do you call a 200 mm lens?", "o": ["Telephoto", "Wide angle", "Fisheye"], "a": 0, "e": "From about 85 mm we speak of telephoto, and 200 mm is clearly telephoto."}, {"q": "You want a whole room or a wide landscape in the frame. What do you choose?", "o": ["Wide angle, 16 to 24 mm", "Telephoto, 200 mm", "Portrait, 85 mm"], "a": 0, "e": "A wide angle captures the widest part of your surroundings."}, {"q": "Which focal length is often used for portraits?", "o": ["85 mm", "14 mm", "600 mm"], "a": 0, "e": "Around 85 mm you stand at a comfortable distance and facial proportions stay natural."}, {"q": "You photograph a walker in front of a mountain and want the mountain big behind her. What do you do?", "o": ["Stand further back and zoom in", "Stand close with a wide angle", "Raise the ISO"], "a": 0, "e": "From further away with a telephoto, the background looks bigger relative to your subject."}, {"q": "What actually causes 'compression'?", "o": ["The greater distance to your subject", "The glass in a telephoto lens", "A higher ISO"], "a": 0, "e": "A telephoto lets you stand further back, and that distance changes the perspective."}, {"q": "Why can a wide angle make a nose look big in a very close portrait?", "o": ["Because what's closer to the camera looks much bigger", "Because a wide angle changes the colours", "Because the shutter speed is longer"], "a": 0, "e": "Very close up, the nose is relatively much closer to the lens than the ears, so it looks bigger."}, {"q": "Your phone shows 1×. Which focal length does that roughly match?", "o": ["24 to 28 mm", "85 mm", "200 mm"], "a": 0, "e": "The main camera on most phones is a slight wide angle."}, {"q": "What happens to the angle of view when you go from 24 to 50 mm?", "o": ["It becomes roughly half as wide", "It becomes wider", "It stays the same"], "a": 0, "e": "From about 84° to about 47°: twice as zoomed in is roughly half the angle."}, {"q": "Your camera has a smaller sensor (APS-C) and you use a 50 mm lens. What does it look like?", "o": ["Roughly like 75 to 80 mm", "Roughly like 25 mm", "Exactly like 50 mm on full frame"], "a": 0, "e": "A smaller sensor crops a smaller part of the image, as if you zoom in about 1.5× more."}],
+  ba1:"Wide",
+  ba1d:"Photograph a landscape, street or room with a wide angle: 24 mm or shorter. On a phone: the 0.5× or 1× camera. Put something interesting in the foreground.",
+  ba2:"Zoomed-in detail",
+  ba2d:"Zoom in to pick a detail out of a larger scene: a window, a bird or a tree in the distance. Goal: 85 mm or more. On a phone: the 2× or 3× camera.",
+  ba3:"Compression",
+  ba3d:"Take two photos of the same subject with something far behind it, like a tower or hill: one close up with a wide angle, one from far away with a telephoto. Keep your subject the same size in both. Then choose the photos one at a time.",
+  b1ok:"Focal length {v}: truly wide angle, you get lots of space in the frame.",
+  b1mid:"Focal length {v}: nearly wide angle. Zoom out a bit more, to 24 mm or shorter.",
+  b1bad:"Focal length {v}: that's already zoomed in. Turn your zoom ring to the smallest number.",
+  b1fg:"Wide-angle tip: something in the foreground, like a rock, flower or fence, gives your photo depth.",
+  b1phone:"On your phone, use the 0.5× camera for an extra wide view.",
+  b2ok:"Focal length {v}: nicely zoomed in, you bring the detail close.",
+  b2mid:"Focal length {v}: slightly zoomed in. For real detail: 85 mm or more.",
+  b2bad:"Focal length {v}: that's still wide. Zoom in to 85 mm or more.",
+  b2phone:"Use your phone's 2× or 3× camera. Zooming in further than that is digital and costs sharpness.",
+  b3first:"Photo 1 is ready ({v}). Now choose your second photo, with a very different focal length.",
+  b3ok:"Photo 1: {a}, photo 2: {b}. A big difference, so you see the compression well. Look at how big the background is compared to your subject.",
+  b3small:"Photo 1: {a}, photo 2: {b}. The difference is small. Choose focal lengths further apart, for example 24 and 135 mm, and keep your subject about the same size in both.",
+  b3reset:"Start over",
+  b3photo:"Photo",
+  bNoFl:"This photo has no focal length data. Use the original file so I can review your focal length.",
+  bCrop:"Your camera didn't record a 35 mm equivalent. If it has a smaller sensor (APS-C), the effect is about 1.5× more zoomed in than the number suggests.",
+  toolF:"Looking for a place with a wide view to compare wide angle and telephoto? Find viewpoints in PhotoByArno Scout.",
   tryIt:"Try it yourself",tryLead:"Tap Tour for a guided walkthrough, or use the sliders. Each slider step is one stop.",
   dark:"Too dark",good:"Good",light:"Too bright",
   aperture:"Aperture",shutter:"Shutter",iso:"ISO",
@@ -547,6 +596,51 @@ nl:{
   d4fracBad:"Een groot deel van je foto is scherp, dus de achtergrond leidt af. Kies een paddenstoel met meer ruimte erachter, of ga iets verder weg en zoom in.",
   d4slow:"Sluitertijd {v}: vrij lang. Gebruik een statief, een boonzak of je tas op de grond, de paddenstoel loopt toch niet weg. Wacht ook tot de wind even stilvalt.",
   d4phone:"Gebruik de macro- of portretmodus van je telefoon en houd hem op ooghoogte van de paddenstoel.",
+  bIntro:"De brandpuntsafstand, in millimeters, bepaalt hoeveel van de wereld je in beeld krijgt. Een klein getal is groothoek: veel ruimte in beeld. Een groot getal is tele: alsof je inzoomt. Maar er gebeurt meer dan alleen dichterbij halen.",
+  bA:"Kijkhoek",
+  bAd:"Bij 24 mm zie je een brede hoek van ongeveer 84°, bij 50 mm ongeveer 47° en bij 200 mm nog maar 12°. Hoe groter het getal, hoe kleiner het stukje wereld dat je vastlegt.",
+  bP:"Perspectief",
+  bPd:"Met een groothoek lijkt wat dichtbij is groot en de achtergrond ver weg. Met een tele lijkt de achtergrond juist dichterbij en groter. Dat heet compressie.",
+  bU:"Waarvoor gebruik je wat?",
+  bUd:"Groothoek (14–35 mm): landschap, architectuur en binnenruimtes. Standaard (rond 50 mm): ongeveer zoals je oog het ziet. Portret (85–135 mm): natuurlijke gezichten. Tele (200 mm en meer): wildlife, sport en details van ver.",
+  bKey:"Perspectief komt door jouw afstand",
+  bKeyd:"Eigenlijk maakt niet de lens de compressie, maar je afstand tot het onderwerp. Een telelens laat je verder weg staan, en vanaf daar lijkt de achtergrond groter. Probeer het zelf met 'Onderwerp even groot' hieronder.",
+  bKey2:"Telefoon of kleinere sensor?",
+  bKey2d:"De millimeters in deze les gelden voor een full-frame camera. Op je telefoon zie je 0.5×, 1× of 3×; 1× komt meestal overeen met ongeveer 24 tot 28 mm. Heeft je camera een kleinere sensor (APS-C), dan werkt een lens ongeveer 1,5× zo ingezoomd: 50 mm voelt dan als zo'n 75 mm.",
+  bTryLead:"Kies wat je wilt zien en schuif met het brandpunt. Rechtsboven zie je van bovenaf waar de camera staat en hoe breed hij kijkt.",
+  bModeLbl:"Wat wil je zien?",
+  bMode1:"Zelfde plek",
+  bMode2:"Onderwerp even groot",
+  bFL:"Brandpunt",
+  bAngle:"kijkhoek",
+  bDist:"afstand tot wandelaar",
+  bWalker:"Wandelaar",
+  bMtn:"Berg",
+  bTours:["Zelfde plek, 24 mm: je ziet de wandelaar, het pad, de bomen en de berg. Veel ruimte in beeld.", "50 mm: het beeld wordt smaller, ongeveer zoals je oog het ziet.", "200 mm vanaf dezelfde plek: je haalt de wandelaar dichtbij zonder te lopen. Alleen haar bovenlichaam past nog in beeld.", "Nu blijft de wandelaar even groot. Met 24 mm sta je vlak bij haar, en de berg is een klein bultje in de verte.", "85 mm: je bent naar achteren gelopen om haar even groot te houden. Kijk hoe de berg groeit.", "200 mm, ruim 40 meter terug: de berg lijkt vlak achter haar te staan. Dat is compressie, gemaakt door jouw afstand.", "Kort samengevat: het brandpunt bepaalt hoeveel je ziet, je afstand bepaalt het perspectief."],
+  bQs:[{"q": "Welke brandpuntsafstand laat het meeste van de omgeving zien?", "o": ["14 mm", "50 mm", "200 mm"], "a": 0, "e": "Hoe kleiner het getal, hoe breder de kijkhoek."}, {"q": "Hoe noem je een lens van 200 mm?", "o": ["Tele", "Groothoek", "Fisheye"], "a": 0, "e": "Vanaf ongeveer 85 mm spreek je van tele, en 200 mm is duidelijk tele."}, {"q": "Je wilt een hele kamer of een breed landschap in beeld. Wat kies je?", "o": ["Groothoek, 16 tot 24 mm", "Tele, 200 mm", "Portret, 85 mm"], "a": 0, "e": "Een groothoek legt het breedste stuk van de omgeving vast."}, {"q": "Welk brandpunt wordt vaak gebruikt voor portretten?", "o": ["85 mm", "14 mm", "600 mm"], "a": 0, "e": "Rond 85 mm sta je op een prettige afstand en blijven de verhoudingen van een gezicht natuurlijk."}, {"q": "Je fotografeert een wandelaar voor een berg en wilt de berg groot achter haar. Wat doe je?", "o": ["Verder weg gaan staan en inzoomen", "Dichtbij gaan staan met een groothoek", "De ISO verhogen"], "a": 0, "e": "Van verder weg met tele lijkt de achtergrond groter ten opzichte van je onderwerp."}, {"q": "Wat veroorzaakt eigenlijk 'compressie'?", "o": ["De grotere afstand tot je onderwerp", "Het glas in een telelens", "Een hogere ISO"], "a": 0, "e": "Een telelens laat je verder weg staan, en die afstand verandert het perspectief."}, {"q": "Waarom kan een groothoek bij een portret van heel dichtbij een neus groot maken?", "o": ["Omdat wat dichter bij de camera is veel groter lijkt", "Omdat een groothoek de kleuren verandert", "Omdat de sluitertijd langer is"], "a": 0, "e": "Van heel dichtbij is de neus relatief veel dichter bij de lens dan de oren, dus lijkt hij groter."}, {"q": "Je telefoon toont 1×. Met welk brandpunt komt dat ongeveer overeen?", "o": ["24 tot 28 mm", "85 mm", "200 mm"], "a": 0, "e": "De hoofdcamera van de meeste telefoons is een lichte groothoek."}, {"q": "Wat gebeurt er met de kijkhoek als je van 24 naar 50 mm gaat?", "o": ["Die wordt ongeveer half zo groot", "Die wordt groter", "Die blijft gelijk"], "a": 0, "e": "Van ongeveer 84° naar ongeveer 47°: twee keer zo ingezoomd is ongeveer de helft van de hoek."}, {"q": "Je camera heeft een kleinere sensor (APS-C) en je gebruikt een 50 mm-lens. Hoe ziet dat eruit?", "o": ["Ongeveer als 75 tot 80 mm", "Ongeveer als 25 mm", "Precies als 50 mm op full frame"], "a": 0, "e": "Een kleinere sensor knipt een kleiner stuk uit het beeld, alsof je ongeveer 1,5× verder inzoomt."}],
+  ba1:"Breed",
+  ba1d:"Fotografeer een landschap, straat of ruimte met een groothoek: 24 mm of korter. Op een telefoon: de 0.5×- of 1×-camera. Zet iets interessants in de voorgrond.",
+  ba2:"Ingezoomd detail",
+  ba2d:"Haal met inzoomen een detail uit een groter tafereel: een raam, een vogel of een boom op afstand. Doel: 85 mm of meer. Op een telefoon: de 2×- of 3×-camera.",
+  ba3:"Compressie",
+  ba3d:"Maak twee foto's van hetzelfde onderwerp met iets ver erachter, zoals een toren of heuvel: één van dichtbij met groothoek, één van ver weg met tele. Houd je onderwerp op beide foto's even groot. Kies daarna de foto's één voor één.",
+  b1ok:"Brandpunt {v}: echt groothoek, je krijgt veel ruimte in beeld.",
+  b1mid:"Brandpunt {v}: bijna groothoek. Zoom nog iets verder uit, naar 24 mm of korter.",
+  b1bad:"Brandpunt {v}: dat is al ingezoomd. Draai je zoomring naar het kleinste getal.",
+  b1fg:"Groothoektip: iets in de voorgrond, zoals een steen, bloem of hek, geeft je foto diepte.",
+  b1phone:"Gebruik op je telefoon de 0.5×-camera voor extra breed beeld.",
+  b2ok:"Brandpunt {v}: mooi ingezoomd, je haalt het detail dichtbij.",
+  b2mid:"Brandpunt {v}: een beetje ingezoomd. Voor echt detail: 85 mm of meer.",
+  b2bad:"Brandpunt {v}: dat is nog breed. Zoom in naar 85 mm of meer.",
+  b2phone:"Gebruik de 2×- of 3×-camera van je telefoon. Verder inzoomen dan dat is digitaal en kost scherpte.",
+  b3first:"Foto 1 staat klaar ({v}). Kies nu je tweede foto, met een heel ander brandpunt.",
+  b3ok:"Foto 1: {a}, foto 2: {b}. Een groot verschil, dus je ziet de compressie goed. Kijk hoe groot de achtergrond is ten opzichte van je onderwerp.",
+  b3small:"Foto 1: {a}, foto 2: {b}. Het verschil is klein. Kies brandpunten verder uit elkaar, bijvoorbeeld 24 en 135 mm, en houd je onderwerp op beide foto's ongeveer even groot.",
+  b3reset:"Opnieuw beginnen",
+  b3photo:"Foto",
+  bNoFl:"Deze foto bevat geen brandpuntsafstand. Gebruik het originele bestand, dan kan ik je brandpunt beoordelen.",
+  bCrop:"Je camera gaf geen kleinbeeld-equivalent door. Heeft je camera een kleinere sensor (APS-C), dan is het effect ongeveer 1,5× zo ingezoomd als het getal doet denken.",
+  toolF:"Op zoek naar een plek met een weids uitzicht om groothoek en tele te vergelijken? Vind uitzichtpunten in PhotoByArno Scout.",
   tryIt:"Probeer het zelf",tryLead:"Tik op Rondleiding voor een tour, of schuif zelf. Elke stap op een schuifje is één stop.",
   dark:"Te donker",good:"Goed",light:"Te licht",
   aperture:"Diafragma",shutter:"Sluitertijd",iso:"ISO",
@@ -750,6 +844,51 @@ de:{
   d4fracBad:"Ein großer Teil deines Fotos ist scharf, also lenkt der Hintergrund ab. Such dir einen Pilz mit mehr Raum dahinter oder geh etwas zurück und zoome hinein.",
   d4slow:"Belichtungszeit {v}: ziemlich lang. Nutze ein Stativ, einen Bohnensack oder deine Tasche auf dem Boden, der Pilz läuft nicht weg. Warte auch, bis der Wind kurz nachlässt.",
   d4phone:"Nutze den Makro- oder Porträtmodus deines Handys und halte es auf Augenhöhe des Pilzes.",
+  bIntro:"Die Brennweite in Millimetern bestimmt, wie viel von der Welt ins Bild passt. Eine kleine Zahl ist Weitwinkel: viel Raum im Bild. Eine große Zahl ist Tele: als würdest du hineinzoomen. Aber es passiert mehr, als nur Dinge näher zu holen.",
+  bA:"Bildwinkel",
+  bAd:"Bei 24 mm siehst du einen weiten Winkel von etwa 84°, bei 50 mm etwa 47° und bei 200 mm nur noch 12°. Je größer die Zahl, desto kleiner der Ausschnitt der Welt, den du festhältst.",
+  bP:"Perspektive",
+  bPd:"Mit einem Weitwinkel wirkt Nahes groß und der Hintergrund weit weg. Mit einem Tele wirkt der Hintergrund näher und größer. Das nennt man Kompression.",
+  bU:"Wofür nimmst du was?",
+  bUd:"Weitwinkel (14–35 mm): Landschaft, Architektur und Innenräume. Standard (um 50 mm): ungefähr so, wie dein Auge es sieht. Porträt (85–135 mm): natürliche Gesichter. Tele (200 mm und mehr): Wildtiere, Sport und Details aus der Ferne.",
+  bKey:"Perspektive kommt von deinem Abstand",
+  bKeyd:"Eigentlich erzeugt nicht das Objektiv die Kompression, sondern dein Abstand zum Motiv. Ein Tele lässt dich weiter weg stehen, und von dort wirkt der Hintergrund größer. Probier es unten mit 'Motiv gleich groß' selbst aus.",
+  bKey2:"Handy oder kleinerer Sensor?",
+  bKey2d:"Die Millimeter in dieser Lektion gelten für eine Vollformatkamera. Am Handy siehst du 0,5×, 1× oder 3×; 1× entspricht meist etwa 24 bis 28 mm. Hat deine Kamera einen kleineren Sensor (APS-C), wirkt ein Objektiv etwa 1,5× stärker gezoomt: 50 mm fühlt sich dann wie etwa 75 mm an.",
+  bTryLead:"Wähle, was du sehen willst, und bewege die Brennweite. Oben rechts siehst du von oben, wo die Kamera steht und wie weit sie blickt.",
+  bModeLbl:"Was willst du sehen?",
+  bMode1:"Gleicher Standort",
+  bMode2:"Motiv gleich groß",
+  bFL:"Brennweite",
+  bAngle:"Bildwinkel",
+  bDist:"Abstand zur Wanderin",
+  bWalker:"Wanderin",
+  bMtn:"Berg",
+  bTours:["Gleicher Standort, 24 mm: Du siehst die Wanderin, den Weg, die Bäume und den Berg. Viel Raum im Bild.", "50 mm: Der Ausschnitt wird enger, ungefähr so, wie dein Auge es sieht.", "200 mm vom gleichen Standort: Du holst die Wanderin nah heran, ohne zu laufen. Nur noch ihr Oberkörper passt ins Bild.", "Jetzt bleibt die Wanderin gleich groß. Mit 24 mm stehst du direkt neben ihr, und der Berg ist ein kleiner Hügel in der Ferne.", "85 mm: Du bist zurückgegangen, damit sie gleich groß bleibt. Schau, wie der Berg wächst.", "200 mm, über 40 Meter zurück: Der Berg scheint direkt hinter ihr zu stehen. Das ist Kompression, erzeugt durch deinen Abstand.", "Kurz gesagt: Die Brennweite bestimmt, wie viel du siehst, dein Abstand bestimmt die Perspektive."],
+  bQs:[{"q": "Welche Brennweite zeigt am meisten von der Umgebung?", "o": ["14 mm", "50 mm", "200 mm"], "a": 0, "e": "Je kleiner die Zahl, desto weiter der Bildwinkel."}, {"q": "Wie nennt man ein Objektiv mit 200 mm?", "o": ["Tele", "Weitwinkel", "Fisheye"], "a": 0, "e": "Ab etwa 85 mm spricht man von Tele, und 200 mm ist eindeutig Tele."}, {"q": "Du willst einen ganzen Raum oder eine weite Landschaft ins Bild bekommen. Was wählst du?", "o": ["Weitwinkel, 16 bis 24 mm", "Tele, 200 mm", "Porträt, 85 mm"], "a": 0, "e": "Ein Weitwinkel erfasst den breitesten Teil der Umgebung."}, {"q": "Welche Brennweite wird oft für Porträts genutzt?", "o": ["85 mm", "14 mm", "600 mm"], "a": 0, "e": "Um 85 mm stehst du in angenehmem Abstand und die Gesichtsproportionen bleiben natürlich."}, {"q": "Du fotografierst eine Wanderin vor einem Berg und willst den Berg groß hinter ihr. Was tust du?", "o": ["Weiter weg stellen und hineinzoomen", "Nah herangehen mit Weitwinkel", "Die ISO erhöhen"], "a": 0, "e": "Aus größerer Entfernung mit Tele wirkt der Hintergrund im Verhältnis zum Motiv größer."}, {"q": "Was verursacht eigentlich 'Kompression'?", "o": ["Der größere Abstand zum Motiv", "Das Glas in einem Teleobjektiv", "Eine höhere ISO"], "a": 0, "e": "Ein Tele lässt dich weiter weg stehen, und dieser Abstand verändert die Perspektive."}, {"q": "Warum kann ein Weitwinkel bei einem Porträt aus nächster Nähe eine Nase groß wirken lassen?", "o": ["Weil das, was näher an der Kamera ist, viel größer wirkt", "Weil ein Weitwinkel die Farben verändert", "Weil die Belichtungszeit länger ist"], "a": 0, "e": "Ganz nah ist die Nase im Verhältnis viel näher am Objektiv als die Ohren, also wirkt sie größer."}, {"q": "Dein Handy zeigt 1×. Welcher Brennweite entspricht das ungefähr?", "o": ["24 bis 28 mm", "85 mm", "200 mm"], "a": 0, "e": "Die Hauptkamera der meisten Handys ist ein leichter Weitwinkel."}, {"q": "Was passiert mit dem Bildwinkel, wenn du von 24 auf 50 mm gehst?", "o": ["Er wird ungefähr halb so groß", "Er wird größer", "Er bleibt gleich"], "a": 0, "e": "Von etwa 84° auf etwa 47°: doppelt so stark gezoomt ist ungefähr der halbe Winkel."}, {"q": "Deine Kamera hat einen kleineren Sensor (APS-C) und du nutzt ein 50-mm-Objektiv. Wie sieht das aus?", "o": ["Etwa wie 75 bis 80 mm", "Etwa wie 25 mm", "Genau wie 50 mm an Vollformat"], "a": 0, "e": "Ein kleinerer Sensor schneidet einen kleineren Teil des Bildes aus, als würdest du etwa 1,5× stärker zoomen."}],
+  ba1:"Weit",
+  ba1d:"Fotografiere eine Landschaft, Straße oder einen Raum mit Weitwinkel: 24 mm oder kürzer. Am Handy: die 0,5×- oder 1×-Kamera. Setz etwas Interessantes in den Vordergrund.",
+  ba2:"Gezoomtes Detail",
+  ba2d:"Hol mit Zoom ein Detail aus einer größeren Szene: ein Fenster, einen Vogel oder einen Baum in der Ferne. Ziel: 85 mm oder mehr. Am Handy: die 2×- oder 3×-Kamera.",
+  ba3:"Kompression",
+  ba3d:"Mach zwei Fotos vom gleichen Motiv mit etwas weit dahinter, etwa einem Turm oder Hügel: eins aus der Nähe mit Weitwinkel, eins von weit weg mit Tele. Halte dein Motiv auf beiden Fotos gleich groß. Wähle die Fotos danach nacheinander aus.",
+  b1ok:"Brennweite {v}: echter Weitwinkel, du bekommst viel Raum ins Bild.",
+  b1mid:"Brennweite {v}: fast Weitwinkel. Zoome noch etwas heraus, auf 24 mm oder kürzer.",
+  b1bad:"Brennweite {v}: Das ist schon gezoomt. Dreh deinen Zoomring auf die kleinste Zahl.",
+  b1fg:"Weitwinkeltipp: Etwas im Vordergrund, etwa ein Stein, eine Blume oder ein Zaun, gibt deinem Foto Tiefe.",
+  b1phone:"Nutze am Handy die 0,5×-Kamera für ein extra weites Bild.",
+  b2ok:"Brennweite {v}: schön gezoomt, du holst das Detail nah heran.",
+  b2mid:"Brennweite {v}: etwas gezoomt. Für echtes Detail: 85 mm oder mehr.",
+  b2bad:"Brennweite {v}: Das ist noch weit. Zoome auf 85 mm oder mehr.",
+  b2phone:"Nutze die 2×- oder 3×-Kamera deines Handys. Weiter zu zoomen ist digital und kostet Schärfe.",
+  b3first:"Foto 1 ist bereit ({v}). Wähle jetzt dein zweites Foto, mit einer ganz anderen Brennweite.",
+  b3ok:"Foto 1: {a}, Foto 2: {b}. Ein großer Unterschied, also siehst du die Kompression gut. Schau, wie groß der Hintergrund im Verhältnis zu deinem Motiv ist.",
+  b3small:"Foto 1: {a}, Foto 2: {b}. Der Unterschied ist klein. Wähle Brennweiten weiter auseinander, zum Beispiel 24 und 135 mm, und halte dein Motiv auf beiden Fotos etwa gleich groß.",
+  b3reset:"Neu beginnen",
+  b3photo:"Foto",
+  bNoFl:"Dieses Foto enthält keine Brennweite. Nutze die Originaldatei, dann kann ich deine Brennweite bewerten.",
+  bCrop:"Deine Kamera hat kein Kleinbild-Äquivalent gespeichert. Hat sie einen kleineren Sensor (APS-C), ist der Effekt etwa 1,5× stärker gezoomt, als die Zahl vermuten lässt.",
+  toolF:"Auf der Suche nach einem Ort mit weiter Aussicht, um Weitwinkel und Tele zu vergleichen? Finde Aussichtspunkte in PhotoByArno Scout.",
   tryIt:"Probier es selbst",tryLead:"Tippe auf Rundgang für eine Führung oder nutze die Schieberegler. Jeder Schritt ist eine Stufe.",
   dark:"Zu dunkel",good:"Gut",light:"Zu hell",
   aperture:"Blende",shutter:"Zeit",iso:"ISO",
@@ -953,6 +1092,51 @@ es:{
   d4fracBad:"Gran parte de tu foto está nítida, así que el fondo distrae. Busca una seta con más espacio detrás, o aléjate un poco y haz zoom.",
   d4slow:"Velocidad {v}: bastante lenta. Usa un trípode, un saco de arena o tu mochila en el suelo, la seta no se va a mover. Espera también a que pare el viento.",
   d4phone:"Usa el modo macro o retrato del móvil y sostenlo a la altura de la seta.",
+  bIntro:"La distancia focal, en milímetros, decide cuánto del mundo cabe en tu encuadre. Un número pequeño es gran angular: mucho espacio en la imagen. Un número grande es teleobjetivo: como hacer zoom. Pero pasa algo más que solo acercar las cosas.",
+  bA:"Ángulo de visión",
+  bAd:"A 24 mm ves un ángulo amplio de unos 84°, a 50 mm unos 47° y a 200 mm solo 12°. Cuanto mayor el número, más pequeño el trozo de mundo que captas.",
+  bP:"Perspectiva",
+  bPd:"Con un gran angular, lo cercano parece grande y el fondo lejano. Con un teleobjetivo, el fondo parece más cerca y más grande. Eso se llama compresión.",
+  bU:"¿Qué usar y cuándo?",
+  bUd:"Gran angular (14–35 mm): paisajes, arquitectura e interiores. Normal (unos 50 mm): más o menos como lo ve tu ojo. Retrato (85–135 mm): caras naturales. Teleobjetivo (200 mm o más): fauna, deporte y detalles lejanos.",
+  bKey:"La perspectiva viene de tu distancia",
+  bKeyd:"En realidad no es el objetivo el que crea la compresión, sino tu distancia al sujeto. Un teleobjetivo te hace alejarte, y desde ahí el fondo parece más grande. Pruébalo abajo con 'Sujeto del mismo tamaño'.",
+  bKey2:"¿Móvil o sensor más pequeño?",
+  bKey2d:"Los milímetros de esta lección son para una cámara de formato completo. En el móvil ves 0,5×, 1× o 3×; 1× suele equivaler a unos 24 a 28 mm. Si tu cámara tiene un sensor más pequeño (APS-C), un objetivo parece 1,5× más cerrado: 50 mm se siente como unos 75 mm.",
+  bTryLead:"Elige qué quieres ver y mueve la focal. Arriba a la derecha ves desde arriba dónde está la cámara y cuánto abarca.",
+  bModeLbl:"¿Qué quieres ver?",
+  bMode1:"Mismo sitio",
+  bMode2:"Sujeto del mismo tamaño",
+  bFL:"Focal",
+  bAngle:"ángulo de visión",
+  bDist:"distancia a la caminante",
+  bWalker:"Caminante",
+  bMtn:"Montaña",
+  bTours:["Mismo sitio, 24 mm: ves a la caminante, el camino, los árboles y la montaña. Mucho espacio en la imagen.", "50 mm: el encuadre se estrecha, más o menos como lo ve tu ojo.", "200 mm desde el mismo sitio: acercas a la caminante sin andar. Solo cabe la parte superior de su cuerpo.", "Ahora la caminante mantiene su tamaño. A 24 mm estás justo a su lado, y la montaña es un bultito a lo lejos.", "85 mm: has retrocedido para mantenerla del mismo tamaño. Mira cómo crece la montaña.", "200 mm, más de 40 metros atrás: la montaña parece justo detrás de ella. Eso es compresión, creada por tu distancia.", "En resumen: la focal decide cuánto ves, tu distancia decide la perspectiva."],
+  bQs:[{"q": "¿Qué focal muestra más del entorno?", "o": ["14 mm", "50 mm", "200 mm"], "a": 0, "e": "Cuanto menor el número, más amplio el ángulo de visión."}, {"q": "¿Cómo se llama un objetivo de 200 mm?", "o": ["Teleobjetivo", "Gran angular", "Ojo de pez"], "a": 0, "e": "A partir de unos 85 mm se habla de teleobjetivo, y 200 mm lo es claramente."}, {"q": "Quieres una habitación entera o un paisaje amplio en el encuadre. ¿Qué eliges?", "o": ["Gran angular, 16 a 24 mm", "Teleobjetivo, 200 mm", "Retrato, 85 mm"], "a": 0, "e": "Un gran angular capta la parte más amplia del entorno."}, {"q": "¿Qué focal se usa a menudo para retratos?", "o": ["85 mm", "14 mm", "600 mm"], "a": 0, "e": "Hacia 85 mm estás a una distancia cómoda y las proporciones de la cara se mantienen naturales."}, {"q": "Fotografías a una caminante delante de una montaña y quieres la montaña grande detrás de ella. ¿Qué haces?", "o": ["Alejarte y hacer zoom", "Acercarte con un gran angular", "Subir el ISO"], "a": 0, "e": "Desde más lejos con teleobjetivo, el fondo parece más grande respecto a tu sujeto."}, {"q": "¿Qué causa en realidad la 'compresión'?", "o": ["La mayor distancia a tu sujeto", "El cristal de un teleobjetivo", "Un ISO más alto"], "a": 0, "e": "Un teleobjetivo te hace alejarte, y esa distancia cambia la perspectiva."}, {"q": "¿Por qué un gran angular puede agrandar la nariz en un retrato muy de cerca?", "o": ["Porque lo que está más cerca de la cámara parece mucho más grande", "Porque el gran angular cambia los colores", "Porque la velocidad es más lenta"], "a": 0, "e": "Muy de cerca, la nariz está mucho más cerca del objetivo que las orejas, así que parece más grande."}, {"q": "Tu móvil muestra 1×. ¿A qué focal equivale más o menos?", "o": ["24 a 28 mm", "85 mm", "200 mm"], "a": 0, "e": "La cámara principal de la mayoría de móviles es un gran angular suave."}, {"q": "¿Qué pasa con el ángulo de visión al pasar de 24 a 50 mm?", "o": ["Se reduce más o menos a la mitad", "Se hace más amplio", "Sigue igual"], "a": 0, "e": "De unos 84° a unos 47°: el doble de zoom es más o menos la mitad del ángulo."}, {"q": "Tu cámara tiene un sensor más pequeño (APS-C) y usas un objetivo de 50 mm. ¿Cómo se ve?", "o": ["Más o menos como 75 a 80 mm", "Más o menos como 25 mm", "Exactamente como 50 mm en formato completo"], "a": 0, "e": "Un sensor más pequeño recorta una parte menor de la imagen, como si hicieras 1,5× más zoom."}],
+  ba1:"Amplio",
+  ba1d:"Fotografía un paisaje, una calle o una habitación con gran angular: 24 mm o menos. En el móvil: la cámara de 0,5× o 1×. Pon algo interesante en primer plano.",
+  ba2:"Detalle con zoom",
+  ba2d:"Haz zoom para sacar un detalle de una escena más grande: una ventana, un pájaro o un árbol a lo lejos. Objetivo: 85 mm o más. En el móvil: la cámara de 2× o 3×.",
+  ba3:"Compresión",
+  ba3d:"Haz dos fotos del mismo sujeto con algo lejos detrás, como una torre o una colina: una de cerca con gran angular y otra de lejos con teleobjetivo. Mantén el sujeto del mismo tamaño en ambas. Después elige las fotos una por una.",
+  b1ok:"Focal {v}: un gran angular de verdad, tienes mucho espacio en la imagen.",
+  b1mid:"Focal {v}: casi gran angular. Abre un poco más, a 24 mm o menos.",
+  b1bad:"Focal {v}: eso ya es zoom. Gira el anillo de zoom hasta el número más pequeño.",
+  b1fg:"Consejo de gran angular: algo en primer plano, como una piedra, una flor o una valla, da profundidad a tu foto.",
+  b1phone:"En el móvil, usa la cámara de 0,5× para una imagen extra amplia.",
+  b2ok:"Focal {v}: buen zoom, acercas el detalle.",
+  b2mid:"Focal {v}: un poco de zoom. Para un detalle de verdad: 85 mm o más.",
+  b2bad:"Focal {v}: todavía es amplio. Haz zoom a 85 mm o más.",
+  b2phone:"Usa la cámara de 2× o 3× del móvil. Más zoom que eso es digital y cuesta nitidez.",
+  b3first:"La foto 1 está lista ({v}). Elige ahora tu segunda foto, con una focal muy distinta.",
+  b3ok:"Foto 1: {a}, foto 2: {b}. Una gran diferencia, así que ves bien la compresión. Fíjate en lo grande que es el fondo respecto a tu sujeto.",
+  b3small:"Foto 1: {a}, foto 2: {b}. La diferencia es pequeña. Elige focales más separadas, por ejemplo 24 y 135 mm, y mantén el sujeto del mismo tamaño en ambas.",
+  b3reset:"Empezar de nuevo",
+  b3photo:"Foto",
+  bNoFl:"Esta foto no tiene datos de focal. Usa el archivo original para que pueda revisar tu focal.",
+  bCrop:"Tu cámara no guardó un equivalente de 35 mm. Si tiene un sensor más pequeño (APS-C), el efecto es unas 1,5× más cerrado de lo que sugiere el número.",
+  toolF:"¿Buscas un sitio con vistas amplias para comparar gran angular y teleobjetivo? Encuentra miradores en PhotoByArno Scout.",
   tryIt:"Pruébalo tú",tryLead:"Toca Recorrido para una visita guiada o usa los controles. Cada paso del control es un paso de luz.",
   dark:"Muy oscura",good:"Bien",light:"Muy clara",
   aperture:"Apertura",shutter:"Obturador",iso:"ISO",
@@ -1013,7 +1197,7 @@ const LESSONS=[
   {id:'belichtingsdriehoek',icon:'ti-aperture',t:'l1',d:'l1d',ready:true,render:renderExposure},
   {id:'scherpstelmodi',icon:'ti-focus-centered',t:'lf',d:'lfd',ready:true,render:renderFocus},
   {id:'scherptediepte',icon:'ti-focus-2',t:'l2',d:'l2d',ready:true,render:renderDof},
-  {id:'brandpuntsafstand',icon:'ti-zoom-in',t:'l3',d:'l3d'},
+  {id:'brandpuntsafstand',icon:'ti-zoom-in',t:'l3',d:'l3d',ready:true,render:renderFocal},
   {id:'histogram',icon:'ti-chart-histogram',t:'l4',d:'l4d'},
   {id:'witbalans',icon:'ti-temperature',t:'l5',d:'l5d'},
   {id:'lichtinval',icon:'ti-sun',t:'l7',d:'l7d'},
@@ -1512,6 +1696,159 @@ function renderDof(){
   tb.onclick=()=>{if(tm){stopT();return}if(!toured){toured=true;track('scherptediepte/tour-start','Tour started',true)}st=0;go();tm=setInterval(go,5200);tb.innerHTML=`<i class="ti ti-player-pause" aria-hidden="true"></i>${t('stop')}`};
   $('rst').onclick=()=>{stopT();$('dn').value=2;$('ds').value=5;$('df').value=2;$('cap').textContent='';draw()};
   draw();
+  cleanup=()=>{if(tm)clearInterval(tm)};
+}
+
+function focalOf(ex){if(!ex)return null;if(ex.fl35)return{mm:ex.fl35,eq:true};if(ex.fl)return{mm:ex.fl,eq:false};return null}
+function renderFocalAssignment(box){
+  box.innerHTML=`<h2>${t('asgTitle')}</h2><p style="color:var(--text2);font-size:15px">${t('asgLead')}</p>
+   <div class="seg wrap" id="baSeg"><button data-a="1">${t('ba1')}</button><button data-a="2">${t('ba2')}</button><button data-a="3">${t('ba3')}</button></div>
+   <div class="concept"><i class="ti ti-target" aria-hidden="true"></i><div><p id="baDesc"></p></div></div>
+   <p class="small">${t('asgFileHint')}</p>
+   <label class="btn primary pick" for="baFile"><i class="ti ti-photo-up" aria-hidden="true"></i>${t('choose')}</label>
+   <input type="file" id="baFile" accept="image/jpeg,image/png,image/webp" style="display:none">
+   <div id="asgOut"></div>`;
+  let asg=1,last=null,shots=[];
+  const seg=box.querySelector('#baSeg'),out=box.querySelector('#asgOut');
+  const fail=()=>{out.innerHTML=`<ul class="fbk"><li class="n"><i class="ti ti-alert-circle" aria-hidden="true"></i><span>${t('badFile')}</span></li></ul>`};
+  const li=(arr,c,ic)=>arr.map(x=>`<li class="${c}"><i class="ti ${ic}" aria-hidden="true"></i><span>${x}</span></li>`).join('');
+  const isPhone=ex=>ex&&/apple|iphone|pixel|google|samsung|xiaomi|redmi|oneplus|huawei|oppo|vivo|motorola|realme|nothing|honor/i.test((ex.make||'')+' '+(ex.model||''));
+  function setA(n){asg=n;seg.querySelectorAll('button').forEach(b=>b.classList.toggle('on',+b.dataset.a===n));box.querySelector('#baDesc').textContent=t('ba'+n+'d');
+    if(n===3)renderPair();else if(last)evaluate();else out.innerHTML=''}
+  seg.querySelectorAll('button').forEach(b=>b.onclick=()=>setA(+b.dataset.a));
+  box.querySelector('#baFile').addEventListener('change',e=>{
+    const f=e.target.files&&e.target.files[0];if(!f)return;
+    out.innerHTML=`<p class="small">${t('analyzing')}</p>`;
+    const rd=new FileReader();
+    rd.onload=()=>{
+      const exif=parseExif(rd.result),url=URL.createObjectURL(f),img=new Image();
+      img.onload=()=>{try{
+        const shot={exif:exif,url:url,px:analysePixels(img)};
+        if(asg===3){if(shots.length>=2){shots.forEach(x=>URL.revokeObjectURL(x.url));shots=[]}shots.push(shot);renderPair()}
+        else{if(last)URL.revokeObjectURL(last.url);last=shot;evaluate()}
+        track('brandpuntsafstand/assignment-'+asg,'Assignment photo checked',true)}catch(err){fail()}};
+      img.onerror=fail;img.src=url;
+    };
+    rd.onerror=fail;rd.readAsArrayBuffer(f);e.target.value='';
+  });
+  function chipsOf(ex){const fo=focalOf(ex);return ex?[ex.fn?fmtFn(ex.fn):'',ex.exp?fmtExp(ex.exp):'',ex.iso?'ISO '+ex.iso:'',fo?Math.round(fo.mm)+' mm':''].filter(Boolean).map(c=>`<span class="chip">${c}</span>`).join(''):''}
+  function evaluate(){
+    const ex=last.exif,fo=focalOf(ex),phone=isPhone(ex),good=[],tips=[],notes=[];
+    const fill=(k,o)=>t(k).replace('{v}',o.v||'').replace('{f}',o.f||'');
+    if(!ex)notes.push(t('faNoExif'));else if(!fo)notes.push(t('bNoFl'));
+    if(phone)notes.push(t('phoneNote'));
+    if(fo&&!fo.eq&&!phone)notes.push(t('bCrop'));
+    if(fo){const v=Math.round(fo.mm)+' mm',mm=fo.mm;
+      if(asg===1){if(mm<=28)good.push(fill('b1ok',{v:v}));else if(mm<=40)tips.push(fill('b1mid',{v:v}));else tips.push(fill('b1bad',{v:v}));
+        if(phone&&mm>20)tips.push(t('b1phone'));tips.push(t('b1fg'))}
+      if(asg===2){if(mm>=85)good.push(fill('b2ok',{v:v}));else if(mm>=50)tips.push(fill('b2mid',{v:v}));else tips.push(fill('b2bad',{v:v}));
+        if(phone&&mm<50)tips.push(t('b2phone'));
+        if(ex.exp&&!phone&&ex.exp>1/mm+1e-6)tips.push(fill('shake',{v:fmtExp(ex.exp),f:Math.round(mm)}))}
+    }else if(asg===1)tips.push(t('b1fg'));
+    if(last.px.sharp<40)tips.push(t('faSharpNo'));
+    const chips=chipsOf(ex);
+    out.innerHTML=`<img src="${last.url}" alt="">
+     ${chips?`<p class="lbl">${t('yourSettings')}</p><div class="chips">${chips}</div>`:''}
+     ${notes.length?`<ul class="fbk">${li(notes,'n','ti-info-circle')}</ul>`:''}
+     ${good.length?`<h3>${t('goodH')}</h3><ul class="fbk">${li(good,'g','ti-circle-check')}</ul>`:''}
+     ${tips.length?`<h3>${t('tipsH')}</h3><ul class="fbk">${li(tips,'t','ti-bulb')}</ul>`:''}
+     <p class="small">${t('encourage')}</p>`;
+    postHeight();
+  }
+  function renderPair(){
+    if(!shots.length){out.innerHTML='';postHeight();return}
+    const fl=shots.map(x=>focalOf(x.exif)),good=[],tips=[],notes=[];
+    const lbl=f=>f?Math.round(f.mm)+' mm':'?';
+    if(shots.some((x,i)=>!fl[i]))notes.push(t('bNoFl'));
+    if(shots.length===1)notes.push(t('b3first').replace('{v}',lbl(fl[0])));
+    else if(fl[0]&&fl[1]){const r=Math.max(fl[0].mm,fl[1].mm)/Math.min(fl[0].mm,fl[1].mm);
+      (r>=3?good:tips).push(t(r>=3?'b3ok':'b3small').replace('{a}',lbl(fl[0])).replace('{b}',lbl(fl[1])))}
+    out.innerHTML=`<div class="pair">${shots.map((x,i)=>`<figure><img src="${x.url}" alt=""><figcaption>${t('b3photo')} ${i+1} · ${lbl(fl[i])}</figcaption></figure>`).join('')}</div>
+     ${notes.length?`<ul class="fbk">${li(notes,'n','ti-info-circle')}</ul>`:''}
+     ${good.length?`<h3>${t('goodH')}</h3><ul class="fbk">${li(good,'g','ti-circle-check')}</ul>`:''}
+     ${tips.length?`<h3>${t('tipsH')}</h3><ul class="fbk">${li(tips,'t','ti-bulb')}</ul>`:''}
+     ${shots.length===2?`<div class="btns"><button class="btn" id="b3reset"><i class="ti ti-refresh" aria-hidden="true"></i>${t('b3reset')}</button></div>`:''}`;
+    const rb=out.querySelector('#b3reset');if(rb)rb.onclick=()=>{shots.forEach(x=>URL.revokeObjectURL(x.url));shots=[];renderPair()};
+    postHeight();
+  }
+  setA(1);
+}
+function renderFocal(){
+  app.innerHTML=`${backBtn()}<h1>${t('l3')}</h1><p class="lead">${t('bIntro')}</p>
+  <div class="concepts">
+   <div class="concept"><i class="ti ti-angle" aria-hidden="true"></i><div><h3>${t('bA')}</h3><p>${t('bAd')}</p></div></div>
+   <div class="concept"><i class="ti ti-perspective" aria-hidden="true"></i><div><h3>${t('bP')}</h3><p>${t('bPd')}</p></div></div>
+   <div class="concept"><i class="ti ti-camera" aria-hidden="true"></i><div><h3>${t('bU')}</h3><p>${t('bUd')}</p></div></div>
+  </div>
+  <div class="key"><i class="ti ti-walk" aria-hidden="true"></i><div><h3>${t('bKey')}</h3><p>${t('bKeyd')}</p></div></div>
+  <div class="key" style="margin-top:10px"><i class="ti ti-device-mobile" aria-hidden="true"></i><div><h3>${t('bKey2')}</h3><p>${t('bKey2d')}</p></div></div>
+  <h2>${t('tryIt')}</h2><p style="color:var(--text2);font-size:15px">${t('bTryLead')}</p>
+  <div class="stage">
+   <canvas id="bc" width="680" height="420" aria-label="${t('l3')}"></canvas>
+   <p class="evtxt" id="bread"></p>
+   <p class="lbl">${t('bModeLbl')}</p>
+   <div class="seg" id="bSeg"><button data-m="A">${t('bMode1')}</button><button data-m="B">${t('bMode2')}</button></div>
+   <div class="row"><label for="bf">${t('bFL')}</label><input type="range" min="0" max="7" step="1" value="1" id="bf"><span id="bfo"></span></div><p class="hint"></p>
+   <div class="btns"><button class="btn primary" id="tour"></button><button class="btn" id="rst"><i class="ti ti-refresh" aria-hidden="true"></i>${t('reset')}</button></div>
+   <p class="cap" id="cap"></p>
+  </div>
+  <h2>${t('quiz')}</h2><div id="quiz"></div>
+  <div id="asg"></div>
+  ${toolLink('scout','ti-map-pin','toolF','brandpuntsafstand','toolGo')}
+  ${lessonFooter('brandpuntsafstand','l3')}`;
+  renderQuiz(document.getElementById('quiz'),'bQs');
+  renderFocalAssignment(document.getElementById('asg'));
+  const $=id=>document.getElementById(id);
+  const c=$('bc'),x=c.getContext('2d'),W=680,H=420,HZ=H*0.52,CAMH=1.5,FLV=[14,24,35,50,85,135,200,400];
+  const nf=v=>v.toLocaleString(lang,{maximumFractionDigits:v>=10?0:1});
+  const trees=[];for(let z=-90;z<=60;z+=7.5){const k=Math.round(z/7.5);trees.push({x:(k%2?1:-1)*(8+Math.abs((k*7)%5)*0.8),z:z+Math.abs((k*5)%4),r:2+Math.abs((k*3)%3)*0.4})}
+  let mode='A';
+  function draw(){
+    const f=FLV[+$('bf').value],F=f/36*W,dist=mode==='A'?5:5*f/24,zc=-dist;
+    const P=(X,h,Z)=>{const dz=Z-zc;return dz<=0.3?null:[W/2+X*F/dz,HZ-(h-CAMH)*F/dz,F/dz]};
+    x.fillStyle='#a9d4ee';x.fillRect(0,0,W,HZ);x.fillStyle='#93c06a';x.fillRect(0,HZ,W,H-HZ);
+    const mz=520,mh=42,mw=95;const a=P(-mw,0,mz),b=P(mw,0,mz),tp=P(0,mh,mz);
+    x.fillStyle='#7b8ea3';x.beginPath();x.moveTo(a[0],a[1]);x.lineTo(tp[0],tp[1]);x.lineTo(b[0],b[1]);x.closePath();x.fill();
+    const sl=P(-mw*0.27,mh*0.73,mz),sr=P(mw*0.27,mh*0.73,mz);x.fillStyle='#f4f6f8';x.beginPath();x.moveTo(sl[0],sl[1]);x.lineTo(tp[0],tp[1]);x.lineTo(sr[0],sr[1]);x.closePath();x.fill();
+    const hz=430;x.fillStyle='#7fa86a';x.beginPath();const h0=P(-400,0,hz);x.moveTo(h0[0],h0[1]);for(let X=-400;X<=400;X+=20){const q=P(X,3+2*Math.sin(X/37),hz);x.lineTo(q[0],q[1])}const h1=P(400,0,hz);x.lineTo(h1[0],h1[1]);x.closePath();x.fill();
+    x.fillStyle='#93c06a';x.fillRect(0,P(0,0,hz)[1],W,H);
+    const near=Math.max(zc+0.6,-200);const p1=P(-1,0,near),p2=P(1,0,near),p3=P(1,0,mz-60),p4=P(-1,0,mz-60);
+    x.fillStyle='#d9c79a';x.beginPath();x.moveTo(p1[0],p1[1]);x.lineTo(p2[0],p2[1]);x.lineTo(p3[0],p3[1]);x.lineTo(p4[0],p4[1]);x.closePath();x.fill();
+    const items=trees.map(t=>({k:'t',o:t,z:t.z})).concat([{k:'p',z:0}]).sort((a,b)=>b.z-a.z);
+    for(const it of items){
+      if(it.k==='t'){const o=it.o,base=P(o.x,0,o.z);if(!base)continue;const s=base[2];if(base[0]<-o.r*s*1.5||base[0]>W+o.r*s*1.5)continue;
+        x.fillStyle='#6b4a2e';x.fillRect(base[0]-0.25*s,base[1]-3.2*s,0.5*s,3.2*s);x.fillStyle=(Math.round(o.z)%2?'#2f6b3a':'#3f7d45');x.beginPath();x.arc(base[0],base[1]-4.8*s,o.r*s,0,7);x.fill()}
+      else{const q=P(0,0,0);const s=q[2];x.save();x.translate(q[0],q[1]);x.scale(s,s);
+        x.fillStyle='#2d3e5c';x.fillRect(-0.16,-0.85,0.13,0.85);x.fillRect(0.03,-0.85,0.13,0.85);
+        x.fillStyle='#d8432f';x.beginPath();x.moveTo(-0.24,-0.82);x.lineTo(0.24,-0.82);x.lineTo(0.2,-1.45);x.lineTo(-0.2,-1.45);x.fill();
+        x.fillStyle='#3a6ea5';x.fillRect(-0.3,-1.42,0.12,0.4);
+        x.fillStyle='#f1c39b';x.beginPath();x.arc(0,-1.6,0.13,0,7);x.fill();x.fillStyle='#3a2a1e';x.beginPath();x.arc(0,-1.65,0.135,Math.PI,0);x.fill();x.restore()}
+    }
+    const ang=2*Math.atan(21.63/f)*180/Math.PI;
+    const mx=W-170,my=12,mw2=156,mh2=118;x.fillStyle='rgba(255,255,255,.88)';x.fillRect(mx,my,mw2,mh2);x.strokeStyle='rgba(0,0,0,.25)';x.strokeRect(mx+.5,my+.5,mw2-1,mh2-1);
+    const pyy=my+42,cy=Math.min(my+mh2-12,pyy+14+Math.log(dist/5+1)*24),cx=mx+mw2/2,ha=Math.min(85,ang/2)*Math.PI/180,L=200;
+    x.save();x.beginPath();x.rect(mx,my,mw2,mh2);x.clip();
+    x.fillStyle='rgba(29,111,209,.18)';x.beginPath();x.moveTo(cx,cy);x.lineTo(cx-Math.tan(ha)*L,cy-L);x.lineTo(cx+Math.tan(ha)*L,cy-L);x.closePath();x.fill();
+    x.strokeStyle='#1d6fd1';x.lineWidth=1.5;x.beginPath();x.moveTo(cx-Math.tan(ha)*L,cy-L);x.lineTo(cx,cy);x.lineTo(cx+Math.tan(ha)*L,cy-L);x.stroke();
+    x.fillStyle='#7b8ea3';x.beginPath();x.moveTo(cx-26,my+18);x.lineTo(cx,my+6);x.lineTo(cx+26,my+18);x.closePath();x.fill();
+    x.fillStyle='#d8432f';x.beginPath();x.arc(cx+3,pyy,4,0,7);x.fill();
+    x.fillStyle='#1d1d1b';x.fillRect(cx-6,cy-4,12,8);x.restore();
+    x.fillStyle='#1d1d1b';x.font='600 12px -apple-system,Segoe UI,Roboto,sans-serif';x.textAlign='left';x.fillText(Math.round(ang)+'°',mx+8,my+mh2-8);
+    x.font='600 20px -apple-system,Segoe UI,Roboto,sans-serif';const lbl=f+' mm';const w=x.measureText(lbl).width+20;x.fillStyle='rgba(0,0,0,.6)';x.fillRect(14,14,w,32);x.fillStyle='#fff';x.fillText(lbl,24,37);
+    $('bfo').textContent=f+' mm';
+    $('bread').textContent=f+' mm · '+t('bAngle')+' '+Math.round(ang)+'° · '+t('bDist')+' '+nf(dist)+' m';
+  }
+  function setMode(m){mode=m;document.querySelectorAll('#bSeg button').forEach(b=>b.classList.toggle('on',b.dataset.m===m));draw()}
+  let used=false;
+  document.querySelectorAll('#bSeg button').forEach(b=>b.onclick=()=>{stopT();$('cap').textContent='';setMode(b.dataset.m);if(!used){used=true;track('brandpuntsafstand/slider-used','Slider used',true)}});
+  $('bf').addEventListener('input',()=>{stopT();$('cap').textContent='';draw();if(!used){used=true;track('brandpuntsafstand/slider-used','Slider used',true)}});
+  const steps=[['A',1],['A',3],['A',6],['B',1],['B',4],['B',6],['A',3]];
+  let tm=null,st=0,toured=false;const tb=$('tour'),playLbl=()=>`<i class="ti ti-player-play" aria-hidden="true"></i>${t('tour')}`;tb.innerHTML=playLbl();
+  function go(){const [m,fi]=steps[st];$('bf').value=fi;setMode(m);$('cap').textContent=(st+1)+'/'+steps.length+' · '+t('bTours')[st];st++;if(st>=steps.length)stopT()}
+  function stopT(){if(tm){clearInterval(tm);tm=null}st=0;tb.innerHTML=playLbl()}
+  tb.onclick=()=>{if(tm){stopT();return}if(!toured){toured=true;track('brandpuntsafstand/tour-start','Tour started',true)}st=0;go();tm=setInterval(go,5200);tb.innerHTML=`<i class="ti ti-player-pause" aria-hidden="true"></i>${t('stop')}`};
+  $('rst').onclick=()=>{stopT();$('bf').value=1;$('cap').textContent='';setMode('A')};
+  setMode('A');
   cleanup=()=>{if(tm)clearInterval(tm)};
 }
 
