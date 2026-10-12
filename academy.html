@@ -145,13 +145,33 @@ footer{margin-top:36px;padding-top:14px;border-top:1px solid var(--line);font-si
   .embedded .stage,.embedded #quiz,.embedded #asg,.embedded .tool{max-width:860px}
 }
 @media (max-width:420px){.row label{width:78px}.hint{margin-left:88px}.row span{min-width:64px}}
+/* 3D-onderdelen (v1.16) */
+.k3v{position:relative;width:100%;aspect-ratio:4/3;max-height:460px;border-radius:10px;overflow:hidden;background:var(--soft);touch-action:pan-y;cursor:grab}
+.k3v:active{cursor:grabbing}
+.k3v.k3wide{aspect-ratio:16/10;margin-top:4px}
+.k3v canvas{width:100%;height:100%;border-radius:0}
+.k3msg{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;text-align:center;padding:16px;margin:0;font-size:13px;color:var(--muted)}
+.k3bar{display:flex;align-items:center;gap:6px 12px;flex-wrap:wrap;margin:10px 0 10px}
+.k3bar .seg{margin:0;flex:0 1 auto}
+.k3bar .seg button{padding:7px 12px}
+.k3hint{font-size:12px;color:var(--muted);margin-left:auto}
+.k3stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:8px 0 0}
+.k3stats div{background:var(--soft);border-radius:10px;padding:8px 10px;display:grid;gap:2px;align-content:start}
+.k3stats span{font-size:11.5px;color:var(--text2);line-height:1.3}
+.k3stats b{font-size:15px;font-variant-numeric:tabular-nums}
+.k3photo{position:relative;width:100%;aspect-ratio:16/10;border-radius:10px;overflow:hidden;background:#3c5a3a;margin-top:4px}
+.k3photo canvas{position:absolute;inset:-6%;width:112%;height:112%;border-radius:0}
+.k3photo canvas.fg{inset:0;width:100%;height:100%}
+.k3sw{margin:0 0 10px;max-width:340px}
+.k3sw button i{font-size:15px;vertical-align:-2px}
+.k3sec .seg{margin-top:0}
 </style>
 </head>
 <body>
 <div class="wrap">
   <header>
     <span class="logo">PhotoByArno Academy</span>
-    <span class="badge">v1.15</span>
+    <span class="badge">v1.16</span>
     <div class="lang" id="langs"></div>
   </header>
   <main id="app"></main>
@@ -177,6 +197,14 @@ en:{
   homeTitle:"Learn photography, step by step",
   homeLead:"Short lessons with animations you control yourself. Slide, watch what happens and understand why.",
   lessons:"Lessons",available:"Start lesson",soon:"Coming soon",back:"All lessons",
+  k3load:"Loading 3D…",k3fail:"3D is not available in this browser. The rest of the lesson works as usual.",k3drag:"Drag to rotate",k3front:"Front",k3angle:"Angled",k3side:"Side",k3top:"Top",k3behind:"Behind camera",k3photo:"Photo",k3view3d:"3D view",
+  k3irisH:"Look inside the camera",k3irisLead:"The aperture is a ring of thin metal blades. Slide and watch the opening get smaller: less light reaches the sensor, which turns darker.",
+  k3shutLead:"Right in front of the sensor sit two curtains. The first one opens, the second follows and closes. At a fast shutter speed only a narrow slit travels across the sensor, yet every line of the sensor gets exactly the same time.",
+  k3light:"Light compared to f/1.8",k3stops:"Stops less light",k3open:"Opening at 50 mm",k3fire:"Release shutter",k3slit:"Open slit",k3slitAll:"Whole sensor",k3time:"Exposure time",k3slow:"Slowed down",
+  k3fLead:"The coloured plane is where the camera focuses. Green: the dog is in that plane and sharp. Red: the dog has left the plane.",
+  k3dLead:"The green block is everything that looks sharp, the blue plane is where you focus. Change aperture, distance or focal length and watch the block grow or shrink.",
+  k3bLead:"The blue shape is what the camera sees. A longer focal length makes it narrower. With 'Subject same size' the camera walks back, so the person stays the same size while the mountain seems to come closer.",
+  k3bokH:"Why highlights take on a shape",k3bokLead:"Small lights in a blurry background take the shape of the aperture opening (bokeh). Wide open they are big and soft. Stop down and they get smaller, with straight edges: seven-sided here, because this lens has 7 blades.",
   l1:"The exposure triangle",l1d:"Aperture, shutter speed and ISO: how they shape your photo together.",
   l2:"Depth of field",l2d:"What decides how much of your photo is sharp?",
   l3:"Focal length",l3d:"Wide angle or telephoto: what does it do to your image?",
@@ -425,6 +453,14 @@ nl:{
   homeTitle:"Leer fotografie, stap voor stap",
   homeLead:"Korte lessen met animaties die je zelf kunt bedienen. Schuif, kijk wat er gebeurt en begrijp waarom.",
   lessons:"Lessen",available:"Start les",soon:"Binnenkort",back:"Alle lessen",
+  k3load:"3D laden…",k3fail:"3D wordt niet ondersteund in deze browser. De rest van de les werkt gewoon.",k3drag:"Sleep om te draaien",k3front:"Voor",k3angle:"Schuin",k3side:"Zijkant",k3top:"Boven",k3behind:"Achter camera",k3photo:"Foto",k3view3d:"3D-weergave",
+  k3irisH:"Kijk in de camera",k3irisLead:"Het diafragma is een ring van dunne metalen lamellen. Schuif en zie de opening kleiner worden: er valt minder licht op de sensor, die daardoor donkerder wordt.",
+  k3shutLead:"Vlak voor de sensor zitten twee gordijntjes. Het eerste gaat open, het tweede volgt en sluit weer. Bij een korte sluitertijd schuift er maar een smalle spleet over de sensor, maar elke regel van de sensor krijgt precies even lang licht.",
+  k3light:"Licht t.o.v. f/1.8",k3stops:"Stops minder licht",k3open:"Opening bij 50 mm",k3fire:"Ontspan sluiter",k3slit:"Open spleet",k3slitAll:"Hele sensor",k3time:"Belichtingstijd",k3slow:"Vertraagd",
+  k3fLead:"Het gekleurde vlak is waar de camera op scherpstelt. Groen: de hond staat in dat vlak en is scherp. Rood: de hond is uit het vlak gelopen.",
+  k3dLead:"Het groene blok is alles wat scherp lijkt, het blauwe vlak is waar je op scherpstelt. Verander diafragma, afstand of brandpuntsafstand en zie het blok groeien of krimpen.",
+  k3bLead:"De blauwe vorm is wat de camera ziet. Hoe langer de brandpuntsafstand, hoe smaller. Bij 'Onderwerp even groot' loopt de camera naar achteren: de persoon blijft even groot en de berg lijkt dichterbij te komen.",
+  k3bokH:"Waarom lichtvlekjes een vorm krijgen",k3bokLead:"Lichtjes in een vage achtergrond krijgen de vorm van de diafragma-opening (bokeh). Wijd open zijn ze groot en zacht. Knijp je het diafragma dicht, dan worden ze kleiner en hoekig: hier zevenhoekig, omdat dit objectief 7 lamellen heeft.",
   l1:"De belichtingsdriehoek",l1d:"Diafragma, sluitertijd en ISO: hoe ze samen je foto bepalen.",
   l2:"Scherptediepte",l2d:"Wat bepaalt hoeveel van je foto scherp is?",
   l3:"Brandpuntsafstand",l3d:"Groothoek of tele: wat doet het met je beeld?",
@@ -673,6 +709,14 @@ de:{
   homeTitle:"Fotografie lernen, Schritt für Schritt",
   homeLead:"Kurze Lektionen mit Animationen, die du selbst steuerst. Schieben, beobachten und verstehen, warum.",
   lessons:"Lektionen",available:"Lektion starten",soon:"Demnächst",back:"Alle Lektionen",
+  k3load:"3D wird geladen…",k3fail:"3D wird in diesem Browser nicht unterstützt. Der Rest der Lektion funktioniert normal.",k3drag:"Zum Drehen ziehen",k3front:"Vorne",k3angle:"Schräg",k3side:"Seite",k3top:"Oben",k3behind:"Hinter der Kamera",k3photo:"Foto",k3view3d:"3D-Ansicht",
+  k3irisH:"Ein Blick in die Kamera",k3irisLead:"Die Blende ist ein Ring aus dünnen Metalllamellen. Schiebe den Regler und sieh, wie die Öffnung kleiner wird: Es fällt weniger Licht auf den Sensor, der dadurch dunkler wird.",
+  k3shutLead:"Direkt vor dem Sensor sitzen zwei Vorhänge. Der erste öffnet sich, der zweite folgt und schließt wieder. Bei kurzer Belichtungszeit wandert nur ein schmaler Schlitz über den Sensor, aber jede Zeile des Sensors bekommt genau gleich lange Licht.",
+  k3light:"Licht im Vergleich zu f/1.8",k3stops:"Stufen weniger Licht",k3open:"Öffnung bei 50 mm",k3fire:"Auslösen",k3slit:"Offener Schlitz",k3slitAll:"Ganzer Sensor",k3time:"Belichtungszeit",k3slow:"Verlangsamt",
+  k3fLead:"Die farbige Fläche zeigt, worauf die Kamera scharfstellt. Grün: Der Hund ist in dieser Ebene und scharf. Rot: Der Hund hat die Ebene verlassen.",
+  k3dLead:"Der grüne Block ist alles, was scharf wirkt, die blaue Fläche ist die Schärfeebene. Ändere Blende, Entfernung oder Brennweite und sieh, wie der Block wächst oder schrumpft.",
+  k3bLead:"Die blaue Form zeigt, was die Kamera sieht. Je länger die Brennweite, desto schmaler. Bei „Motiv gleich groß“ geht die Kamera zurück: Die Person bleibt gleich groß, und der Berg scheint näher zu kommen.",
+  k3bokH:"Warum Lichtpunkte eine Form bekommen",k3bokLead:"Kleine Lichter im unscharfen Hintergrund nehmen die Form der Blendenöffnung an (Bokeh). Bei offener Blende sind sie groß und weich. Blendest du ab, werden sie kleiner und eckig: hier siebeneckig, weil dieses Objektiv 7 Lamellen hat.",
   l1:"Das Belichtungsdreieck",l1d:"Blende, Belichtungszeit und ISO: wie sie gemeinsam dein Foto bestimmen.",
   l2:"Schärfentiefe",l2d:"Was bestimmt, wie viel von deinem Foto scharf ist?",
   l3:"Brennweite",l3d:"Weitwinkel oder Tele: Was macht das mit deinem Bild?",
@@ -921,6 +965,14 @@ es:{
   homeTitle:"Aprende fotografía, paso a paso",
   homeLead:"Lecciones cortas con animaciones que controlas tú. Desliza, observa qué pasa y entiende por qué.",
   lessons:"Lecciones",available:"Empezar lección",soon:"Próximamente",back:"Todas las lecciones",
+  k3load:"Cargando 3D…",k3fail:"Este navegador no admite 3D. El resto de la lección funciona con normalidad.",k3drag:"Arrastra para girar",k3front:"Frente",k3angle:"Inclinada",k3side:"Lateral",k3top:"Arriba",k3behind:"Tras la cámara",k3photo:"Foto",k3view3d:"Vista 3D",
+  k3irisH:"Mira dentro de la cámara",k3irisLead:"El diafragma es un anillo de finas láminas metálicas. Desliza y verás cómo la abertura se hace más pequeña: llega menos luz al sensor, que se oscurece.",
+  k3shutLead:"Justo delante del sensor hay dos cortinillas. La primera se abre y la segunda la sigue y vuelve a cerrar. Con una velocidad rápida solo recorre el sensor una rendija estrecha, pero cada línea del sensor recibe luz exactamente el mismo tiempo.",
+  k3light:"Luz respecto a f/1.8",k3stops:"Pasos menos de luz",k3open:"Abertura a 50 mm",k3fire:"Disparar",k3slit:"Rendija abierta",k3slitAll:"Sensor completo",k3time:"Tiempo de exposición",k3slow:"Ralentizado",
+  k3fLead:"El plano de color es donde enfoca la cámara. Verde: el perro está en ese plano y nítido. Rojo: el perro ha salido del plano.",
+  k3dLead:"El bloque verde es todo lo que se ve nítido; el plano azul es donde enfocas. Cambia la apertura, la distancia o la focal y verás crecer o encoger el bloque.",
+  k3bLead:"La forma azul es lo que ve la cámara. Cuanto más larga la focal, más estrecha. Con «Sujeto del mismo tamaño» la cámara retrocede: la persona mantiene su tamaño y la montaña parece acercarse.",
+  k3bokH:"Por qué las luces toman una forma",k3bokLead:"Las pequeñas luces de un fondo desenfocado toman la forma de la abertura del diafragma (bokeh). Con el diafragma abierto son grandes y suaves. Al cerrarlo se hacen más pequeñas y con lados rectos: aquí de siete lados, porque este objetivo tiene 7 láminas.",
   l1:"El triángulo de exposición",l1d:"Apertura, velocidad de obturación e ISO: cómo definen juntos tu foto.",
   l2:"Profundidad de campo",l2d:"¿Qué determina cuánto de tu foto está nítido?",
   l3:"Distancia focal",l3d:"Gran angular o teleobjetivo: ¿qué le hace a tu imagen?",
@@ -1209,6 +1261,7 @@ let cleanup=null;
 
 function route(){
   if(cleanup){cleanup();cleanup=null}
+  k3stopAll();
   const id=location.hash.slice(1);
   const L=LESSONS.find(l=>l.id===id&&l.ready);
   if(L){L.render();}else renderHome();
@@ -1388,6 +1441,19 @@ function renderExposure(){
    <div class="concept"><i class="ti ti-adjustments" aria-hidden="true"></i><div><h3>${t('cI')}</h3><p>${t('cId')}</p></div></div>
   </div>
   <div class="key"><i class="ti ti-arrows-exchange" aria-hidden="true"></i><div><h3>${t('cK')}</h3><p>${t('cKd')}</p></div></div>
+  <h2>${t('k3irisH')}</h2><p style="color:var(--text2);font-size:15px" id="k3lead">${t('k3irisLead')}</p>
+  <div class="stage k3sec">
+   <div class="seg" id="k3M"><button data-m="a" class="on">${t('aperture')}</button><button data-m="s">${t('shutter')}</button></div>
+   <div id="k3A">${k3block('k3ir',K3_IRV,'',1)}
+    <div class="row"><label for="k3a">${t('aperture')}</label><input type="range" min="0" max="6" step="1" value="3" id="k3a"><span id="k3ao"></span></div>
+    <div class="k3stats"><div><span>${t('k3light')}</span><b id="k3s1"></b></div><div><span>${t('k3stops')}</span><b id="k3s2"></b></div><div><span>${t('k3open')}</span><b id="k3s3"></b></div></div>
+   </div>
+   <div id="k3S" style="display:none">${k3block('k3sh',K3_SHV,'',1)}
+    <div class="row"><label for="k3s">${t('shutter')}</label><input type="range" min="0" max="6" step="1" value="1" id="k3s"><span id="k3so"></span></div>
+    <div class="btns"><button class="btn primary" id="k3fire"><i class="ti ti-camera" aria-hidden="true"></i>${t('k3fire')}</button></div>
+    <div class="k3stats"><div><span>${t('k3slit')}</span><b id="k3t1"></b></div><div><span>${t('k3time')}</span><b id="k3t2"></b></div><div><span>${t('k3slow')}</span><b>±400×</b></div></div>
+   </div>
+  </div>
   <h2>${t('tryIt')}</h2><p style="color:var(--text2);font-size:15px">${t('tryLead')}</p>
   <div class="stage">
    <canvas id="c" width="680" height="420" aria-label="${t('l1')}"></canvas>
@@ -1461,6 +1527,24 @@ function renderExposure(){
   tb.onclick=()=>{if(tm){stop();return}if(!toured){toured=true;track('belichtingsdriehoek/tour-start','Tour started',true)}st=0;go();tm=setInterval(go,4200);tb.innerHTML=`<i class="ti ti-player-pause" aria-hidden="true"></i>${t('stop')}`};
   $('rst').onclick=()=>{stop();A.value=3;S.value=3;I.value=0;ui();$('cap').textContent=''};
   ui();raf=requestAnimationFrame(frame);
+  {/* 3D: diafragma en sluiter */
+   const ist={f:AN[3],fmin:1.8},sst={s:1/500,fire:1},SVs=[1/1000,1/500,1/250,1/125,1/60,1/30,1/15];let shCtl=null,k3used=false;
+   const used=()=>{if(!k3used){k3used=true;track('belichtingsdriehoek/3d-used','3D used',true)}};
+   const irCtl=k3($('k3ir'),{build:buildIris(ist),views:K3_IRV,def:1,target:[0,0,-0.9],lesson:'belichtingsdriehoek'});k3wire('k3ir',irCtl,K3_IRV);
+   function irUi(){const i=+$('k3a').value,f=AN[i],l=100/Math.pow(2,i);ist.f=f;$('k3ao').textContent=AV[i];
+     $('k3s1').textContent=(l>=10?Math.round(l):k3nf(l))+'%';$('k3s2').textContent=i;$('k3s3').textContent=k3nf(50/f)+' mm'}
+   function shUi(){const i=+$('k3s').value,sv=SVs[i],D=Math.min(6,sv*K3_SLOW);sst.s=sv;$('k3so').textContent=SV[i]+' s';
+     $('k3t1').textContent=D<K3_TRAVEL?Math.round(D/K3_TRAVEL*100)+'%':t('k3slitAll');$('k3t2').textContent=SV[i]+' s'}
+   $('k3a').addEventListener('input',()=>{irUi();used()});
+   $('k3s').addEventListener('input',()=>{shUi();sst.fire++;used()});
+   $('k3fire').onclick=()=>{sst.fire++;used()};
+   const mb=document.querySelectorAll('#k3M button');
+   mb.forEach(b=>b.onclick=()=>{const sh=b.dataset.m==='s';mb.forEach(x=>x.classList.toggle('on',x===b));
+     $('k3A').style.display=sh?'none':'';$('k3S').style.display=sh?'':'none';$('k3lead').textContent=t(sh?'k3shutLead':'k3irisLead');
+     if(sh&&!shCtl){shCtl=k3($('k3sh'),{build:buildShutter(sst),views:K3_SHV,def:1,target:[0,0,0],lesson:'belichtingsdriehoek'});k3wire('k3sh',shCtl,K3_SHV)}
+     else if(sh)sst.fire++;
+     used();postHeight()});
+   irUi();shUi();}
   cleanup=()=>{cancelAnimationFrame(raf);clearInterval(tm)};
 }
 
@@ -1627,7 +1711,7 @@ function renderDof(){
   <div class="key" style="margin-top:10px"><i class="ti ti-target-arrow" aria-hidden="true"></i><div><h3>${t('dSweet')}</h3><p>${t('dSweetd')}</p></div></div>
   <h2>${t('tryIt')}</h2><p style="color:var(--text2);font-size:15px">${t('dTryLead')}</p>
   <div class="stage">
-   <canvas id="dc" width="680" height="420" aria-label="${t('l2')}"></canvas>
+   ${k3switch('k3do')}<canvas id="dc" width="680" height="420" aria-label="${t('l2')}"></canvas>${k3box('k3do',K3_DOFV,'k3dLead')}
    <div class="dofbar" id="dbar"><div class="tr"></div><div class="band" id="dband"></div><div class="fm" id="dfm">▲</div></div>
    <p class="evtxt" id="drange"></p>
    <label class="chk"><input type="checkbox" id="dzone" checked>${t('dZone')}</label>
@@ -1636,6 +1720,11 @@ function renderDof(){
    <div class="row"><label for="df">${t('dFL')}</label><input type="range" min="0" max="5" step="1" value="2" id="df"><span id="dfo"></span></div><p class="hint"></p>
    <div class="btns"><button class="btn primary" id="tour"></button><button class="btn" id="rst"><i class="ti ti-refresh" aria-hidden="true"></i>${t('reset')}</button></div>
    <p class="cap" id="cap"></p>
+  </div>
+  <h2>${t('k3bokH')}</h2><p style="color:var(--text2);font-size:15px">${t('k3bokLead')}</p>
+  <div class="stage k3sec">${k3block('k3bk',K3_IRV,'',0)}
+   <div class="row"><label for="k3b">${t('aperture')}</label><input type="range" min="0" max="8" step="1" value="3" id="k3b"><span id="k3bo"></span></div>
+   <div class="k3photo"><canvas id="k3pb" width="480" height="300"></canvas><canvas id="k3pk" width="480" height="300"></canvas><canvas id="k3pf" class="fg" width="480" height="300"></canvas></div>
   </div>
   <h2>${t('quiz')}</h2><div id="quiz"></div>
   <div id="asg"></div>
@@ -1669,10 +1758,11 @@ function renderDof(){
   function blurPx(f,N,s,d){const sm=s*1000,dm=d*1000;const b=f*f/(N*(sm-f))*Math.abs(dm-sm)/dm;return Math.min(16,b/36*W*3)}
   const LMIN=Math.log(1),LMAX=Math.log(60),pos=d=>Math.max(0,Math.min(100,(Math.log(Math.max(1,Math.min(60,d)))-LMIN)/(LMAX-LMIN)*100));
   const bar=$('dbar');[[2,'dObjF'],[5,'dObjP'],[46,'dObjT']].forEach(([d,k])=>{const e=document.createElement('div');e.className='obj';e.style.left=pos(d)+'%';e.innerHTML=t(k)+'<b></b>';bar.appendChild(e)});
+  let dst=null;
   function draw(){
     const N=AV[+$('dn').value],f=FLV[+$('df').value],s=+$('ds').value,F=f/50*220;
     $('dno').textContent='f/'+N;$('dso').textContent=nf(s)+' m';$('dfo').textContent=f+' mm';
-    const [near,far]=limits(f,N,s);
+    const [near,far]=limits(f,N,s);dst={N:N,f:f,s:s,near:near,far:far};
     x.globalAlpha=1;x.fillStyle='#a9d4ee';x.fillRect(0,0,W,HZ);
     x.fillStyle='#fff1b8';x.beginPath();x.arc(560,70,30,0,7);x.fill();
     x.fillStyle='#93c06a';x.fillRect(0,HZ,W,H-HZ);
@@ -1696,6 +1786,13 @@ function renderDof(){
   tb.onclick=()=>{if(tm){stopT();return}if(!toured){toured=true;track('scherptediepte/tour-start','Tour started',true)}st=0;go();tm=setInterval(go,5200);tb.innerHTML=`<i class="ti ti-player-pause" aria-hidden="true"></i>${t('stop')}`};
   $('rst').onclick=()=>{stopT();$('dn').value=2;$('ds').value=5;$('df').value=2;$('cap').textContent='';draw()};
   draw();
+  k3toggle('k3do',[c],{build:buildDof(()=>dst),views:K3_DOFV,target:[0,0.3,-5],lesson:'scherptediepte'});
+  {/* 3D: bokeh en diafragmavorm */
+   const bst={f:4,fmin:1.4};let bused=false;
+   const bc=k3($('k3bk'),{build:buildIris(bst),views:K3_IRV,def:0,target:[0,0,-0.9],lesson:'scherptediepte'});k3wire('k3bk',bc,K3_IRV);
+   const paint=k3bokeh($('k3pb'),$('k3pk'),$('k3pf'));
+   function bu(){const f=AV[+$('k3b').value];bst.f=f;$('k3bo').textContent='f/'+f;paint(f,1.4)}
+   $('k3b').addEventListener('input',()=>{bu();if(!bused){bused=true;track('scherptediepte/3d-bokeh','Bokeh slider used',true)}});bu();}
   cleanup=()=>{if(tm)clearInterval(tm)};
 }
 
@@ -1784,7 +1881,7 @@ function renderFocal(){
   <div class="key" style="margin-top:10px"><i class="ti ti-device-mobile" aria-hidden="true"></i><div><h3>${t('bKey2')}</h3><p>${t('bKey2d')}</p></div></div>
   <h2>${t('tryIt')}</h2><p style="color:var(--text2);font-size:15px">${t('bTryLead')}</p>
   <div class="stage">
-   <canvas id="bc" width="680" height="420" aria-label="${t('l3')}"></canvas>
+   ${k3switch('k3bf')}<canvas id="bc" width="680" height="420" aria-label="${t('l3')}"></canvas>${k3box('k3bf',K3_BFV,'k3bLead')}
    <p class="evtxt" id="bread"></p>
    <p class="lbl">${t('bModeLbl')}</p>
    <div class="seg" id="bSeg"><button data-m="A">${t('bMode1')}</button><button data-m="B">${t('bMode2')}</button></div>
@@ -1802,9 +1899,9 @@ function renderFocal(){
   const c=$('bc'),x=c.getContext('2d'),W=680,H=420,HZ=H*0.52,CAMH=1.5,FLV=[14,24,35,50,85,135,200,400];
   const nf=v=>v.toLocaleString(lang,{maximumFractionDigits:v>=10?0:1});
   const trees=[];for(let z=-90;z<=60;z+=7.5){const k=Math.round(z/7.5);trees.push({x:(k%2?1:-1)*(8+Math.abs((k*7)%5)*0.8),z:z+Math.abs((k*5)%4),r:2+Math.abs((k*3)%3)*0.4})}
-  let mode='A';
+  let mode='A',bst=null;
   function draw(){
-    const f=FLV[+$('bf').value],F=f/36*W,dist=mode==='A'?5:5*f/24,zc=-dist;
+    const f=FLV[+$('bf').value],F=f/36*W,dist=mode==='A'?5:5*f/24,zc=-dist;bst={f:f,dist:dist};
     const P=(X,h,Z)=>{const dz=Z-zc;return dz<=0.3?null:[W/2+X*F/dz,HZ-(h-CAMH)*F/dz,F/dz]};
     x.fillStyle='#a9d4ee';x.fillRect(0,0,W,HZ);x.fillStyle='#93c06a';x.fillRect(0,HZ,W,H-HZ);
     const mz=520,mh=42,mw=95;const a=P(-mw,0,mz),b=P(mw,0,mz),tp=P(0,mh,mz);
@@ -1849,6 +1946,7 @@ function renderFocal(){
   tb.onclick=()=>{if(tm){stopT();return}if(!toured){toured=true;track('brandpuntsafstand/tour-start','Tour started',true)}st=0;go();tm=setInterval(go,5200);tb.innerHTML=`<i class="ti ti-player-pause" aria-hidden="true"></i>${t('stop')}`};
   $('rst').onclick=()=>{stopT();$('bf').value=1;$('cap').textContent='';setMode('A')};
   setMode('A');
+  k3toggle('k3bf',[c],{build:buildFocal(()=>bst),views:K3_BFV,target:[0,0.3,-1],dist:12,pmin:0.05,lesson:'brandpuntsafstand'});
   cleanup=()=>{if(tm)clearInterval(tm)};
 }
 
@@ -1863,7 +1961,7 @@ function renderFocus(){
   <div class="key"><i class="ti ti-camera" aria-hidden="true"></i><div><h3>${t('fKey')}</h3><p>${t('fKeyd')}</p></div></div>
   <h2>${t('tryIt')}</h2><p style="color:var(--text2);font-size:15px">${t('fTryLead')}</p>
   <div class="stage">
-   <canvas id="fc" width="680" height="420" aria-label="${t('lf')}"></canvas>
+   ${k3switch('k3fo')}<canvas id="fc" width="680" height="420" aria-label="${t('lf')}"></canvas>${k3box('k3fo',K3_FOV,'k3fLead')}
    <div class="dbar" id="dbar"><div class="tr"></div>
      <div class="mkr sub" id="mSub"><span>${t('subjLbl')}</span><b style="background:#d8432f"></b></div>
      <div class="mkr foc" id="mFoc" style="color:var(--accent)"><b style="background:var(--accent);opacity:.85"></b><span>${t('focusLbl')}</span></div>
@@ -1907,7 +2005,7 @@ function renderFocus(){
     g.fillStyle='#222';g.beginPath();g.arc(0,hy+6,4.5,0,7);g.fill();
     g.beginPath();g.arc(-9,hy-5,3.2,0,7);g.fill();g.beginPath();g.arc(9,hy-5,3.2,0,7);g.fill();
     g.restore()}
-  let mode='S',subj='moving',start=performance.now(),lockF=30,fCur=30,aSw=false,raf,tm=null,st=0,used=false,toured=false;
+  let fst=null,mode='S',subj='moving',start=performance.now(),lockF=30,fCur=30,aSw=false,raf,tm=null,st=0,used=false,toured=false;
   const RUN=4500,HOLD=1300,D0=30,D1=3,pos=d=>((Math.min(30,Math.max(2,d))-2)/28*100)+'%';
   function restart(){start=performance.now();const d0=subj==='still'?10:D0;lockF=d0;fCur=d0;aSw=false}
   function frame(now){
@@ -1927,6 +2025,7 @@ function renderFocus(){
     const lbl=mode==='S'?'AF-S':mode==='C'?'AF-C':mode==='A'?(aSw?'AF-A → C':'AF-A'):'MF';
     x.font='600 22px -apple-system,Segoe UI,Roboto,sans-serif';x.textAlign='left';const w=x.measureText(lbl).width+20;
     x.fillStyle='rgba(0,0,0,.6)';x.fillRect(14,14,w,34);x.fillStyle='#fff';x.fillText(lbl,24,39);
+    fst={d:d,f:f,sharp:sharp,tt:tt,moving:movingNow,lbl:lbl};
     $('mSub').style.left=pos(d);$('mFoc').style.left=pos(f);
     const txt=(sharp?t('sharp'):t('blurry'))+' · '+t('subjLbl')+' '+Math.round(d)+' m · '+t('focusLbl')+' '+Math.round(f)+' m'+(mode==='A'&&aSw?' · AF-A '+t('switched'):'');
     const fs=$('fstat');if(fs.textContent!==txt)fs.textContent=txt;fs.style.color=sharp?'var(--ok)':'var(--bad)';
@@ -1943,7 +2042,322 @@ function renderFocus(){
   function stopT(){if(tm){clearInterval(tm);tm=null}st=0;tb.innerHTML=playLbl()}
   tb.onclick=()=>{if(tm){stopT();return}if(!toured){toured=true;track('scherpstelmodi/tour-start','Focus tour started',true)}st=0;go();tm=setInterval(go,5800);tb.innerHTML=`<i class="ti ti-player-pause" aria-hidden="true"></i>${t('stop')}`};
   mfo();setSub('moving');setMode('S');raf=requestAnimationFrame(frame);
+  k3toggle('k3fo',[c],{build:buildFocus(()=>fst),views:K3_FOV,target:[0,0.6,-6.5],lesson:'scherpstelmodi'});
   cleanup=()=>{cancelAnimationFrame(raf);if(tm)clearInterval(tm)};
+}
+
+/* ===== 3D-onderdelen (v1.16) =====
+   Gedeelde 3D-viewer op basis van Three.js. Three.js wordt pas geladen als een les 3D gebruikt.
+   k3(element, opties) maakt een viewer; k3stopAll() ruimt alles op bij het wisselen van les. */
+const THREE_URL='https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js';
+let threeP=null;const k3Live=[];
+function loadThree(){
+  if(window.THREE)return Promise.resolve();
+  if(!threeP)threeP=new Promise((ok,no)=>{const s=document.createElement('script');s.src=THREE_URL;s.async=true;s.onload=ok;s.onerror=()=>{threeP=null;no(new Error('three'))};document.head.appendChild(s)});
+  return threeP;
+}
+function k3(el,o){
+  const ctl={dead:false,api:null};
+  el.innerHTML=`<p class="k3msg">${t('k3load')}</p>`;
+  const fail=()=>{if(!ctl.dead)el.innerHTML=`<p class="k3msg">${t('k3fail')}</p>`};
+  loadThree().then(()=>{if(ctl.dead)return;try{ctl.api=k3make(el,o)}catch(e){fail()}},fail);
+  k3Live.push(ctl);return ctl;
+}
+function k3stopAll(){k3Live.splice(0).forEach(c=>{c.dead=true;if(c.api)c.api.dispose()})}
+function k3make(el,o){
+  const R=new THREE.WebGLRenderer({antialias:true,alpha:true});
+  el.innerHTML='';R.setPixelRatio(Math.min(window.devicePixelRatio||1,2));R.setClearColor(0x000000,0);el.appendChild(R.domElement);
+  const scene=new THREE.Scene(),cam=new THREE.PerspectiveCamera(o.fov||34,1,0.05,600);
+  scene.add(new THREE.HemisphereLight(0xffffff,0x4a4a55,0.8));
+  const key=new THREE.DirectionalLight(0xffffff,0.85);key.position.set(5,8,6);scene.add(key);
+  const v0=o.views[o.def||0],tgt=new THREE.Vector3().fromArray(o.target||[0,0,0]);
+  let yaw=v0[1],pitch=v0[2],dist=v0[3]||o.dist||8,tY=yaw,tP=pitch,tD=dist,drag=false,lx=0,ly=0,raf=0,prev=performance.now(),used=false;
+  const pmin=o.pmin!=null?o.pmin:-1.2,pmax=o.pmax!=null?o.pmax:1.45;
+  const api={scene:scene,cam:cam,goal:tgt.clone(),
+    setView(y,p,d){if(y!=null)tY=y;if(p!=null)tP=Math.max(pmin,Math.min(pmax,p));if(d!=null)tD=d}};
+  const cv=R.domElement;
+  cv.addEventListener('pointerdown',e=>{drag=true;lx=e.clientX;ly=e.clientY;try{cv.setPointerCapture(e.pointerId)}catch(_){}});
+  cv.addEventListener('pointermove',e=>{if(!drag)return;tY-=(e.clientX-lx)*0.008;tP=Math.max(pmin,Math.min(pmax,tP+(e.clientY-ly)*0.008));lx=e.clientX;ly=e.clientY;
+    if(!used){used=true;if(o.onUse)o.onUse();if(o.lesson)track(o.lesson+'/3d-rotate','3D rotated',true)}});
+  const up=()=>{drag=false};cv.addEventListener('pointerup',up);cv.addEventListener('pointercancel',up);
+  function resize(){const w=el.clientWidth,h=el.clientHeight;if(!w||!h)return;R.setSize(w,h,false);cam.aspect=w/h;cam.updateProjectionMatrix()}
+  const ro=new ResizeObserver(resize);ro.observe(el);resize();
+  const upd=o.build(api)||{};
+  function frame(now){
+    const dt=Math.min(0.05,(now-prev)/1000);prev=now;
+    if(upd.update)upd.update(dt,now);
+    const k=Math.min(1,dt*6);yaw+=(tY-yaw)*k;pitch+=(tP-pitch)*k;dist+=(tD-dist)*k;tgt.lerp(api.goal,k);
+    cam.position.set(tgt.x+dist*Math.sin(yaw)*Math.cos(pitch),tgt.y+dist*Math.sin(pitch),tgt.z+dist*Math.cos(yaw)*Math.cos(pitch));
+    cam.lookAt(tgt);R.render(scene,cam);raf=requestAnimationFrame(frame);
+  }
+  raf=requestAnimationFrame(frame);
+  api.dispose=()=>{cancelAnimationFrame(raf);ro.disconnect();
+    scene.traverse(ob=>{if(ob.geometry)ob.geometry.dispose();const m=ob.material;if(m)(Array.isArray(m)?m:[m]).forEach(x=>{if(x.map)x.map.dispose();x.dispose()})});
+    R.dispose();try{R.forceContextLoss()}catch(e){}};
+  return api;
+}
+const K3_IRV=[['k3front',0,0,8],['k3angle',0.62,0.28,8],['k3side',1.42,0.12,8]],K3_SHV=[['k3front',0,0.02,7],['k3angle',0.55,0.25,7],['k3side',1.3,0.1,7]];
+const K3_FOV=[['k3side',1.2,0.38,15],['k3top',0,1.4,17],['k3behind',0,0.22,11]];
+const K3_DOFV=[['k3angle',0.85,0.5,12],['k3top',0,1.4,15],['k3behind',0,0.2,9]];
+const K3_BFV=[['k3angle',0.95,0.5],['k3top',0,1.4],['k3side',1.5,0.1]];
+/* Opmaak-hulpjes: viewer + knoppen voor de kijkhoek, en de wissel Foto / 3D */
+function k3block(id,views,cls,def){return `<div class="k3v ${cls||''}" id="${id}"></div><div class="k3bar"><div class="seg" id="${id}V">${views.map((v,i)=>`<button data-i="${i}"${i===(def||0)?' class="on"':''}>${t(v[0])}</button>`).join('')}</div><span class="k3hint">${t('k3drag')}</span></div>`}
+function k3wire(id,ctl,views){const bs=document.querySelectorAll('#'+id+'V button');bs.forEach(b=>b.onclick=()=>{const v=views[+b.dataset.i];if(ctl.api)ctl.api.setView(v[1],v[2],v[3]);bs.forEach(x=>x.classList.toggle('on',x===b))})}
+function k3switch(id){return `<div class="seg k3sw" id="${id}Sw"><button data-v="2d" class="on"><i class="ti ti-photo" aria-hidden="true"></i> ${t('k3photo')}</button><button data-v="3d"><i class="ti ti-cube" aria-hidden="true"></i> ${t('k3view3d')}</button></div>`}
+function k3box(id,views,leadKey){return `<div id="${id}Box" style="display:none">${k3block(id,views,'k3wide')}<p class="small" style="margin:0 0 8px">${t(leadKey)}</p></div>`}
+function k3toggle(id,hide,o){
+  let ctl=null;const box=document.getElementById(id+'Box'),bs=document.querySelectorAll('#'+id+'Sw button');
+  bs.forEach(b=>b.onclick=()=>{const on=b.dataset.v==='3d';bs.forEach(x=>x.classList.toggle('on',x===b));
+    hide.forEach(e=>e.style.display=on?'none':'');box.style.display=on?'':'none';
+    if(on&&!ctl){ctl=k3(document.getElementById(id),o);k3wire(id,ctl,o.views);if(o.lesson)track(o.lesson+'/3d-open','3D view opened',true)}
+    postHeight()});
+}
+const k3mat=(c,x)=>new THREE.MeshStandardMaterial(Object.assign({color:c,roughness:0.7,metalness:0.05},x||{}));
+const k3nf=v=>v.toLocaleString(lang,{maximumFractionDigits:v>=10?0:1});
+function k3label(txt,sc){
+  const cv=document.createElement('canvas');cv.width=256;cv.height=64;
+  const sp=new THREE.Sprite(new THREE.SpriteMaterial({map:new THREE.CanvasTexture(cv),depthTest:false,transparent:true}));
+  sp.renderOrder=10;let last=null;
+  sp.userData.set=(s,col)=>{if(s===last)return;last=s;const g=cv.getContext('2d');g.clearRect(0,0,256,64);if(!s){sp.material.map.needsUpdate=true;return}
+    g.font='600 30px -apple-system,Segoe UI,Roboto,sans-serif';const w=Math.min(252,g.measureText(s).width+28);
+    g.fillStyle='rgba(20,20,22,.74)';const x0=128-w/2,r=14;g.beginPath();g.moveTo(x0+r,8);g.arcTo(x0+w,8,x0+w,56,r);g.arcTo(x0+w,56,x0,56,r);g.arcTo(x0,56,x0,8,r);g.arcTo(x0,8,x0+w,8,r);g.fill();
+    g.fillStyle=col||'#fff';g.textAlign='center';g.textBaseline='middle';g.fillText(s,128,33);sp.material.map.needsUpdate=true};
+  sp.userData.set(txt);const s=sc||1;sp.scale.set(s*1.6,s*0.4,1);return sp;
+}
+const k3accent=()=>getComputedStyle(document.documentElement).getPropertyValue('--accent').trim()||'#1d6fd1';
+function k3person(s,shirt){
+  const g=new THREE.Group();
+  const legs=new THREE.Mesh(new THREE.BoxGeometry(0.3*s,0.85*s,0.2*s),k3mat(0x2d3e5c));legs.position.y=0.425*s;g.add(legs);
+  const torso=new THREE.Mesh(new THREE.BoxGeometry(0.46*s,0.62*s,0.26*s),k3mat(shirt||0xd8432f));torso.position.y=1.15*s;g.add(torso);
+  const head=new THREE.Mesh(new THREE.SphereGeometry(0.14*s,16,12),k3mat(0xf1c39b));head.position.y=1.6*s;g.add(head);
+  const hair=new THREE.Mesh(new THREE.SphereGeometry(0.145*s,16,8,0,Math.PI*2,0,Math.PI/2),k3mat(0x3a2a1e));hair.position.y=1.62*s;g.add(hair);
+  return g;
+}
+function k3tree(h,r,col){
+  const g=new THREE.Group();
+  const tr=new THREE.Mesh(new THREE.CylinderGeometry(r*0.09,r*0.12,h*0.62,8),k3mat(0x6b4a2e));tr.position.y=h*0.31;g.add(tr);
+  const cr=new THREE.Mesh(new THREE.SphereGeometry(r,16,12),k3mat(col||0x3f7d45));cr.position.y=h*0.62+r*0.75;g.add(cr);
+  return g;
+}
+function k3camera(s){
+  const g=new THREE.Group();
+  const body=new THREE.Mesh(new THREE.BoxGeometry(0.7*s,0.48*s,0.38*s),k3mat(0x2a2b30,{metalness:0.4,roughness:0.5}));g.add(body);
+  const grip=new THREE.Mesh(new THREE.BoxGeometry(0.16*s,0.44*s,0.46*s),k3mat(0x1b1c20));grip.position.set(0.3*s,-0.01*s,-0.02*s);g.add(grip);
+  const hump=new THREE.Mesh(new THREE.BoxGeometry(0.26*s,0.14*s,0.3*s),k3mat(0x2a2b30,{metalness:0.4,roughness:0.5}));hump.position.y=0.3*s;g.add(hump);
+  const lens=new THREE.Mesh(new THREE.CylinderGeometry(0.17*s,0.19*s,0.36*s,32),k3mat(0x1a1b1f,{metalness:0.5,roughness:0.4}));lens.rotation.x=Math.PI/2;lens.position.z=-0.36*s;g.add(lens);
+  const glass=new THREE.Mesh(new THREE.CircleGeometry(0.13*s,32),new THREE.MeshStandardMaterial({color:0x5a64a8,metalness:0.6,roughness:0.15}));glass.rotation.y=Math.PI;glass.position.z=-0.545*s;g.add(glass);
+  return g;
+}
+
+/* Objectief met 7 diafragmalamellen. st={f, fmin}: f is de gekozen f-waarde, fmin de grootste opening. */
+const k3irisPhase=(f,fmin)=>-Math.PI/2+0.9*(1-fmin/f);
+function buildIris(st){return api=>{
+  const scene=api.scene,N=7,R=1.05,RMAX=R*0.93;
+  const lens=new THREE.Group();scene.add(lens);
+  const rim=new THREE.DirectionalLight(0xbfc8ff,0.4);rim.position.set(-4,-2,-3);scene.add(rim);
+  const metal=k3mat(0x26272d,{metalness:0.55,roughness:0.42,side:THREE.DoubleSide}),rubber=k3mat(0x17181c,{roughness:0.85});
+  const add=(geo,mat,rx,z)=>{const m=new THREE.Mesh(geo,mat);if(rx)m.rotation.x=rx;m.position.z=z;lens.add(m);return m};
+  add(new THREE.CylinderGeometry(1.3,1.3,1.4,72,1,true),metal,Math.PI/2,-0.15);
+  add(new THREE.RingGeometry(R,1.3,72),metal,0,0.55);
+  add(new THREE.CylinderGeometry(R,R,0.55,72,1,true),metal,Math.PI/2,0.275);
+  add(new THREE.RingGeometry(0.75,1.3,72),metal,0,-0.85);
+  add(new THREE.CylinderGeometry(0.95,0.95,0.18,60,1,true),k3mat(0xb9bcc6,{metalness:0.9,roughness:0.25,side:THREE.DoubleSide}),Math.PI/2,-0.94);
+  for(let i=0;i<9;i++)add(new THREE.TorusGeometry(1.305,0.028,8,96),rubber,0,-0.6+i*0.07);
+  add(new THREE.TorusGeometry(1.31,0.018,8,96),k3mat(k3accent(),{metalness:0.3,roughness:0.4}),0,0.42);
+  const capR=1.7,capH=Math.sqrt(capR*capR-R*R);
+  add(new THREE.SphereGeometry(capR,48,16,0,Math.PI*2,0,Math.asin(R/capR)),new THREE.MeshPhysicalMaterial({color:0xb7c8ff,transparent:true,opacity:0.16,roughness:0.05,clearcoat:1,depthWrite:false}),Math.PI/2,0.5-capH);
+  const blades=[];
+  for(let i=0;i<N;i++){
+    const mesh=new THREE.Mesh(new THREE.BufferGeometry(),k3mat(i%2?0x1c1d22:0x232429,{metalness:0.35,roughness:0.55,side:THREE.DoubleSide}));
+    const line=new THREE.LineLoop(new THREE.BufferGeometry(),new THREE.LineBasicMaterial({color:0x6a6c78}));
+    mesh.position.z=i*0.006;line.position.z=i*0.006+0.002;lens.add(mesh,line);blades.push({mesh:mesh,line:line});
+  }
+  const SZ=-2.5,beamGeo=new THREE.BufferGeometry();
+  beamGeo.setAttribute('position',new THREE.BufferAttribute(new Float32Array(N*9),3));
+  const glow=o=>new THREE.MeshBasicMaterial({color:0xffe1a3,transparent:true,opacity:o,blending:THREE.AdditiveBlending,depthWrite:false,side:THREE.DoubleSide});
+  lens.add(new THREE.Mesh(beamGeo,glow(0.3)));
+  add(new THREE.CylinderGeometry(R*0.97,R*0.97,2.6,48,1,true),glow(0.07),Math.PI/2,1.3);
+  const sMat=new THREE.MeshBasicMaterial({color:0x222222,side:THREE.DoubleSide});
+  add(new THREE.PlaneGeometry(0.9,0.6),sMat,0,SZ);
+  const fr=new THREE.LineLoop(new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(-.47,-.32,0),new THREE.Vector3(.47,-.32,0),new THREE.Vector3(.47,.32,0),new THREE.Vector3(-.47,.32,0)]),new THREE.LineBasicMaterial({color:0x8a8d9a}));
+  fr.position.z=SZ;lens.add(fr);
+  const dark=new THREE.Color(0x1d1e24),bright=new THREE.Color(0xffe6b0);
+  function upd(r){
+    const ph=-Math.PI/2+0.9*(1-r/RMAX),a=Math.acos(Math.min(r/R,0.999)),S=28;
+    blades.forEach((b,i)=>{
+      const th=2*Math.PI*i/N+ph,pts=[];
+      for(let k=0;k<=S;k++){const g=th-a+2*a*k/S;pts.push(new THREE.Vector2(R*Math.cos(g),R*Math.sin(g)))}
+      b.mesh.geometry.dispose();b.mesh.geometry=new THREE.ShapeGeometry(new THREE.Shape(pts));
+      b.line.geometry.dispose();b.line.geometry=new THREE.BufferGeometry().setFromPoints(pts);
+    });
+    const cr=r/Math.cos(Math.PI/N),p=beamGeo.attributes.position.array;
+    for(let i=0;i<N;i++){const g1=2*Math.PI*i/N+ph+Math.PI/N,g2=g1+2*Math.PI/N,o=i*9;
+      p[o]=0;p[o+1]=0;p[o+2]=SZ;p[o+3]=cr*Math.cos(g1);p[o+4]=cr*Math.sin(g1);p[o+5]=0;p[o+6]=cr*Math.cos(g2);p[o+7]=cr*Math.sin(g2);p[o+8]=0}
+    beamGeo.attributes.position.needsUpdate=true;beamGeo.computeBoundingSphere();
+    sMat.color.copy(dark).lerp(bright,Math.pow(r/RMAX,1.2));
+  }
+  let cur=RMAX*st.fmin/st.f,last=-1;
+  return{update(dt){const tg=RMAX*st.fmin/st.f;cur+=(tg-cur)*Math.min(1,dt*7);if(Math.abs(cur-last)>1e-4){upd(cur);last=cur}}};
+}}
+
+/* Spleetsluiter: twee gordijntjes voor de sensor, sterk vertraagd. st={s: sluitertijd in seconden, fire: teller} */
+const K3_SLOW=400,K3_TRAVEL=1.6;
+function buildShutter(st){return api=>{
+  const g=new THREE.Group();api.scene.add(g);
+  const Wd=3,Hs=2,K=6,NS=24,T=K3_TRAVEL;
+  const frameMat=k3mat(0x2a2b30,{metalness:0.4,roughness:0.5}),bw=0.24;
+  [[0,Hs/2+bw/2,Wd+2*bw,bw],[0,-Hs/2-bw/2,Wd+2*bw,bw],[-Wd/2-bw/2,0,bw,Hs],[Wd/2+bw/2,0,bw,Hs]].forEach(([x,y,w,h])=>{const m=new THREE.Mesh(new THREE.BoxGeometry(w,h,0.32),frameMat);m.position.set(x,y,0.04);g.add(m)});
+  const back=new THREE.Mesh(new THREE.BoxGeometry(Wd+1,Hs+1,0.12),frameMat);back.position.z=-0.22;g.add(back);
+  const dark=new THREE.Color(0x1d1e24),bright=new THREE.Color(0xffe6b0),strips=[];
+  for(let i=0;i<NS;i++){const m=new THREE.Mesh(new THREE.PlaneGeometry(Wd*0.96,Hs/NS*1.002),new THREE.MeshBasicMaterial({color:0x1d1e24}));
+    m.position.set(0,-Hs/2+Hs*(i+0.5)/NS,-0.12);g.add(m);strips.push({m:m,acc:0,y:m.position.y})}
+  const mk=(col,z)=>{const mat=k3mat(col,{metalness:0.5,roughness:0.35}),arr=[];for(let i=0;i<K;i++){const m=new THREE.Mesh(new THREE.BoxGeometry(Wd*1.03,1,0.012),mat);m.position.z=z;g.add(m);arr.push(m)}return arr};
+  const c1=mk(0x18191d,-0.04),c2=mk(0x2b2c32,0.0);
+  const lay=(arr,a,b)=>{const h=(b-a)/K;arr.forEach((m,i)=>{m.visible=b-a>0.01;m.scale.y=Math.max(0.001,h*0.97);m.position.y=a+h*(i+0.5)})};
+  let tt=-1,lastFire=0,D=1;
+  return{update(dt){
+    if(st.fire!==lastFire){lastFire=st.fire;tt=0;D=Math.min(6,Math.max(0.05,st.s*K3_SLOW));strips.forEach(s=>s.acc=0)}
+    let e1=Hs/2,e2=Hs/2;
+    if(tt>=0){tt+=dt;const cl=v=>Math.max(0,Math.min(1,v));
+      e1=Hs/2-Hs*cl(tt/T);e2=Hs/2-Hs*cl((tt-D)/T);
+      strips.forEach(s=>{if(s.y>e1&&s.y<e2)s.acc+=dt;s.m.material.color.copy(dark).lerp(bright,Math.min(1,s.acc/D))});
+      if(tt>D+T+1.6)tt=-1;
+    }
+    lay(c1,-Hs/2,e1);lay(c2,e2,Hs/2);
+  }};
+}}
+
+/* Scherpstelmodi: camera, hond en het scherpstelvlak. get() levert de toestand van de 2D-animatie. */
+function buildFocus(get){return api=>{
+  const s=api.scene,u=0.45;
+  const ground=new THREE.Mesh(new THREE.PlaneGeometry(12,20),k3mat(0x8fbf5a));ground.rotation.x=-Math.PI/2;ground.position.z=-7;s.add(ground);
+  const tickM=new THREE.MeshBasicMaterial({color:0xffffff,transparent:true,opacity:0.55});
+  [5,10,15,20,25,30].forEach(d=>{const m=new THREE.Mesh(new THREE.PlaneGeometry(3.4,0.035),tickM);m.rotation.x=-Math.PI/2;m.position.set(0,0.01,-d*u);s.add(m);
+    const l=k3label(d+' m',0.65);l.position.set(-2.3,0.25,-d*u);s.add(l)});
+  const cam=k3camera(1);cam.position.set(0,0.9,0.5);s.add(cam);
+  const dog=new THREE.Group(),bodyC=k3mat(0xc98b3c),lightC=k3mat(0xf0d8a8),darkC=k3mat(0x8a5a24);
+  const torso=new THREE.Mesh(new THREE.SphereGeometry(0.3,24,16),bodyC);torso.scale.set(0.85,0.75,1.35);torso.position.y=0.52;dog.add(torso);
+  const head=new THREE.Mesh(new THREE.SphereGeometry(0.2,20,16),bodyC);head.position.set(0,0.8,0.4);dog.add(head);
+  const snout=new THREE.Mesh(new THREE.SphereGeometry(0.1,16,12),lightC);snout.position.set(0,0.74,0.57);dog.add(snout);
+  const nose=new THREE.Mesh(new THREE.SphereGeometry(0.035,10,8),k3mat(0x222222));nose.position.set(0,0.77,0.66);dog.add(nose);
+  [-1,1].forEach(sd=>{const e=new THREE.Mesh(new THREE.SphereGeometry(0.08,12,10),darkC);e.scale.set(0.6,1.4,0.6);e.position.set(sd*0.17,0.86,0.36);e.rotation.z=sd*0.4;dog.add(e)});
+  const tail=new THREE.Mesh(new THREE.CylinderGeometry(0.03,0.05,0.32,8),bodyC);tail.position.set(0,0.66,-0.48);tail.rotation.x=-0.8;dog.add(tail);
+  const legs=[];[[-0.14,0.25],[0.14,0.25],[-0.14,-0.25],[0.14,-0.25]].forEach(([x,z])=>{const geo=new THREE.BoxGeometry(0.1,0.4,0.1);geo.translate(0,-0.2,0);const l=new THREE.Mesh(geo,bodyC);l.position.set(x,0.4,z);dog.add(l);legs.push(l)});
+  s.add(dog);
+  const pm=new THREE.MeshBasicMaterial({color:0x3fb950,transparent:true,opacity:0.22,side:THREE.DoubleSide,depthWrite:false});
+  const plane=new THREE.Mesh(new THREE.PlaneGeometry(3,1.9),pm);plane.position.y=0.95;s.add(plane);
+  const edge=new THREE.LineSegments(new THREE.EdgesGeometry(new THREE.PlaneGeometry(3,1.9)),new THREE.LineBasicMaterial({color:0x3fb950}));plane.add(edge);
+  const rayG=new THREE.BufferGeometry();rayG.setAttribute('position',new THREE.BufferAttribute(new Float32Array(24),3));
+  const rays=new THREE.LineSegments(rayG,new THREE.LineBasicMaterial({color:0x3fb950,transparent:true,opacity:0.45}));s.add(rays);
+  const lbl=k3label('',0.85);s.add(lbl);
+  const green=new THREE.Color(0x3fb950),red=new THREE.Color(0xe24b4a);
+  let pz=-30*u;
+  return{update(dt){const st=get();if(!st)return;
+    dog.position.set(st.moving?Math.sin(st.tt/700)*0.35:0,0,-st.d*u);
+    const sw=st.moving?Math.sin(st.tt/70)*0.6:0;legs.forEach((l,i)=>l.rotation.x=(i===0||i===3)?sw:-sw);
+    pz+=(-st.f*u-pz)*Math.min(1,dt*12);plane.position.z=pz;
+    const c=st.sharp?green:red;pm.color.copy(c);edge.material.color.copy(c);rays.material.color.copy(c);
+    const p=rayG.attributes.position.array,L=[0,0.9,-0.05];let o=0;
+    [[-1.5,0],[1.5,0],[1.5,1.9],[-1.5,1.9]].forEach(([x,y])=>{p[o++]=L[0];p[o++]=L[1];p[o++]=L[2];p[o++]=x;p[o++]=y;p[o++]=pz});
+    rayG.attributes.position.needsUpdate=true;rayG.computeBoundingSphere();
+    lbl.position.set(0,2.2,pz);lbl.userData.set(st.lbl+' · '+Math.round(st.f)+' m');
+  }};
+}}
+
+/* Scherptediepte: het groene blok is de scherpe zone. get() levert {N,f,s,near,far} uit de les. */
+function buildDof(get){return api=>{
+  const s=api.scene,u=0.35;
+  const ground=new THREE.Mesh(new THREE.PlaneGeometry(26,30),k3mat(0x93c06a));ground.rotation.x=-Math.PI/2;ground.position.z=-12;s.add(ground);
+  const path=new THREE.Mesh(new THREE.PlaneGeometry(0.6,22),k3mat(0xd9c79a));path.rotation.x=-Math.PI/2;path.position.set(0,0.005,-11);s.add(path);
+  const posts=[];
+  for(let d=2;d<=26;d+=1.5){const mat=k3mat(0x7a5532,{transparent:true}),band=k3mat(0xe9e2d0,{transparent:true});
+    const gp=new THREE.Group();const p=new THREE.Mesh(new THREE.BoxGeometry(0.05,0.385,0.05),mat);p.position.y=0.19;gp.add(p);
+    const b=new THREE.Mesh(new THREE.BoxGeometry(0.055,0.04,0.055),band);b.position.y=0.33;gp.add(b);
+    gp.position.set(-1.4*u,0,-d*u);s.add(gp);posts.push({d:d,mats:[mat,band]})}
+  const person=k3person(u);person.position.set(0.5*u,0,-5*u);s.add(person);
+  const fl=new THREE.Group();const stem=new THREE.Mesh(new THREE.CylinderGeometry(0.006,0.006,0.13,6),k3mat(0x3b7d2a));stem.position.y=0.065;fl.add(stem);
+  const bloom=new THREE.Mesh(new THREE.SphereGeometry(0.035,12,8),k3mat(0xf2c230));bloom.position.y=0.14;fl.add(bloom);fl.position.set(0.75*u,0,-2*u);s.add(fl);
+  for(let k=-48;k<=48;k+=5){const tr=k3tree(3*u*1.6,3*u*0.95,(k%2?0x2f6b3a:0x3f7d45));tr.position.set((k+(k%3))*u,0,-(46+Math.abs(k)%7)*u);s.add(tr)}
+  const cm=k3camera(0.6);cm.position.set(0,0.5,0.2);s.add(cm);
+  const slab=new THREE.Group();
+  slab.add(new THREE.Mesh(new THREE.BoxGeometry(1,1,1),new THREE.MeshBasicMaterial({color:0x3fb950,transparent:true,opacity:0.2,depthWrite:false})));
+  slab.add(new THREE.LineSegments(new THREE.EdgesGeometry(new THREE.BoxGeometry(1,1,1)),new THREE.LineBasicMaterial({color:0x2f9a40})));
+  s.add(slab);
+  const acc=new THREE.Color(k3accent());
+  const fp=new THREE.Mesh(new THREE.PlaneGeometry(4.6,1.25),new THREE.MeshBasicMaterial({color:acc,transparent:true,opacity:0.3,side:THREE.DoubleSide,depthWrite:false}));fp.position.y=0.62;s.add(fp);
+  fp.add(new THREE.LineSegments(new THREE.EdgesGeometry(new THREE.PlaneGeometry(4.6,1.25)),new THREE.LineBasicMaterial({color:acc})));
+  const fg=new THREE.BufferGeometry();fg.setAttribute('position',new THREE.BufferAttribute(new Float32Array(12),3));
+  const fov=new THREE.LineSegments(fg,new THREE.LineBasicMaterial({color:0xffffff,transparent:true,opacity:0.7}));s.add(fov);
+  const lN=k3label('',0.75),lF=k3label('',0.75);s.add(lN,lF);
+  let cn=3,cf=8,cs=5,ch=0.4;
+  return{update(dt){const st=get();if(!st)return;
+    const far=st.far===Infinity?62:Math.min(62,st.far),k=Math.min(1,dt*8);
+    cn+=(st.near-cn)*k;cf+=(far-cf)*k;cs+=(st.s-cs)*k;ch+=(18/st.f-ch)*k;
+    slab.scale.set(4.4,1.2,Math.max(0.01,(cf-cn)*u));slab.position.set(0,0.6,-(cn+cf)/2*u);
+    fp.position.z=-cs*u;
+    const L=60*u,p=fg.attributes.position.array;p.set([0,0.02,0,-ch*L,0.02,-L,0,0.02,0,ch*L,0.02,-L]);fg.attributes.position.needsUpdate=true;fg.computeBoundingSphere();
+    lN.position.set(-2.6,1.35,-cn*u);lN.userData.set(k3nf(st.near)+' m');
+    lF.position.set(-2.6,1.35,-cf*u);lF.userData.set(st.far===Infinity?'∞':k3nf(st.far)+' m');
+    posts.forEach(pp=>{const o=(pp.d>=st.near&&pp.d<=st.far)?1:0.28;pp.mats.forEach(m=>m.opacity=o)});
+  }};
+}}
+
+/* Brandpuntsafstand: wat de camera ziet (blauwe vorm) en waar de camera staat. get() levert {f, dist}. */
+function buildFocal(get){return api=>{
+  const s=api.scene,u=0.2;
+  const ground=new THREE.Mesh(new THREE.PlaneGeometry(260,260),k3mat(0x93c06a));ground.rotation.x=-Math.PI/2;ground.position.z=-60;s.add(ground);
+  const path=new THREE.Mesh(new THREE.PlaneGeometry(0.4,110),k3mat(0xd9c79a));path.rotation.x=-Math.PI/2;path.position.set(0,0.01,-38);s.add(path);
+  for(let z=-90;z<=60;z+=7.5){const k=Math.round(z/7.5),x=(k%2?1:-1)*(8+Math.abs((k*7)%5)*0.8),zz=z+Math.abs((k*5)%4),r=2+Math.abs((k*3)%3)*0.4;
+    const tr=k3tree(4.8*u,r*u,(Math.round(zz)%2?0x2f6b3a:0x3f7d45));tr.position.set(x*u,0,-zz*u);s.add(tr)}
+  const mtn=new THREE.Mesh(new THREE.ConeGeometry(95*u,42*u,7),k3mat(0x7b8ea3,{flatShading:true}));mtn.position.set(0,21*u,-520*u);s.add(mtn);
+  const snow=new THREE.Mesh(new THREE.ConeGeometry(95*u*0.27,42*u*0.27,7),k3mat(0xf4f6f8,{flatShading:true}));snow.position.set(0,42*u*(1-0.135),-520*u);s.add(snow);
+  s.add(k3person(u,0xd8432f));
+  const cam=k3camera(0.35);s.add(cam);
+  const acc=new THREE.Color(k3accent());
+  const fg=new THREE.BufferGeometry();fg.setAttribute('position',new THREE.BufferAttribute(new Float32Array(36),3));
+  s.add(new THREE.Mesh(fg,new THREE.MeshBasicMaterial({color:acc,transparent:true,opacity:0.14,side:THREE.DoubleSide,depthWrite:false})));
+  const eg=new THREE.BufferGeometry();eg.setAttribute('position',new THREE.BufferAttribute(new Float32Array(24),3));
+  s.add(new THREE.LineSegments(eg,new THREE.LineBasicMaterial({color:acc})));
+  const rg=new THREE.BufferGeometry();rg.setAttribute('position',new THREE.BufferAttribute(new Float32Array(15),3));
+  s.add(new THREE.Line(rg,new THREE.LineBasicMaterial({color:0xffffff})));
+  const lbl=k3label('',1);s.add(lbl);
+  const CH=1.5*u;let cz=1,th=0.75;
+  return{update(dt){const st=get();if(!st)return;const k=Math.min(1,dt*5);
+    cz+=(st.dist*u-cz)*k;th+=(18/st.f-th)*k;const tv=th*2/3;
+    cam.position.set(0,CH,cz+0.1);
+    const L=cz+30,ez=cz-L,A=[0,CH,cz],c=[[-th*L,CH-tv*L],[th*L,CH-tv*L],[th*L,CH+tv*L],[-th*L,CH+tv*L]];
+    const p=fg.attributes.position.array,e=eg.attributes.position.array;let o=0,q=0;
+    for(let i=0;i<4;i++){const a=c[i],b=c[(i+1)%4];p.set([A[0],A[1],A[2],a[0],a[1],ez,b[0],b[1],ez],o);o+=9;e.set([A[0],A[1],A[2],a[0],a[1],ez],q);q+=6}
+    fg.attributes.position.needsUpdate=true;fg.computeBoundingSphere();eg.attributes.position.needsUpdate=true;eg.computeBoundingSphere();
+    const w=th*cz,h=tv*cz,r=rg.attributes.position.array;
+    r.set([-w,CH-h,0,w,CH-h,0,w,CH+h,0,-w,CH+h,0,-w,CH-h,0]);rg.attributes.position.needsUpdate=true;rg.computeBoundingSphere();
+    lbl.position.set(0,CH+0.75,cz);lbl.userData.set(st.f+' mm · '+Math.round(2*Math.atan(21.63/st.f)*180/Math.PI)+'°');
+    api.goal.set(0,0.3,cz*0.45-1.5);api.setView(null,null,9+cz*1.25);
+  }};
+}}
+
+/* Bokeh-voorbeeld: drie lagen (wazige achtergrond, lichtvlekjes, scherpe bloem). */
+function k3bokeh(bg,bk,fgc){
+  const W=480,H=300,N=7;let seed=7;const rnd=()=>(seed=(seed*16807)%2147483647)/2147483647;
+  (g=>{const grd=g.createLinearGradient(0,0,0,H);grd.addColorStop(0,'#9cc3d6');grd.addColorStop(.45,'#6f9a6a');grd.addColorStop(1,'#2f4a2c');g.fillStyle=grd;g.fillRect(0,0,W,H);
+    g.strokeStyle='#3b2f25';for(let i=0;i<5;i++){g.lineWidth=4+rnd()*8;const x=rnd()*W;g.beginPath();g.moveTo(x,H);g.lineTo(x+(rnd()-.5)*40,H*0.1);g.stroke()}
+    const gr=['#4f7a3f','#6c9850','#88b062','#3c6234','#a3c47a','#2e4f2a'];
+    for(let i=0;i<900;i++){g.fillStyle=gr[(rnd()*gr.length)|0];g.globalAlpha=.55+rnd()*.45;g.beginPath();g.ellipse(rnd()*W,rnd()*H*0.85,2+rnd()*6,1+rnd()*3,rnd()*Math.PI,0,Math.PI*2);g.fill()}
+    g.globalAlpha=1})(bg.getContext('2d'));
+  (g=>{const x=W*0.64;g.strokeStyle='#3f6b2c';g.lineWidth=5;g.lineCap='round';
+    g.beginPath();g.moveTo(x-30,H+5);g.quadraticCurveTo(x-10,H*0.65,x,H*0.42);g.stroke();
+    g.lineWidth=3;g.beginPath();g.moveTo(x-20,H*0.8);g.quadraticCurveTo(x-55,H*0.7,x-70,H*0.74);g.stroke();
+    [[-26,-6,'#c9221c'],[24,-8,'#d42a22'],[-14,-28,'#e0362b'],[14,-30,'#e8402f'],[0,-4,'#b81c18']].forEach(([dx,dy,c])=>{g.fillStyle=c;g.beginPath();g.ellipse(x+dx,H*0.38+dy,30,26,dx/60,0,Math.PI*2);g.fill()});
+    g.fillStyle='rgba(255,255,255,.18)';g.beginPath();g.ellipse(x+8,H*0.3,14,8,-.4,0,Math.PI*2);g.fill();
+    g.fillStyle='#1d1a16';g.beginPath();g.arc(x,H*0.37,11,0,Math.PI*2);g.fill()})(fgc.getContext('2d'));
+  const spots=[];for(let i=0;i<22;i++)spots.push([rnd()*W,rnd()*H*0.7,.5+rnd()*.5]);
+  return(f,fmin)=>{
+    const g=bk.getContext('2d'),sz=3+26*(fmin/f),ph=k3irisPhase(f,fmin);g.clearRect(0,0,W,H);g.globalCompositeOperation='lighter';
+    spots.forEach(([x,y,a])=>{g.fillStyle=`rgba(255,244,214,${0.18+0.3*a})`;g.beginPath();
+      for(let k=0;k<N;k++){const tt=-(2*Math.PI*k/N+ph+Math.PI/N),px=x+sz*Math.cos(tt),py=y+sz*Math.sin(tt);k?g.lineTo(px,py):g.moveTo(px,py)}g.closePath();g.fill()});
+    g.globalCompositeOperation='source-over';
+    bg.style.filter=`blur(${Math.max(0,14*fmin/f-0.6).toFixed(2)}px)`;bk.style.filter=`blur(${(1.2*fmin/f+0.3).toFixed(2)}px)`;
+  };
 }
 
 const langBox=document.getElementById('langs');
