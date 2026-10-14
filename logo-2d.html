@@ -14,9 +14,9 @@ html,body{margin:0;padding:0;background:transparent}
 .logo2d.playing img{animation:logoIn 1.05s cubic-bezier(.16,.84,.44,1) both,imgFlash 4.6s ease-out .9s infinite}
 @keyframes logoIn{from{opacity:0;transform:scale(.86) translateY(10px)}to{opacity:1;transform:scale(1) translateY(0)}}
 @keyframes imgFlash{0%{filter:brightness(1)}6%{filter:brightness(1.18)}16%{filter:brightness(1)}100%{filter:brightness(1)}}
-.ring{position:absolute;border-radius:50%;border:3px solid #c17a3a;opacity:0;pointer-events:none}
+.ring{position:absolute;left:24.9%;top:52.8%;width:30%;aspect-ratio:1;transform:translate(-50%,-50%);border-radius:50%;border:3px solid #c17a3a;opacity:0;pointer-events:none}
 .logo2d.playing .ring{animation:ringPulse 4.6s ease-out .9s infinite}
-@keyframes ringPulse{0%{opacity:0;transform:scale(.55);box-shadow:0 0 0 0 rgba(193,122,58,.6)}6%{opacity:1;box-shadow:0 0 18px 4px rgba(193,122,58,.55)}28%{opacity:0;transform:scale(2.05);box-shadow:0 0 0 0 rgba(193,122,58,0)}100%{opacity:0;transform:scale(2.05)}}
+@keyframes ringPulse{0%{opacity:0;transform:translate(-50%,-50%) scale(.55);box-shadow:0 0 0 0 rgba(193,122,58,.6)}6%{opacity:1;transform:translate(-50%,-50%) scale(.75);box-shadow:0 0 18px 4px rgba(193,122,58,.55)}28%{opacity:0;transform:translate(-50%,-50%) scale(2.05);box-shadow:0 0 0 0 rgba(193,122,58,0)}100%{opacity:0;transform:translate(-50%,-50%) scale(2.05)}}
 .flashpop{position:absolute;inset:0;pointer-events:none;background:radial-gradient(circle at 24.9% 52.8%,rgba(255,255,255,.95) 0%,rgba(255,255,255,.55) 9%,transparent 22%);opacity:0}
 .logo2d.playing .flashpop{animation:flashPop 4.6s ease-out .9s infinite}
 @keyframes flashPop{0%{opacity:0}6%{opacity:1}16%{opacity:0}100%{opacity:0}}
