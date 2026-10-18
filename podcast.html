@@ -1,11 +1,11 @@
 <!doctype html>
 <!-- © 2026 PhotoByArno · photobyarno.com · Alle rechten voorbehouden. Dit element mag alleen vanaf photobyarno.com worden gebruikt. -->
-<!-- PhotoByArno Podcast-widget v1.3 — NL/EN/DE/ES tekst, audio blijft Nederlands; eerste aflevering heeft nu de echte opname (vliegenzwammen); locatie gecorrigeerd naar Lierop/Heeze -->
+<!-- PhotoByArno Podcast-widget v1.4 — NL/EN/DE/ES tekst, audio blijft Nederlands; eerste aflevering heeft nu de echte opname (vliegenzwammen); locatie gecorrigeerd naar Lierop/Heeze -->
 <html lang="nl">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>PhotoByArno Podcast v1.3</title>
+<title>PhotoByArno Podcast v1.4</title>
 <style>
   :root{
     --bg-main:#f5f2eb;--card-bg:#ffffff;--card-border:#e5dfd3;
@@ -147,6 +147,9 @@ function setLang(l){
 
 render();
 try{new ResizeObserver(postHeight).observe(document.body)}catch(e){setInterval(postHeight,1000)}
+</script>
+<script>/* © 2026 PhotoByArno · photobyarno.com · anonieme bezoekersstatistiek (GoatCounter, zonder cookies) */
+(function(){var T="podcast",N="Podcast";if(!/^https?:$/.test(location.protocol))return;var q=[],r=!1,seen={};function s(p,t,e){if(!r){q.push([p,t,e]);return}try{window.goatcounter.count({path:p,title:t||p,event:!!e})}catch(x){}}function ev(p,t){if(seen[p])return;seen[p]=1;s(p,t,!0)}window.goatcounter=window.goatcounter||{};window.goatcounter.no_onload=!0;window.goatcounter.allow_frame=!0;var g=document.createElement("script");g.async=!0;g.src="https://gc.zgo.at/count.js";g.setAttribute("data-goatcounter","https://photobyarno.goatcounter.com/count");g.setAttribute("data-goatcounter-settings",'{"no_onload":true,"allow_frame":true}');g.onload=function(){r=!0;q.splice(0).forEach(function(a){s(a[0],a[1],a[2])})};document.head.appendChild(g);s("/"+T+"/home",N);ev(T+"/lang/"+String(document.documentElement.lang||navigator.language||"?").slice(0,2).toLowerCase(),"Language");document.addEventListener("click",function(e){var b=e.target&&e.target.closest&&e.target.closest("[data-tab],[data-mode],[data-cat],[data-lang],#sundir-pick,#map-expand-btn,#wildlife-chip");if(!b)return;var d=b.dataset,k=d.tab?"tab-"+d.tab:d.mode?"mode-"+d.mode:d.cat?"cat-"+d.cat:d.lang?"lang/"+d.lang+"/chosen":b.id;ev(T+"/"+k,k)},!0);document.addEventListener("play",function(e){var a=e.target;if(!a||a.tagName!=="AUDIO")return;var h="",el=a;for(var i=0;i<6&&el&&!h;i++){el=el.parentElement;var x=el&&el.querySelector("h1,h2,h3,h4");if(x)h=x.textContent}var src=String(a.currentSrc||a.src||""),hs=0;for(var j=0;j<src.length;j+=211)hs=(hs*31+src.charCodeAt(j))>>>0;ev(T+"/play/"+hs.toString(36),"Play: "+String(h||"episode").trim())},!0)})();
 </script>
 </body>
 </html>
