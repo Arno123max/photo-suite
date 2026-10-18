@@ -122,7 +122,7 @@ canvas{width:100%;display:block;border-radius:10px}
 .fbk .g{background:var(--ok-bg);color:var(--ok)}
 .fbk .t{background:var(--accent-bg);color:var(--accent-text)}
 .fbk .n{background:var(--soft);color:var(--text2)}
-#histo{width:100%;height:70px;display:block;border-radius:8px;background:var(--soft);margin:4px 0 10px}
+#histo,.histo-cv{width:100%;height:70px;display:block;border-radius:8px;background:var(--soft);margin:4px 0 10px}
 .seg{display:flex;border:1px solid var(--line2);border-radius:var(--radius);overflow:hidden;margin:4px 0 12px}
 .seg button{flex:1;border:0;background:transparent;color:var(--text2);padding:9px 4px;font:inherit;font-size:13px;cursor:pointer}
 .seg button+button{border-left:1px solid var(--line)}
@@ -359,6 +359,16 @@ en:{
   sharpOk:"There are sharp details in your photo.",
   encourage:"Every photo is practice. Try again with these tips and compare the results.",
   faNoExif:"This photo has no shooting data (EXIF), for example because it was sent through WhatsApp or social media. I did check the sharpness.",
+  hIntro:"The histogram is a small graph that shows exactly how your photo is exposed — far more precise than your camera's screen. The left side holds the dark pixels, the right side the light ones, and the height shows how many pixels share that tone.",
+  hA:"What you're looking at",hAd:"The horizontal axis runs from black (left) to white (right). The height of the graph at any point shows how many pixels have that tone. A peak on the left means lots of dark pixels, a peak on the right means lots of light ones.",
+  hB:"Clipping: data you've lost",hBd:"When pixels pile up right against the edge, that's clipping: pure black or pure white, with zero detail left. It's worst on the right: blown highlights are gone for good and can't be brought back in editing. Dark shadows can often still be brightened a little.",
+  hC:"There's no single 'correct' shape",hCd:"A snow scene naturally leans right, a night photo naturally leans left — neither is a mistake. The histogram is there to check for clipping, not to force every photo into the same mountain shape.",
+  hKey:"Why the screen sometimes fools you",hKeyd:"In bright sunlight your camera's screen is hard to judge: a photo can look fine and still have blown highlights. The histogram doesn't care about ambient light — outdoors, trust the graph over your eyes.",
+  hTryLead:"Move the exposure slider and watch the graph follow along, until pixels pile up against the edge — that's clipping.",
+  hSceneLbl:"Scene",hScene1:"Normal",hScene2:"Snow",hEv:"Exposure",
+  hTours:["Correctly exposed: the graph is spread across the middle, nothing piled up against either edge.","Underexposed: the whole graph shifts left. Not pretty, but that shadow detail can often still be brought back in editing.","Overexposed: pixels pile up against the right edge. That's clipping — the detail is gone for good, even in editing.","A snow scene, correctly exposed: the histogram naturally leans right. Not a mistake, as long as it doesn't touch the very edge.","Push it further and almost everything clips. When in doubt, a slight underexposure is usually safer than overexposing."],
+  hAsgLead:"Pick a photo and look at its histogram. You'll see right away whether any highlights or shadows were lost. Your photo stays on your own device: nobody else sees it.",
+  hQs:[{"q":"What does the horizontal axis of a histogram show?","o":["Black (left) to white (right)","Sharp to blurry","Far to near"],"a":0,"e":"The dark tones sit on the left, the light tones on the right."},{"q":"What does the height of the graph at a point mean?","o":["How many pixels have that tone","How sharp the photo is","Which aperture was used"],"a":0,"e":"The higher the graph at a point, the more pixels share that tone."},{"q":"Pixels pile up right against the right edge of the histogram. What does that mean?","o":["Blown highlights, detail is gone","The photo is too dark","The photo is sharp"],"a":0,"e":"That's clipping: pure white, with no detail left at all."},{"q":"Can blown highlights be recovered later in editing?","o":["No, that data is gone for good","Yes, always fully recoverable","Only in RAW files, never JPG"],"a":0,"e":"Once it's blown there's no information left to bring back — not even in RAW."},{"q":"Is a histogram that leans fully to the left always a mistake?","o":["No, that's normal for a dark scene like night","Yes, always a mistake","Only in portraits"],"a":0,"e":"A dark or night scene naturally leans left — that's normal."},{"q":"Why is the histogram more reliable than your camera's screen?","o":["The screen is hard to judge in bright light","The screen always shows the wrong colour","The histogram only exists on expensive cameras"],"a":0,"e":"Outdoors in sunlight the screen is barely readable; the histogram stays reliable."},{"q":"What does a snow scene's histogram usually look like, even when correctly exposed?","o":["It leans right, with lots of light pixels","It leans left","It sits exactly in the middle"],"a":0,"e":"Snow is naturally bright, so the histogram leans right — as long as it doesn't touch the edge, nothing's wrong."},{"q":"You're torn between slightly over- or underexposing. Which is usually safer?","o":["Slightly underexposing","Slightly overexposing","It doesn't matter"],"a":0,"e":"Shadows can often still be brightened, blown highlights never can — so when in doubt, go a bit darker."}],
   fa1:"Still and sharp",
   fa1d:"Photograph something that stands still, like a flower, a building or an object, in single mode (AF-S). Put the focus point right on your subject.",
   fa2:"Moving and sharp",
@@ -683,6 +693,16 @@ nl:{
   sharpOk:"Er zijn scherpe details in je foto.",
   encourage:"Elke foto is oefening. Probeer het nog eens met deze tips en vergelijk het resultaat.",
   faNoExif:"Deze foto bevat geen opnamegegevens (EXIF), bijvoorbeeld omdat hij via WhatsApp of sociale media is verstuurd. De scherpte heb ik wel bekeken.",
+  hIntro:"Het histogram is een grafiekje dat precies laat zien hoe je foto is belicht — veel duidelijker dan het schermpje van je camera. Links staan de donkere pixels, rechts de lichte, en de hoogte laat zien hoeveel pixels elke toon hebben.",
+  hA:"Wat je ziet",hAd:"De horizontale as loopt van zwart (links) naar wit (rechts). De hoogte van de grafiek op elk punt laat zien hoeveel pixels die toon hebben. Een piek linksin betekent veel donkere pixels, een piek rechts veel lichte.",
+  hB:"Clipping: data die je kwijt bent",hBd:"Stapelen pixels zich op helemaal tegen de rand op, dan is dat clipping: zuiver zwart of zuiver wit, zonder enig detail. Bij de rechterrand is dat het ergst: uitgebrande hooglichten zijn voorgoed verdwenen en met bewerken niet meer terug te halen. Donkere schaduwen zijn vaak nog wel iets op te lichten.",
+  hC:"Geen vaste 'goede' vorm",hCd:"Een sneeuwlandschap leunt van nature naar rechts, een nachtfoto naar links — dat is geen fout. Het histogram is er om clipping te checken, niet om elke foto dezelfde bergvorm te geven.",
+  hKey:"Waarom het schermpje je soms voor de gek houdt",hKeyd:"In fel zonlicht is het camerascherm nauwelijks te beoordelen: een foto kan er prima uitzien en toch uitgebrande hooglichten hebben. Het histogram heeft daar geen last van — vertrouw buiten liever op de grafiek dan op je ogen.",
+  hTryLead:"Schuif met de belichting en kijk wat er met de grafiek gebeurt: hij schuift mee, tot de pixels tegen de rand opstapelen — dat is clipping.",
+  hSceneLbl:"Scène",hScene1:"Normaal",hScene2:"Sneeuw",hEv:"Belichting",
+  hTours:["Goed belicht: de grafiek is verspreid over het midden, nergens stapelt het op tegen een rand.","Onderbelicht: de hele grafiek schuift naar links. Niet mooi, maar die schaduwdetails zijn vaak nog terug te halen bij het bewerken.","Overbelicht: de pixels stapelen op tegen de rechterrand. Dat is clipping — dat detail is voorgoed weg, ook bij bewerken.","Een sneeuwscène, goed belicht: het histogram leunt van nature naar rechts. Geen fout, zolang het de uiterste rand niet raakt.","Nog verder erin: bijna alles klipt. Twijfel je? Dan is iets onderbelichten vaak veiliger dan overbelichten."],
+  hAsgLead:"Kies een foto en bekijk het histogram. Je ziet meteen of er hooglichten of schaduwen zijn kwijtgeraakt. Je foto blijft op je eigen toestel: niemand anders ziet hem.",
+  hQs:[{"q":"Wat laat de horizontale as van een histogram zien?","o":["Van zwart (links) naar wit (rechts)","Van scherp naar wazig","Van ver naar dichtbij"],"a":0,"e":"Links staan de donkere tinten, rechts de lichte."},{"q":"Wat betekent de hoogte van de grafiek op een bepaald punt?","o":["Hoeveel pixels die toon hebben","Hoe scherp de foto is","Welk diafragma is gebruikt"],"a":0,"e":"Hoe hoger de grafiek op een punt, hoe meer pixels die toon hebben."},{"q":"Pixels stapelen zich helemaal op tegen de rechterrand van het histogram. Wat betekent dat?","o":["Uitgebrande hooglichten, detail is weg","De foto is te donker","De foto is scherp"],"a":0,"e":"Dat is clipping: zuiver wit, zonder enig detail meer."},{"q":"Kun je uitgebrande hooglichten later herstellen in een bewerkingsprogramma?","o":["Nee, die data is voorgoed verdwenen","Ja, altijd volledig te herstellen","Alleen bij RAW-bestanden, nooit bij JPG"],"a":0,"e":"Eenmaal uitgebrand is er geen informatie meer om terug te halen — ook niet in RAW."},{"q":"Een histogram dat helemaal naar links leunt, is dat altijd een fout?","o":["Nee, dat hoort bij een donkere scène zoals nacht","Ja, altijd een fout","Alleen bij portretten"],"a":0,"e":"Een donkere of nachtscène leunt van nature naar links — dat is normaal."},{"q":"Waarom is het histogram betrouwbaarder dan het schermpje van je camera?","o":["Het schermpje is in fel licht lastig te beoordelen","Het schermpje toont altijd een verkeerde kleur","Het histogram is alleen beschikbaar bij dure camera's"],"a":0,"e":"Buiten in de zon is het scherm nauwelijks te beoordelen; het histogram blijft betrouwbaar."},{"q":"Hoe ziet het histogram van een sneeuwscène er doorgaans uit, ook al is hij goed belicht?","o":["Het leunt naar rechts, met veel lichte pixels","Het leunt naar links","Het staat precies in het midden"],"a":0,"e":"Sneeuw is van nature licht, dus het histogram leunt naar rechts — zolang het de rand niet raakt is er niets mis."},{"q":"Je twijfelt tussen iets over- of onderbelichten. Wat is meestal veiliger?","o":["Iets onderbelichten","Iets overbelichten","Maakt niet uit"],"a":0,"e":"Schaduwen zijn vaak nog op te lichten, uitgebrande hooglichten nooit — dus bij twijfel liever iets donkerder."}],
   fa1:"Stilstaand en scherp",
   fa1d:"Fotografeer iets dat stilstaat, zoals een bloem, een gebouw of een voorwerp, in de enkelvoudige stand (AF-S). Zet het scherpstelpunt precies op je onderwerp.",
   fa2:"Bewegend en scherp",
@@ -1007,6 +1027,16 @@ de:{
   sharpOk:"Dein Foto hat scharfe Details.",
   encourage:"Jedes Foto ist Übung. Versuch es noch einmal mit diesen Tipps und vergleiche das Ergebnis.",
   faNoExif:"Dieses Foto enthält keine Aufnahmedaten (EXIF), zum Beispiel weil es über WhatsApp oder soziale Medien verschickt wurde. Die Schärfe habe ich trotzdem geprüft.",
+  hIntro:"Das Histogramm ist eine kleine Grafik, die genau zeigt, wie dein Foto belichtet ist — viel präziser als der Bildschirm deiner Kamera. Links stehen die dunklen Pixel, rechts die hellen, und die Höhe zeigt, wie viele Pixel diesen Ton haben.",
+  hA:"Was du siehst",hAd:"Die horizontale Achse reicht von Schwarz (links) bis Weiß (rechts). Die Höhe der Kurve an einem Punkt zeigt, wie viele Pixel diesen Ton haben. Ein Peak links bedeutet viele dunkle Pixel, ein Peak rechts viele helle.",
+  hB:"Clipping: verlorene Daten",hBd:"Stapeln sich Pixel direkt am Rand, ist das Clipping: reines Schwarz oder reines Weiß, ganz ohne Detail. Am schlimmsten ist es rechts: ausgebrannte Lichter sind für immer weg und lassen sich beim Bearbeiten nicht zurückholen. Dunkle Schatten lassen sich oft noch etwas aufhellen.",
+  hC:"Keine feste 'richtige' Form",hCd:"Eine Schneeszene neigt von Natur aus nach rechts, ein Nachtfoto nach links — beides ist kein Fehler. Das Histogramm dient dazu, Clipping zu prüfen, nicht jedem Foto dieselbe Bergform aufzuzwingen.",
+  hKey:"Warum dich der Bildschirm manchmal täuscht",hKeyd:"Bei hellem Sonnenlicht ist der Kamerabildschirm kaum zu beurteilen: Ein Foto kann gut aussehen und trotzdem ausgebrannte Lichter haben. Dem Histogramm macht das Umgebungslicht nichts aus — draußen besser der Grafik vertrauen als den Augen.",
+  hTryLead:"Verschiebe den Belichtungsregler und beobachte, wie die Kurve mitwandert, bis sich Pixel am Rand stapeln — das ist Clipping.",
+  hSceneLbl:"Szene",hScene1:"Normal",hScene2:"Schnee",hEv:"Belichtung",
+  hTours:["Richtig belichtet: Die Kurve verteilt sich über die Mitte, nirgends stapelt sich etwas an einem Rand.","Unterbelichtet: Die ganze Kurve verschiebt sich nach links. Nicht schön, aber diese Schattendetails lassen sich beim Bearbeiten oft noch zurückholen.","Überbelichtet: Pixel stapeln sich am rechten Rand. Das ist Clipping — das Detail ist für immer weg, auch beim Bearbeiten.","Eine Schneeszene, richtig belichtet: Das Histogramm neigt von Natur aus nach rechts. Kein Fehler, solange es nicht ganz an den Rand reicht.","Noch weiter rein, und fast alles klippt. Im Zweifel ist leichtes Unterbelichten meist sicherer als Überbelichten."],
+  hAsgLead:"Wähle ein Foto und schau dir sein Histogramm an. Du siehst sofort, ob Lichter oder Schatten verloren gegangen sind. Dein Foto bleibt auf deinem eigenen Gerät: Niemand sonst sieht es.",
+  hQs:[{"q":"Was zeigt die horizontale Achse eines Histogramms?","o":["Schwarz (links) bis Weiß (rechts)","Scharf bis unscharf","Weit bis nah"],"a":0,"e":"Die dunklen Töne stehen links, die hellen rechts."},{"q":"Was bedeutet die Höhe der Kurve an einem Punkt?","o":["Wie viele Pixel diesen Ton haben","Wie scharf das Foto ist","Welche Blende benutzt wurde"],"a":0,"e":"Je höher die Kurve an einem Punkt, desto mehr Pixel haben diesen Ton."},{"q":"Pixel stapeln sich direkt am rechten Rand des Histogramms. Was bedeutet das?","o":["Ausgebrannte Lichter, Detail ist weg","Das Foto ist zu dunkel","Das Foto ist scharf"],"a":0,"e":"Das ist Clipping: reines Weiß, ganz ohne Detail."},{"q":"Lassen sich ausgebrannte Lichter später beim Bearbeiten zurückholen?","o":["Nein, diese Daten sind für immer weg","Ja, immer vollständig zurückzuholen","Nur bei RAW-Dateien, nie bei JPG"],"a":0,"e":"Einmal ausgebrannt gibt es keine Information mehr zum Zurückholen — auch nicht bei RAW."},{"q":"Ist ein Histogramm, das komplett nach links neigt, immer ein Fehler?","o":["Nein, das ist normal bei einer dunklen Szene wie Nacht","Ja, immer ein Fehler","Nur bei Porträts"],"a":0,"e":"Eine dunkle oder Nachtszene neigt von Natur aus nach links — das ist normal."},{"q":"Warum ist das Histogramm zuverlässiger als der Bildschirm deiner Kamera?","o":["Der Bildschirm ist bei hellem Licht schwer zu beurteilen","Der Bildschirm zeigt immer die falsche Farbe","Das Histogramm gibt es nur bei teuren Kameras"],"a":0,"e":"Draußen im Sonnenlicht ist der Bildschirm kaum lesbar; das Histogramm bleibt zuverlässig."},{"q":"Wie sieht das Histogramm einer Schneeszene meist aus, selbst bei korrekter Belichtung?","o":["Es neigt nach rechts, mit vielen hellen Pixeln","Es neigt nach links","Es steht genau in der Mitte"],"a":0,"e":"Schnee ist von Natur aus hell, daher neigt das Histogramm nach rechts — solange es nicht den Rand berührt, ist alles in Ordnung."},{"q":"Du schwankst zwischen leichtem Über- oder Unterbelichten. Was ist meist sicherer?","o":["Leicht unterbelichten","Leicht überbelichten","Egal"],"a":0,"e":"Schatten lassen sich oft noch aufhellen, ausgebrannte Lichter nie — im Zweifel also lieber etwas dunkler."}],
   fa1:"Ruhig und scharf",
   fa1d:"Fotografiere etwas Unbewegtes, etwa eine Blume, ein Gebäude oder einen Gegenstand, im Einzel-AF (AF-S). Setz den Fokuspunkt genau auf dein Motiv.",
   fa2:"Bewegt und scharf",
@@ -1331,6 +1361,16 @@ es:{
   sharpOk:"Tu foto tiene detalles nítidos.",
   encourage:"Cada foto es práctica. Inténtalo de nuevo con estos consejos y compara el resultado.",
   faNoExif:"Esta foto no tiene datos de disparo (EXIF), por ejemplo porque se envió por WhatsApp o redes sociales. La nitidez sí la he revisado.",
+  hIntro:"El histograma es un pequeño gráfico que muestra exactamente cómo está expuesta tu foto, mucho más preciso que la pantalla de tu cámara. A la izquierda están los píxeles oscuros, a la derecha los claros, y la altura indica cuántos píxeles tienen ese tono.",
+  hA:"Qué estás viendo",hAd:"El eje horizontal va del negro (izquierda) al blanco (derecha). La altura del gráfico en cada punto indica cuántos píxeles tienen ese tono. Un pico a la izquierda significa muchos píxeles oscuros, un pico a la derecha, muchos claros.",
+  hB:"Clipping: datos perdidos",hBd:"Cuando los píxeles se amontonan justo contra el borde, eso es clipping: negro puro o blanco puro, sin ningún detalle. Es peor en el lado derecho: las luces quemadas se pierden para siempre y no se pueden recuperar al editar. Las sombras oscuras a menudo sí se pueden aclarar un poco.",
+  hC:"No hay una forma 'correcta' única",hCd:"Una escena de nieve se inclina de forma natural hacia la derecha, una foto nocturna hacia la izquierda — ninguna de las dos es un error. El histograma sirve para comprobar el clipping, no para forzar la misma forma de montaña en cada foto.",
+  hKey:"Por qué la pantalla a veces te engaña",hKeyd:"Con luz solar intensa, la pantalla de la cámara es difícil de juzgar: una foto puede verse bien y aun así tener luces quemadas. Al histograma no le afecta la luz ambiente — al aire libre, confía más en el gráfico que en tus ojos.",
+  hTryLead:"Mueve el control de exposición y observa cómo se desplaza el gráfico, hasta que los píxeles se amontonan contra el borde — eso es clipping.",
+  hSceneLbl:"Escena",hScene1:"Normal",hScene2:"Nieve",hEv:"Exposición",
+  hTours:["Bien expuesta: el gráfico se reparte por el centro, no se amontona en ningún borde.","Subexpuesta: todo el gráfico se desplaza a la izquierda. No es bonito, pero ese detalle en las sombras suele poderse recuperar al editar.","Sobreexpuesta: los píxeles se amontonan contra el borde derecho. Eso es clipping: el detalle se pierde para siempre, incluso al editar.","Una escena de nieve, bien expuesta: el histograma se inclina de forma natural hacia la derecha. No es un error, mientras no toque el borde mismo.","Si subes aún más, casi todo se quema. En caso de duda, subexponer un poco suele ser más seguro que sobreexponer."],
+  hAsgLead:"Elige una foto y mira su histograma. Verás enseguida si se han perdido luces o sombras. Tu foto se queda en tu propio dispositivo: nadie más la ve.",
+  hQs:[{"q":"¿Qué muestra el eje horizontal de un histograma?","o":["Negro (izquierda) a blanco (derecha)","Nítido a borroso","Lejos a cerca"],"a":0,"e":"Los tonos oscuros están a la izquierda, los claros a la derecha."},{"q":"¿Qué significa la altura del gráfico en un punto?","o":["Cuántos píxeles tienen ese tono","Cuán nítida es la foto","Qué apertura se usó"],"a":0,"e":"Cuanto más alto el gráfico en un punto, más píxeles comparten ese tono."},{"q":"Los píxeles se amontonan justo contra el borde derecho del histograma. ¿Qué significa?","o":["Luces quemadas, el detalle se ha perdido","La foto está demasiado oscura","La foto está nítida"],"a":0,"e":"Eso es clipping: blanco puro, sin ningún detalle."},{"q":"¿Se pueden recuperar las luces quemadas al editar después?","o":["No, esos datos se pierden para siempre","Sí, siempre se recuperan por completo","Solo en archivos RAW, nunca en JPG"],"a":0,"e":"Una vez quemada, no queda información que recuperar, ni siquiera en RAW."},{"q":"¿Un histograma que se inclina totalmente a la izquierda es siempre un error?","o":["No, es normal en una escena oscura como la noche","Sí, siempre es un error","Solo en retratos"],"a":0,"e":"Una escena oscura o nocturna se inclina de forma natural hacia la izquierda — es normal."},{"q":"¿Por qué es el histograma más fiable que la pantalla de tu cámara?","o":["La pantalla es difícil de juzgar con luz intensa","La pantalla siempre muestra el color equivocado","El histograma solo existe en cámaras caras"],"a":0,"e":"Al aire libre bajo el sol la pantalla apenas se puede leer; el histograma sigue siendo fiable."},{"q":"¿Cómo suele verse el histograma de una escena de nieve, incluso bien expuesta?","o":["Se inclina a la derecha, con muchos píxeles claros","Se inclina a la izquierda","Queda justo en el centro"],"a":0,"e":"La nieve es naturalmente clara, así que el histograma se inclina a la derecha — mientras no toque el borde, no hay problema."},{"q":"Dudas entre sobreexponer o subexponer un poco. ¿Qué suele ser más seguro?","o":["Subexponer un poco","Sobreexponer un poco","Da igual"],"a":0,"e":"Las sombras a menudo se pueden aclarar, las luces quemadas nunca — así que, en caso de duda, mejor algo más oscuro."}],
   fa1:"Quieto y nítido",
   fa1d:"Fotografía algo que esté quieto, como una flor, un edificio o un objeto, en modo único (AF-S). Coloca el punto de enfoque justo sobre tu sujeto.",
   fa2:"En movimiento y nítido",
@@ -1575,7 +1615,7 @@ const LESSONS=[
   {id:'scherpstelmodi',icon:'ti-focus-centered',t:'lf',d:'lfd',ready:true,render:renderFocus},
   {id:'scherptediepte',icon:'ti-focus-2',t:'l2',d:'l2d',ready:true,render:renderDof},
   {id:'brandpuntsafstand',icon:'ti-zoom-in',t:'l3',d:'l3d',ready:true,render:renderFocal},
-  {id:'histogram',icon:'ti-chart-histogram',t:'l4',d:'l4d'},
+  {id:'histogram',icon:'ti-chart-histogram',t:'l4',d:'l4d',ready:true,render:renderHistogram},
   {id:'witbalans',icon:'ti-temperature',t:'l5',d:'l5d'},
   {id:'lichtinval',icon:'ti-sun',t:'l7',d:'l7d'},
   {id:'compositie',icon:'ti-grid-3x3',t:'l6',d:'l6d',ready:true,render:renderComposition}
@@ -2119,6 +2159,115 @@ function renderDof(){
    const paint=k3bokeh($('k3pb'),$('k3pk'),$('k3pf'));
    function bu(){const f=AV[+$('k3b').value];bst.f=f;$('k3bo').textContent='f/'+f;paint(f,1.4)}
    $('k3b').addEventListener('input',()=>{bu();if(!bused){bused=true;track('scherptediepte/3d-bokeh','Bokeh slider used',true)}});bu();}
+  cleanup=()=>{if(tm)clearInterval(tm)};
+}
+
+function renderHistoAssignment(box){
+  box.innerHTML=`<h2>${t('asgTitle')}</h2><p style="color:var(--text2);font-size:15px">${t('hAsgLead')}</p>
+   <label class="btn primary pick" for="haFile"><i class="ti ti-photo-up" aria-hidden="true"></i>${t('choose')}</label>
+   <input type="file" id="haFile" accept="image/jpeg,image/png,image/webp" style="display:none">
+   <div id="asgOut"></div>`;
+  let url=null;
+  const out=box.querySelector('#asgOut');
+  const fail=()=>{out.innerHTML=`<ul class="fbk"><li class="n"><i class="ti ti-alert-circle" aria-hidden="true"></i><span>${t('badFile')}</span></li></ul>`};
+  box.querySelector('#haFile').addEventListener('change',e=>{
+    const f=e.target.files&&e.target.files[0];if(!f)return;
+    out.innerHTML=`<p class="small">${t('analyzing')}</p>`;
+    if(url)URL.revokeObjectURL(url);url=URL.createObjectURL(f);
+    const img=new Image();
+    img.onload=()=>{try{
+      const px=analysePixels(img);
+      const fill=(k,o)=>t(k).replace('{p}',o.p||'');
+      const good=[],tips=[];
+      const pc=v=>Math.max(1,Math.round(v*100));
+      if(px.hi>0.02)tips.push(fill('expHi',{p:pc(px.hi)}));
+      if(px.lo>0.05)tips.push(fill('expLo',{p:pc(px.lo)}));
+      if(px.hi<=0.02&&px.lo<=0.05){if(px.mean<60)tips.push(t('expDark'));else if(px.mean>200)tips.push(t('expBright'));else good.push(t('expOk'))}
+      const li=(arr,c,ic)=>arr.map(x=>`<li class="${c}"><i class="ti ${ic}" aria-hidden="true"></i><span>${x}</span></li>`).join('');
+      out.innerHTML=`<img src="${url}" alt="">
+       <canvas id="haHisto" class="histo-cv"></canvas>
+       ${good.length?`<h3>${t('goodH')}</h3><ul class="fbk">${li(good,'g','ti-circle-check')}</ul>`:''}
+       ${tips.length?`<h3>${t('tipsH')}</h3><ul class="fbk">${li(tips,'t','ti-bulb')}</ul>`:''}
+       <p class="small">${t('encourage')}</p>`;
+      drawHisto(out.querySelector('#haHisto'),px.hist);
+      track('histogram/assignment','Assignment photo checked',true);
+      postHeight();
+    }catch(err){fail()}};
+    img.onerror=fail;img.src=url;e.target.value='';
+  });
+}
+function renderHistogram(){
+  app.innerHTML=`${backBtn()}<h1>${t('l4')}</h1><p class="lead">${t('hIntro')}</p>
+  <div class="concepts">
+   <div class="concept"><i class="ti ti-chart-histogram" aria-hidden="true"></i><div><h3>${t('hA')}</h3><p>${t('hAd')}</p></div></div>
+   <div class="concept"><i class="ti ti-alert-triangle" aria-hidden="true"></i><div><h3>${t('hB')}</h3><p>${t('hBd')}</p></div></div>
+   <div class="concept"><i class="ti ti-snowflake" aria-hidden="true"></i><div><h3>${t('hC')}</h3><p>${t('hCd')}</p></div></div>
+  </div>
+  <div class="key"><i class="ti ti-device-desktop" aria-hidden="true"></i><div><h3>${t('hKey')}</h3><p>${t('hKeyd')}</p></div></div>
+  <h2>${t('tryIt')}</h2><p style="color:var(--text2);font-size:15px">${t('hTryLead')}</p>
+  <div class="stage">
+   <p class="lbl">${t('hSceneLbl')}</p>
+   <div class="seg" id="hSceneSeg"><button data-s="n" class="on">${t('hScene1')}</button><button data-s="s">${t('hScene2')}</button></div>
+   <canvas id="hc" width="680" height="300" aria-label="${t('l4')}"></canvas>
+   <canvas id="hHisto" class="histo-cv"></canvas>
+   <p class="evtxt" id="hlive"></p>
+   <div class="row"><label for="hev">${t('hEv')}</label><input type="range" min="-3" max="3" step="1" value="0" id="hev"><span id="hevo"></span></div>
+   <div class="btns"><button class="btn primary" id="tour"></button><button class="btn" id="rst"><i class="ti ti-refresh" aria-hidden="true"></i>${t('reset')}</button></div>
+   <p class="cap" id="cap"></p>
+  </div>
+  <h2>${t('quiz')}</h2><div id="quiz"></div>
+  <div id="asg"></div>
+  ${toolLink('suite','ti-file-info','tool1','histogram')}
+  ${lessonFooter('histogram','l4')}`;
+  renderQuiz(document.getElementById('quiz'),'hQs');
+  renderHistoAssignment(document.getElementById('asg'));
+  const $=id=>document.getElementById(id);
+  const c=$('hc'),x=c.getContext('2d'),W=680,H=300;
+  let scene='n';
+  function drawScene(ev){
+    x.clearRect(0,0,W,H);
+    if(scene==='s'){
+      const sky=x.createLinearGradient(0,0,0,H*0.55);sky.addColorStop(0,'#cfe3ee');sky.addColorStop(1,'#eef3f3');
+      x.fillStyle=sky;x.fillRect(0,0,W,H*0.55);
+      x.fillStyle='#f3f6f6';x.fillRect(0,H*0.55,W,H*0.45);
+      [120,260,430,560].forEach(tx=>{x.fillStyle='#2f3a33';x.fillRect(tx-4,H*0.55-34,8,34);x.beginPath();x.arc(tx,H*0.55-40,16,0,7);x.fill()});
+    }else{
+      const sky=x.createLinearGradient(0,0,0,H*0.55);sky.addColorStop(0,'#a9d4ee');sky.addColorStop(1,'#dcebdf');
+      x.fillStyle=sky;x.fillRect(0,0,W,H*0.55);
+      x.fillStyle='#fff1b8';x.beginPath();x.arc(W*0.84,H*0.15,20,0,7);x.fill();
+      x.fillStyle='#8fbf6c';x.fillRect(0,H*0.55,W,H*0.45);
+      [100,250,400,550].forEach((tx,i)=>{x.fillStyle='#6b4a2e';x.fillRect(tx-4,H*0.55-30,8,30);x.fillStyle=i%2?'#2f6b3a':'#3f7d45';x.beginPath();x.arc(tx,H*0.55-38,18,0,7);x.fill()});
+    }
+    if(ev>0){x.fillStyle='rgba(255,255,255,'+Math.min(1,ev*.35)+')';x.fillRect(0,0,W,H)}
+    if(ev<0){x.fillStyle='rgba(0,0,0,'+Math.min(1,-ev*.35)+')';x.fillRect(0,0,W,H)}
+    pbaMark(x,W,H);
+  }
+  function hist(){
+    const d=x.getImageData(0,0,W,H).data,N=W*H,h=new Array(256).fill(0);let hi=0,lo=0;
+    for(let i=0;i<d.length;i+=4){const l=Math.round(0.2126*d[i]+0.7152*d[i+1]+0.0722*d[i+2]);h[l]++}
+    for(let k=252;k<256;k++)hi+=h[k];for(let k=0;k<4;k++)lo+=h[k];
+    return{hist:h,hi:hi/N,lo:lo/N};
+  }
+  function update(){
+    const ev=+$('hev').value;$('hevo').textContent=(ev>0?'+':'')+ev;
+    drawScene(ev);
+    const hd=hist();drawHisto($('hHisto'),hd.hist);
+    const pc=v=>Math.max(1,Math.round(v*100));
+    const fill=(k,o)=>t(k).replace('{p}',o.p||'');
+    if(hd.hi>0.02)$('hlive').textContent=fill('expHi',{p:pc(hd.hi)});
+    else if(hd.lo>0.05)$('hlive').textContent=fill('expLo',{p:pc(hd.lo)});
+    else $('hlive').textContent=t('expOk');
+  }
+  let used=false;
+  document.querySelectorAll('#hSceneSeg button').forEach(b=>b.onclick=()=>{stopT();$('cap').textContent='';scene=b.dataset.s;document.querySelectorAll('#hSceneSeg button').forEach(x2=>x2.classList.toggle('on',x2===b));update();if(!used){used=true;track('histogram/slider-used','Slider used',true)}});
+  $('hev').addEventListener('input',()=>{stopT();$('cap').textContent='';update();if(!used){used=true;track('histogram/slider-used','Slider used',true)}});
+  const steps=[['n',0],['n',-2],['n',2],['s',0],['n',3]];
+  let tm=null,st=0,toured=false;const tb=$('tour'),playLbl=()=>`<i class="ti ti-player-play" aria-hidden="true"></i>${t('tour')}`;tb.innerHTML=playLbl();
+  function go(){const [sc,ev]=steps[st];scene=sc;$('hev').value=ev;document.querySelectorAll('#hSceneSeg button').forEach(b=>b.classList.toggle('on',b.dataset.s===sc));update();$('cap').textContent=(st+1)+'/'+steps.length+' · '+t('hTours')[st];st++;if(st>=steps.length)stopT()}
+  function stopT(){if(tm){clearInterval(tm);tm=null}st=0;tb.innerHTML=playLbl()}
+  tb.onclick=()=>{if(tm){stopT();return}if(!toured){toured=true;track('histogram/tour-start','Tour started',true)}st=0;go();tm=setInterval(go,5200);tb.innerHTML=`<i class="ti ti-player-pause" aria-hidden="true"></i>${t('stop')}`};
+  $('rst').onclick=()=>{stopT();scene='n';$('hev').value=0;document.querySelectorAll('#hSceneSeg button').forEach(b=>b.classList.toggle('on',b.dataset.s==='n'));$('cap').textContent='';update()};
+  update();
   cleanup=()=>{if(tm)clearInterval(tm)};
 }
 
