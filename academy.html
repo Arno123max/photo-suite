@@ -3049,6 +3049,12 @@ function renderMacrofotografie(){
   <div class="stage">
    <canvas id="mcc" width="680" height="300" aria-label="${t('l10')}"></canvas>
    <p class="evtxt" id="mclive"></p>
+   <div style="margin:4px 0 2px">
+    <div style="position:relative;height:22px;background:rgba(0,0,0,.08);border-radius:999px;overflow:hidden">
+     <div id="mcZoneBar" style="position:absolute;top:0;bottom:0;left:50%;width:0;background:var(--accent);border-radius:999px;transition:left .25s,width .25s"></div>
+    </div>
+    <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--text2);margin-top:4px"><span>0 mm</span><span>20 mm</span></div>
+   </div>
    <div class="row"><label for="mcap">${t('mcApertureLbl')}</label><input type="range" min="0" max="6" step="1" value="0" id="mcap"><span id="mcapo"></span></div>
    <div class="btns"><button class="btn primary" id="tour"></button><button class="btn" id="rst"><i class="ti ti-refresh" aria-hidden="true"></i>${t('reset')}</button></div>
    <p class="cap" id="cap"></p>
@@ -3066,7 +3072,7 @@ function renderMacrofotografie(){
   function draw(){
     const idx=+$('mcap').value;
     $('mcapo').textContent='f/'+APERTURES[idx];
-    const blurPx=Math.max(1,16-idx*2);
+    const blurPx=Math.max(1,18-idx*2.6);
     x.clearRect(0,0,W,H);
     x.fillStyle='#e8f1e4';x.fillRect(0,0,W,H);
     x.save();x.filter=`blur(${blurPx}px)`;
@@ -3078,6 +3084,8 @@ function renderMacrofotografie(){
     pbaMark(x,W,H);
     const fill=(k,v)=>t(k).replace('{v}',v);
     $('mclive').textContent=fill('mcZoneLbl',DOF_MM[idx]);
+    const mm=DOF_MM[idx],pct=Math.min(100,mm/20*100);
+    const bar=$('mcZoneBar');bar.style.left=(50-pct/2)+'%';bar.style.width=pct+'%';
   }
   let used=false;
   $('mcap').addEventListener('input',()=>{stopT();$('cap').textContent='';draw();if(!used){used=true;track('macrofotografie/slider-used','Slider used',true)}});
