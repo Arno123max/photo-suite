@@ -332,6 +332,7 @@ en:{
   mcApertureLbl:"Aperture",mcZoneLbl:"Sharp zone at this distance: about {v} mm",
   mcTours:["Wide open aperture: an extremely thin sharp zone.","A mid-range aperture: still very thin.","Aperture fully closed: wider, but still only a few millimetres."],
   mcAsgLead:"Upload a close-up photo and we'll check the exposure.",
+  mc3dH:"View in 3D",mc3dLead:"Rotate around the flower and see how thin the sharp zone (the coloured slab) stays, even up close.",
   lmIntro:"Your camera has to guess how much light there is, and that guess can go wrong. Understanding how metering works avoids surprises.",
   lmA:"Matrix/evaluative metering",lmAd:"Splits the whole photo into zones and combines them into one reading. The default choice for most situations.",
   lmB:"Centre-weighted metering",lmBd:"Puts the emphasis on the centre of the frame, the edges count less. Handy when your subject is usually in the middle.",
@@ -766,6 +767,7 @@ nl:{
   mcApertureLbl:"Diafragma",mcZoneLbl:"Scherpe zone op deze afstand: ongeveer {v} mm",
   mcTours:["Wijd open diafragma: extreem dunne scherpe zone.","Een middelgroot diafragma: nog steeds erg dun.","Diafragma helemaal dicht: breder, maar nog altijd maar een paar millimeter."],
   mcAsgLead:"Upload een close-up foto en we kijken naar de belichting.",
+  mc3dH:"In 3D bekijken",mc3dLead:"Draai om de bloem heen en zie hoe dun de scherpe zone (de gekleurde plak) blijft, zelfs van dichtbij.",
   lmIntro:"Je camera moet raden hoeveel licht er is, en dat raden kan misgaan. Begrijpen hoe lichtmeting werkt, voorkomt verrassingen.",
   lmA:"Matrix-/evaluatieve meting",lmAd:"Verdeelt de hele foto in zones en combineert die tot één advies. De standaardkeuze voor de meeste situaties.",
   lmB:"Centrumgewogen meting",lmBd:"Legt de nadruk op het midden van het beeld, de rand telt minder mee. Handig als je onderwerp meestal in het midden staat.",
@@ -1200,6 +1202,7 @@ de:{
   mcApertureLbl:"Blende",mcZoneLbl:"Scharfe Zone bei dieser Entfernung: etwa {v} mm",
   mcTours:["Blende weit offen: eine extrem dünne scharfe Zone.","Eine mittlere Blende: immer noch sehr dünn.","Blende ganz geschlossen: breiter, aber immer noch nur wenige Millimeter."],
   mcAsgLead:"Lade ein Nahaufnahme-Foto hoch, und wir prüfen die Belichtung.",
+  mc3dH:"In 3D ansehen",mc3dLead:"Drehe dich um die Blume und sieh, wie dünn die scharfe Zone (die farbige Scheibe) bleibt, selbst aus der Nähe.",
   lmIntro:"Deine Kamera muss raten, wie viel Licht vorhanden ist, und dieses Raten kann danebengehen. Zu verstehen, wie Belichtungsmessung funktioniert, vermeidet Überraschungen.",
   lmA:"Matrix-/Mehrfeldmessung",lmAd:"Teilt das ganze Foto in Zonen und kombiniert sie zu einem Wert. Die Standardwahl für die meisten Situationen.",
   lmB:"Mittenbetonte Messung",lmBd:"Legt den Schwerpunkt auf die Bildmitte, der Rand zählt weniger. Praktisch, wenn dein Motiv meist in der Mitte steht.",
@@ -1634,6 +1637,7 @@ es:{
   mcApertureLbl:"Apertura",mcZoneLbl:"Zona nítida a esta distancia: unos {v} mm",
   mcTours:["Apertura muy abierta: una zona nítida extremadamente fina.","Una apertura intermedia: todavía muy fina.","Apertura totalmente cerrada: más ancha, pero aún solo unos milímetros."],
   mcAsgLead:"Sube una foto de cerca y comprobaremos la exposición.",
+  mc3dH:"Ver en 3D",mc3dLead:"Gira alrededor de la flor y observa lo fina que sigue siendo la zona nítida (la franja de color), incluso de cerca.",
   lmIntro:"Tu cámara tiene que adivinar cuánta luz hay, y esa suposición puede fallar. Entender cómo funciona la medición de luz evita sorpresas.",
   lmA:"Medición matricial/evaluativa",lmAd:"Divide toda la foto en zonas y las combina en una sola lectura. La opción predeterminada para la mayoría de situaciones.",
   lmB:"Medición con ponderación central",lmBd:"Pone el énfasis en el centro del encuadre, los bordes cuentan menos. Útil cuando tu sujeto suele estar en el centro.",
@@ -2841,7 +2845,7 @@ function renderLichtinval(){
   <div class="stage">
    <p class="lbl">${t('liQualityLbl')}</p>
    <div class="seg" id="liSoftSeg"><button data-q="h" class="on">${t('liHard')}</button><button data-q="s">${t('liSoft')}</button></div>
-   <canvas id="lic" width="680" height="300" aria-label="${t('l7')}"></canvas>
+   ${k3block('li3d',LI_V,'',0)}
    <p class="evtxt" id="lilive"></p>
    <div class="row"><label for="liang">${t('liAngleLbl')}</label><input type="range" min="0" max="360" step="15" value="0" id="liang"><span id="liango"></span></div>
    <div class="btns"><button class="btn primary" id="tour"></button><button class="btn" id="rst"><i class="ti ti-refresh" aria-hidden="true"></i>${t('reset')}</button></div>
@@ -2854,38 +2858,13 @@ function renderLichtinval(){
   renderQuiz(document.getElementById('quiz'),'liQs');
   renderExpoAssignment(document.getElementById('asg'),'liAsgLead','lichtinval/assignment');
   const $=id=>document.getElementById(id);
-  const c=$('lic'),x=c.getContext('2d'),W=680,H=300;
-  let soft=false;
-  function drawScene(ang){
-    x.clearRect(0,0,W,H);
-    x.fillStyle='#dce6ea';x.fillRect(0,0,W,H*0.68);
-    x.fillStyle='#c7bfae';x.fillRect(0,H*0.68,W,H*0.32);
-    const rad=ang*Math.PI/180;
-    const front=Math.cos(rad),side=Math.sin(rad);
-    const cx=W/2,cy=H*0.42,r=62;
-    const shadowOffsetX=side*95;
-    const shadowLen=28+Math.abs(front)*55;
-    x.save();
-    if(soft)x.filter='blur(16px)';
-    x.fillStyle='rgba(0,0,0,.3)';
-    x.beginPath();x.ellipse(cx+shadowOffsetX,H*0.7+6,r*0.85,shadowLen*0.24,0,0,7);x.fill();
-    x.restore();
-    const lightX=cx+side*r*0.9,lightY=cy-r*0.5;
-    const grad=x.createRadialGradient(lightX,lightY,8,cx,cy,r*1.4);
-    if(soft){grad.addColorStop(0,'#f1cb9a');grad.addColorStop(0.7,'#caa06e');grad.addColorStop(1,'#8a6a47')}
-    else{grad.addColorStop(0,'#f6d6a8');grad.addColorStop(0.35,'#caa06e');grad.addColorStop(1,'#4a3826')}
-    x.fillStyle=grad;
-    x.beginPath();x.arc(cx,cy,r,0,7);x.fill();
-    const dark=Math.max(0,(1-front)/2)*0.72;
-    if(dark>0.02){x.fillStyle='rgba(10,10,15,'+dark+')';x.beginPath();x.arc(cx,cy,r,0,7);x.fill()}
-    x.fillStyle='#2d3e5c';x.fillRect(cx-28,cy+r-4,56,70);
-    if(dark>0.3){x.fillStyle='rgba(10,10,15,'+Math.min(0.6,dark)+')';x.fillRect(cx-28,cy+r-4,56,70)}
-    pbaMark(x,W,H);
-  }
+  let soft=false,liState={ang:0,soft:false};
+  const ctl3d=k3($('li3d'),{build:buildLichtinval(()=>liState),views:LI_V,def:0,target:[0,1,0],lesson:'lichtinval'});
+  k3wire('li3d',ctl3d,LI_V);
   function zone(ang){const a=((ang%360)+360)%360;if(a>135&&a<225)return 'back';if((a>45&&a<135)||(a>225&&a<315))return 'side';return 'front'}
   function update(){
     const ang=+$('liang').value;$('liango').textContent=ang+'°';
-    drawScene(ang);
+    liState={ang:ang,soft:soft};
     const z=zone(ang);
     $('lilive').textContent=z==='front'?t('liFront'):z==='side'?t('liSide'):t('liBack');
   }
@@ -3059,6 +3038,8 @@ function renderMacrofotografie(){
    <div class="btns"><button class="btn primary" id="tour"></button><button class="btn" id="rst"><i class="ti ti-refresh" aria-hidden="true"></i>${t('reset')}</button></div>
    <p class="cap" id="cap"></p>
   </div>
+  <h2>${t('mc3dH')}</h2><p style="color:var(--text2);font-size:15px">${t('mc3dLead')}</p>
+  <div class="stage k3sec">${k3block('mc3d',MC_V,'',0)}</div>
   <h2>${t('quiz')}</h2><div id="quiz"></div>
   <div id="asg"></div>
   ${toolLink('suite','ti-file-info','tool1','macrofotografie')}
@@ -3069,6 +3050,9 @@ function renderMacrofotografie(){
   const c=$('mcc'),x=c.getContext('2d'),W=680,H=300;
   const APERTURES=[1.8,2.8,4,5.6,8,11,16];
   const DOF_MM=[2,3,4,6,9,13,18];
+  let mc3dState={mm:DOF_MM[0]};
+  const mc3dCtl=k3($('mc3d'),{build:buildMacro3D(()=>mc3dState),views:MC_V,def:0,target:[0,0.18,0],lesson:'macrofotografie'});
+  k3wire('mc3d',mc3dCtl,MC_V);
   function draw(){
     const idx=+$('mcap').value;
     $('mcapo').textContent='f/'+APERTURES[idx];
@@ -3086,6 +3070,7 @@ function renderMacrofotografie(){
     $('mclive').textContent=fill('mcZoneLbl',DOF_MM[idx]);
     const mm=DOF_MM[idx],pct=Math.min(100,mm/20*100);
     const bar=$('mcZoneBar');bar.style.left=(50-pct/2)+'%';bar.style.width=pct+'%';
+    mc3dState={mm:mm};
   }
   let used=false;
   $('mcap').addEventListener('input',()=>{stopT();$('cap').textContent='';draw();if(!used){used=true;track('macrofotografie/slider-used','Slider used',true)}});
@@ -3603,6 +3588,8 @@ function k3make(el,o){
 const K3_IRV=[['k3front',0,0,8],['k3angle',0.62,0.28,8],['k3side',1.42,0.12,8]],K3_SHV=[['k3front',0,0.02,7],['k3angle',0.55,0.25,7],['k3side',1.3,0.1,7]];
 const K3_FOV=[['k3side',1.2,0.38,15],['k3top',0,1.4,17],['k3behind',0,0.22,11]];
 const K3_DOFV=[['k3angle',0.85,0.5,12],['k3top',0,1.4,15],['k3behind',0,0.2,9]];
+const LI_V=[['k3front',0,0.08,4.6],['k3angle',0.7,0.26,4.6],['k3side',1.4,0.12,4.6]];
+const MC_V=[['k3angle',0.55,0.42,2.1],['k3top',0,1.3,2.4],['k3side',1.45,0.3,2.1]];
 const K3_BFV=[['k3angle',0.95,0.5],['k3top',0,1.4],['k3side',1.5,0.1]];
 /* Opmaak-hulpjes: viewer + knoppen voor de kijkhoek, en de wissel Foto / 3D */
 function k3block(id,views,cls,def){return `<div class="k3v ${cls||''}" id="${id}"></div><div class="k3bar"><div class="seg" id="${id}V">${views.map((v,i)=>`<button data-i="${i}"${i===(def||0)?' class="on"':''}>${t(v[0])}</button>`).join('')}</div><span class="k3hint">${t('k3drag')}</span></div>`}
@@ -3806,6 +3793,54 @@ function buildDof(get){return api=>{
   }};
 }}
 
+/* Lichtinval: 3D-figuur met een echte, zelf gestuurde lichtbron. get() levert {ang, soft}. */
+function buildLichtinval(get){return api=>{
+  const s=api.scene;
+  s.children.filter(c=>c.isLight).forEach(c=>s.remove(c));
+  const ground=new THREE.Mesh(new THREE.CircleGeometry(4.5,40),k3mat(0xc7bfae));ground.rotation.x=-Math.PI/2;s.add(ground);
+  const legs=new THREE.Mesh(new THREE.CylinderGeometry(0.4,0.46,1.0,20),k3mat(0x2d3e5c));legs.position.y=0.5;s.add(legs);
+  const head=new THREE.Mesh(new THREE.SphereGeometry(0.4,30,22),k3mat(0xcaa06e));head.position.y=1.38;s.add(head);
+  const shadow=new THREE.Mesh(new THREE.CircleGeometry(0.72,32),new THREE.MeshBasicMaterial({color:0x000000,transparent:true,opacity:0.3}));
+  shadow.rotation.x=-Math.PI/2;shadow.position.y=0.012;s.add(shadow);
+  const fill=new THREE.HemisphereLight(0xffffff,0x33343d,0.32);s.add(fill);
+  const sun=new THREE.DirectionalLight(0xffffff,1.2);s.add(sun);s.add(sun.target);
+  sun.target.position.set(0,1,0);
+  return{update(){
+    const st=get();if(!st)return;
+    const rad=st.ang*Math.PI/180;
+    sun.position.set(Math.sin(rad)*4,2.5,Math.cos(rad)*4);
+    sun.intensity=st.soft?0.6:1.25;
+    fill.intensity=st.soft?0.78:0.3;
+    shadow.position.x=-Math.sin(rad)*0.62;
+    shadow.position.z=-Math.cos(rad)*0.62;
+    const sc=st.soft?1.4:0.85;shadow.scale.set(sc,sc,1);
+    shadow.material.opacity=st.soft?0.16:0.32;
+  }};
+}}
+/* Macro 3D: een bloem van dichtbij met een scherpe-zone-plak die meegroeit met DOF_MM (in mm). get() levert {mm}. */
+function buildMacro3D(get){return api=>{
+  const s=api.scene;
+  const ground=new THREE.Mesh(new THREE.CircleGeometry(3,40),k3mat(0x8fae72));ground.rotation.x=-Math.PI/2;s.add(ground);
+  function mkFlower(x,z,scale,color){
+    const g=new THREE.Group();
+    const stem=new THREE.Mesh(new THREE.CylinderGeometry(0.01,0.013,0.3,8),k3mat(0x3b7d2a));stem.position.y=0.15;g.add(stem);
+    const bloom=new THREE.Mesh(new THREE.SphereGeometry(0.075,16,12),k3mat(color));bloom.position.y=0.32;g.add(bloom);
+    g.position.set(x,0,z);g.scale.setScalar(scale);s.add(g);
+  }
+  mkFlower(0,0,1,0xf2c230);
+  mkFlower(-0.42,-0.3,0.82,0xf2c230);
+  mkFlower(0.48,-0.42,0.78,0xf2c230);
+  mkFlower(-0.26,0.34,0.86,0xe86f3f);
+  const acc=new THREE.Color(k3accent());
+  const slab=new THREE.Mesh(new THREE.BoxGeometry(1.5,0.5,1),new THREE.MeshBasicMaterial({color:acc,transparent:true,opacity:0.3,depthWrite:false}));
+  slab.position.set(0,0.2,0);s.add(slab);
+  slab.add(new THREE.LineSegments(new THREE.EdgesGeometry(new THREE.BoxGeometry(1,1,1)),new THREE.LineBasicMaterial({color:acc})));
+  let d=0.01;
+  return{update(dt){const st=get();if(!st)return;
+    const k=Math.min(1,dt*8),target=Math.max(0.006,st.mm/1000);
+    d+=(target-d)*k;slab.scale.set(1.5,0.5,Math.max(0.03,d*18));
+  }};
+}}
 /* Brandpuntsafstand: wat de camera ziet (blauwe vorm) en waar de camera staat. get() levert {f, dist}. */
 function buildFocal(get){return api=>{
   const s=api.scene,u=0.2;
