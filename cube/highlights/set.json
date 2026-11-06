@@ -1,0 +1,35 @@
+{
+ "title": "Highlights",
+ "photos": [
+  {
+   "src": "1.jpg",
+   "full": "1-full.jpg",
+   "title": "Kingfisher"
+  },
+  {
+   "src": "2.jpg",
+   "full": "2-full.jpg",
+   "title": "Flamingos"
+  },
+  {
+   "src": "3.jpg",
+   "full": "3-full.jpg",
+   "title": "Dragonfly"
+  },
+  {
+   "src": "4.jpg",
+   "full": "4-full.jpg",
+   "title": "Full moon"
+  },
+  {
+   "src": "5.jpg",
+   "full": "5-full.jpg",
+   "title": "Cabo Girão, Madeira"
+  },
+  {
+   "src": "6.jpg",
+   "full": "6-full.jpg",
+   "title": "Forest light"
+  }
+ ]
+}

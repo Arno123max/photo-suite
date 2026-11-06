@@ -1,0 +1,131 @@
+<!doctype html>
+<!-- © 2026 PhotoByArno · photobyarno.com · Alle rechten voorbehouden. Deze kubus mag alleen vanaf photobyarno.com worden gebruikt. -->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PhotoByArno Photo Cube v1.0</title>
+<script>try{if(window.self!==window.top)document.documentElement.classList.add('embedded')}catch(e){document.documentElement.classList.add('embedded')}</script>
+<style>:root{--s:min(72vw,340px);--h:calc(var(--s)/2);--green:#2F5D50;--text:#1d1d1b;--muted:#6f6e69;--bg:#f6f5f2}*{box-sizing:border-box}html,body{margin:0;padding:0;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}html.embedded,html.embedded body{background:transparent}.wrap{max-width:720px;margin:0 auto;padding:28px 16px 22px;text-align:center}.stage{position:relative;width:100%;height:calc(var(--s)*1.55);display:flex;align-items:center;justify-content:center;perspective:1100px;touch-action:none;user-select:none;-webkit-user-select:none;cursor:grab}.stage.drag{cursor:grabbing}.cube{position:relative;width:var(--s);height:var(--s);transform-style:preserve-3d;will-change:transform}.face{position:absolute;inset:0;border-radius:12px;overflow:hidden;backface-visibility:hidden;-webkit-backface-visibility:hidden;background:#222;box-shadow:inset 0 0 0 2px rgba(255,255,255,.55)}.face img{width:100%;height:100%;object-fit:cover;display:block;pointer-events:none;-webkit-user-drag:none}.face .shade{position:absolute;inset:0;background:#000;opacity:0;pointer-events:none}.face .mark{position:absolute;right:8px;bottom:6px;font:600 10px/1 system-ui,sans-serif;letter-spacing:.04em;color:rgba(255,255,255,.82);text-shadow:0 1px 2px rgba(0,0,0,.6);pointer-events:none}.pip{position:absolute;left:9px;top:9px;width:26px;height:26px;border-radius:6px;background:rgba(255,255,255,.88);display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(3,1fr);padding:4px;box-shadow:0 1px 3px rgba(0,0,0,.35);pointer-events:none}.pip i{width:5px;height:5px;border-radius:50%;background:#1d1d1b;place-self:center;visibility:hidden}.shadow{position:absolute;left:50%;bottom:4%;width:calc(var(--s)*1.05);height:calc(var(--s)*.16);transform:translateX(-50%);border-radius:50%;background:radial-gradient(closest-side,rgba(0,0,0,.28),rgba(0,0,0,0));pointer-events:none}.hint{position:absolute;left:50%;top:50%;width:150px;height:110px;margin:-55px 0 0 -75px;pointer-events:none;transition:opacity .4s}.hint.off{opacity:0}.hand{position:absolute;left:96px;top:32px;width:46px;height:46px;animation:swipe 2.6s ease-in-out infinite;filter:drop-shadow(0 2px 4px rgba(0,0,0,.45))}.trail{position:absolute;left:30px;top:52px;width:90px;height:4px;border-radius:2px;background:linear-gradient(90deg,rgba(255,255,255,0),rgba(255,255,255,.9));animation:trail 2.6s ease-in-out infinite;transform-origin:right center}@keyframes swipe{0%,18%{transform:translateX(0);opacity:0}28%{opacity:1}62%{transform:translateX(-80px);opacity:1}78%,100%{transform:translateX(-80px);opacity:0}}@keyframes trail{0%,28%{transform:scaleX(0);opacity:0}62%{transform:scaleX(1);opacity:.9}80%,100%{transform:scaleX(1);opacity:0}}.label{display:inline-block;margin-top:2px;padding:7px 14px;border-radius:999px;background:var(--green);color:#fff;font-weight:650;font-size:14px;letter-spacing:.02em;transition:opacity .4s}.label.off{opacity:0}.cap{margin:14px 0 4px;font-weight:650;font-size:17px;min-height:1.4em}.dots{display:flex;gap:7px;justify-content:center;margin:6px 0 12px}.dots b{width:8px;height:8px;border-radius:50%;background:rgba(0,0,0,.18);transition:background .25s,transform .25s}.dots b.on{background:var(--green);transform:scale(1.25)}.nav{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}.nav button{width:44px;height:44px;border-radius:50%;border:1px solid rgba(0,0,0,.15);background:#fff;color:var(--text);font-size:18px;cursor:pointer;box-shadow:0 1px 3px rgba(0,0,0,.08)}.nav button:hover{border-color:var(--green);color:var(--green)}.tip{margin-top:12px;font-size:13px;color:var(--muted)}.box{position:fixed;inset:0;background:rgba(10,10,10,.88);display:none;align-items:center;justify-content:center;flex-direction:column;z-index:9;padding:16px}.box.on{display:flex}.box img{max-width:100%;max-height:calc(100% - 60px);border-radius:8px;box-shadow:0 6px 24px rgba(0,0,0,.5)}.box p{color:#fff;margin:12px 0 0;font-weight:600}.box button{position:absolute;right:12px;top:10px;width:40px;height:40px;border-radius:50%;border:0;background:rgba(255,255,255,.15);color:#fff;font-size:22px;cursor:pointer}.blocked{padding:40px 16px;text-align:center;color:var(--muted)}.blocked a{color:var(--green);font-weight:650}</style>
+</head>
+<body>
+<div class="wrap" id="app">
+  <div class="stage" id="stage">
+    <div class="shadow"></div>
+    <div class="cube" id="cube"></div>
+    <div class="hint" id="hint"><div class="trail"></div><svg class="hand" viewBox="0 0 48 48"><path fill="#fff" stroke="#1d1d1b" stroke-width="2" stroke-linejoin="round" d="M19 6c2 0 3.5 1.5 3.5 3.5V22l1-.3V17c0-2 1.5-3.3 3.3-3.3S30 15 30 17v5l.9-.2v-2.6c0-1.9 1.5-3.2 3.2-3.2s3.2 1.4 3.2 3.2V23l.6-.1c0-1.8 1.4-3 3.1-3S44 21.4 44 23v9c0 7-5 12-12 12h-4c-4 0-6.5-1.6-9-5l-7-10c-1.2-1.7-.8-3.8.8-4.9 1.5-1 3.5-.6 4.7.8l3 3.5V9.5C15.5 7.5 17 6 19 6z"/></svg></div>
+  </div>
+  <div class="label" id="label"></div>
+  <div class="cap" id="cap"></div>
+  <div class="dots" id="dots"></div>
+  <div class="nav"><button id="bl" aria-label="Left">&#9664;</button><button id="bu" aria-label="Up">&#9650;</button><button id="bd" aria-label="Down">&#9660;</button><button id="br" aria-label="Right">&#9654;</button></div>
+  <div class="tip" id="tip"></div>
+</div>
+<div class="box" id="box"><button id="bx" aria-label="Close">&times;</button><img id="bimg" alt=""><p id="bcap"></p></div>
+<script>(function(){
+var PBA_HOSTS=['photobyarno.com','www.photobyarno.com','arno123max.github.io'];
+function hostOk(h){h=String(h||'').toLowerCase();return PBA_HOSTS.indexOf(h)>=0||h==='jouwweb.nl'||/\.jouwweb\.nl$/.test(h)}
+function allowed(){
+if(!hostOk(location.hostname))return false;
+if(window.self===window.top)return true;
+try{var ao=location.ancestorOrigins;if(ao&&ao.length){for(var i=0;i<ao.length;i++)if(!hostOk(new URL(ao[i]).hostname))return false;return true}}catch(e){}
+try{if(document.referrer)return hostOk(new URL(document.referrer).hostname)}catch(e){}
+return true;
+}
+function post(){try{window.parent.postMessage({pbaHeight:Math.ceil(document.documentElement.scrollHeight)},'*')}catch(e){}}
+if(!allowed()){document.getElementById('app').innerHTML='<div class="blocked">This photo cube only works on <a href="https://www.photobyarno.com" target="_blank" rel="noopener">photobyarno.com</a>.</div>';post();return}
+var L=(navigator.language||'en').slice(0,2).toLowerCase();
+var TX={
+en:{spin:'Swipe to spin',tip:'Swipe or use the arrows · tap a photo to enlarge',of:'of'},
+nl:{spin:'Swipe om te draaien',tip:'Swipe of gebruik de pijlen · tik op een foto om te vergroten',of:'van'},
+de:{spin:'Wischen zum Drehen',tip:'Wischen oder Pfeile nutzen · Foto antippen zum Vergrößern',of:'von'},
+es:{spin:'Desliza para girar',tip:'Desliza o usa las flechas · toca una foto para ampliarla',of:'de'}
+}[L]||null;
+if(!TX){L='en';TX={spin:'Swipe to spin',tip:'Swipe or use the arrows · tap a photo to enlarge',of:'of'}}
+document.documentElement.lang=L;
+var gq=[],gr=false,seen={};
+function gc(p,t,e){if(!/^https?:$/.test(location.protocol))return;if(!gr){gq.push([p,t,e]);return}try{window.goatcounter.count({path:p,title:t||p,event:!!e})}catch(x){}}
+function ev(p,t){if(seen[p])return;seen[p]=1;gc(p,t,true)}
+window.goatcounter=window.goatcounter||{};window.goatcounter.no_onload=true;window.goatcounter.allow_frame=true;
+if(/^https?:$/.test(location.protocol)){var gs=document.createElement('script');gs.async=true;gs.src='https://gc.zgo.at/count.js';gs.setAttribute('data-goatcounter','https://photobyarno.goatcounter.com/count');gs.setAttribute('data-goatcounter-settings','{"no_onload":true,"allow_frame":true}');gs.onload=function(){gr=true;gq.splice(0).forEach(function(a){gc(a[0],a[1],a[2])})};document.head.appendChild(gs)}
+var params=new URLSearchParams(location.search);
+var SET=(params.get('set')||'highlights').replace(/[^a-z0-9_-]/gi,'');
+var BASE='cube/'+SET+'/';
+gc('/cube/'+SET,'Photo cube: '+SET);
+function qa(ax,ay,az,deg){var a=deg*Math.PI/360,s=Math.sin(a);return[Math.cos(a),ax*s,ay*s,az*s]}
+function qm(a,b){return[a[0]*b[0]-a[1]*b[1]-a[2]*b[2]-a[3]*b[3],a[0]*b[1]+a[1]*b[0]+a[2]*b[3]-a[3]*b[2],a[0]*b[2]-a[1]*b[3]+a[2]*b[0]+a[3]*b[1],a[0]*b[3]+a[1]*b[2]-a[2]*b[1]+a[3]*b[0]]}
+function qn(q){var l=Math.hypot(q[0],q[1],q[2],q[3])||1;return[q[0]/l,q[1]/l,q[2]/l,q[3]/l]}
+function qd(a,b){return a[0]*b[0]+a[1]*b[1]+a[2]*b[2]+a[3]*b[3]}
+function slerp(a,b,t){var d=qd(a,b);if(d<0){b=[-b[0],-b[1],-b[2],-b[3]];d=-d}if(d>.9995)return qn([a[0]+(b[0]-a[0])*t,a[1]+(b[1]-a[1])*t,a[2]+(b[2]-a[2])*t,a[3]+(b[3]-a[3])*t]);var th=Math.acos(d),s=Math.sin(th),u=Math.sin((1-t)*th)/s,v=Math.sin(t*th)/s;return[a[0]*u+b[0]*v,a[1]*u+b[1]*v,a[2]*u+b[2]*v,a[3]*u+b[3]*v]}
+function mat(q){var w=q[0],x=q[1],y=q[2],z=q[3];return[[1-2*(y*y+z*z),2*(x*y-z*w),2*(x*z+y*w)],[2*(x*y+z*w),1-2*(x*x+z*z),2*(y*z-x*w)],[2*(x*z-y*w),2*(y*z+x*w),1-2*(x*x+y*y)]]}
+function css(R){return'matrix3d('+[R[0][0],R[1][0],R[2][0],0,R[0][1],R[1][1],R[2][1],0,R[0][2],R[1][2],R[2][2],0,0,0,0,1].join(',')+')'}
+var FACES=[
+{place:'rotateY(0deg)',target:qa(0,1,0,0),n:[0,0,1]},
+{place:'rotateY(90deg)',target:qa(0,1,0,-90),n:[1,0,0]},
+{place:'rotateX(90deg)',target:qa(1,0,0,-90),n:[0,-1,0]},
+{place:'rotateY(180deg)',target:qa(0,1,0,180),n:[0,0,-1]},
+{place:'rotateY(-90deg)',target:qa(0,1,0,90),n:[-1,0,0]},
+{place:'rotateX(-90deg)',target:qa(1,0,0,90),n:[0,1,0]}
+];
+var PIPS=[[4],[0,8],[0,4,8],[0,2,6,8],[0,2,4,6,8],[0,2,3,5,6,8]];
+var TILT=qm(qa(1,0,0,-17),qa(0,1,0,26));
+var cube=document.getElementById('cube'),stage=document.getElementById('stage'),hint=document.getElementById('hint'),label=document.getElementById('label');
+var capEl=document.getElementById('cap'),dotsEl=document.getElementById('dots');
+label.textContent=TX.spin;document.getElementById('tip').textContent=TX.tip;
+var photos=[],shades=[];
+function build(list){
+photos=list.slice(0,6);while(photos.length<6&&list.length)photos.push(list[photos.length%list.length]);
+cube.innerHTML='';shades=[];dotsEl.innerHTML='';
+FACES.forEach(function(f,i){
+var d=document.createElement('div');d.className='face';d.dataset.i=i;
+d.style.transform=f.place+' translateZ(var(--h))';
+var im=new Image();im.alt=photos[i].title||'';im.decoding='async';im.src=BASE+photos[i].src;im.draggable=false;d.appendChild(im);
+var pip=document.createElement('div');pip.className='pip';for(var k=0;k<9;k++){var dot=document.createElement('i');if(PIPS[i].indexOf(k)>=0)dot.style.visibility='visible';pip.appendChild(dot)}d.appendChild(pip);
+var m=document.createElement('div');m.className='mark';m.textContent='photobyarno.com';d.appendChild(m);
+var sh=document.createElement('div');sh.className='shade';d.appendChild(sh);shades.push(sh);
+cube.appendChild(d);
+dotsEl.appendChild(document.createElement('b'));
+});
+render();post();
+}
+var Q=[1,0,0,0],vx=0,vy=0,drag=null,snap=null,lastAct=performance.now(),started=false,cur=-1,wig=0;
+function nearest(q){var R=mat(q),best=0,bd=-9;FACES.forEach(function(f,i){var n=f.n,z=R[2][0]*n[0]+R[2][1]*n[1]+R[2][2]*n[2];if(z>bd){bd=z;best=i}});return best}
+function render(){
+var M=qm(TILT,qm(qa(0,1,0,wig),Q)),R=mat(M);
+cube.style.transform=css(R);
+FACES.forEach(function(f,i){var n=f.n,z=R[2][0]*n[0]+R[2][1]*n[1]+R[2][2]*n[2],y=R[1][0]*n[0]+R[1][1]*n[1]+R[1][2]*n[2];var o=Math.max(0,Math.min(.55,(1-z)*.32+(y>0?y*.12:0)));if(shades[i])shades[i].style.opacity=o.toFixed(3)});
+var k=nearest(Q);if(k!==cur&&photos[k]){cur=k;capEl.textContent=(photos[k].title||'')+'  ·  '+(k+1)+' '+TX.of+' 6';[].forEach.call(dotsEl.children,function(b,i){b.classList.toggle('on',i===k)})}
+}
+function goTo(q){var s=Q;snap={from:s,to:q,t0:performance.now(),dur:520}}
+function snapNearest(){goTo(FACES[nearest(Q)].target)}
+function hideHint(){if(started)return;started=true;hint.classList.add('off');label.classList.add('off');ev('cube/'+SET+'/spin','Cube spun')}
+function tick(now){
+if(snap){var t=Math.min(1,(now-snap.t0)/snap.dur);t=1-Math.pow(1-t,3);Q=slerp(snap.from,snap.to,t);if(t>=1){Q=snap.to;snap=null}}
+else if(!drag&&(Math.abs(vx)>.02||Math.abs(vy)>.02)){Q=qn(qm(qa(1,0,0,-vy),qm(qa(0,1,0,vx),Q)));vx*=.9;vy*=.9;if(Math.abs(vx)<.25&&Math.abs(vy)<.25){vx=vy=0;snapNearest()}}
+var idle=now-lastAct;
+if(!drag&&!snap&&idle>2600){var p=((idle-2600)%3400)/3400;wig=p<.45?Math.sin(p/.45*Math.PI*2)*11*(1-p/.45):0}else wig*=.85;
+render();requestAnimationFrame(tick);
+}
+var down=null;
+stage.addEventListener('pointerdown',function(e){if(e.button>0)return;stage.setPointerCapture&&stage.setPointerCapture(e.pointerId);drag={x:e.clientX,y:e.clientY,t:performance.now(),moved:0};down={x:e.clientX,y:e.clientY,t:performance.now(),face:e.target.closest&&e.target.closest('.face')};snap=null;vx=vy=0;lastAct=performance.now();stage.classList.add('drag')});
+stage.addEventListener('pointermove',function(e){if(!drag)return;var dx=e.clientX-drag.x,dy=e.clientY-drag.y;drag.x=e.clientX;drag.y=e.clientY;drag.moved+=Math.abs(dx)+Math.abs(dy);if(drag.moved>6)hideHint();var k=.45;vx=dx*k;vy=dy*k;Q=qn(qm(qa(1,0,0,-vy),qm(qa(0,1,0,vx),Q)));lastAct=performance.now()});
+function up(e){if(!drag)return;var moved=drag.moved;drag=null;stage.classList.remove('drag');lastAct=performance.now();
+if(moved<7&&down&&performance.now()-down.t<400&&down.face){vx=vy=0;openBox(+down.face.dataset.i);snapNearest();return}
+if(Math.abs(vx)<.25&&Math.abs(vy)<.25){vx=vy=0;snapNearest()}}
+stage.addEventListener('pointerup',up);stage.addEventListener('pointercancel',up);
+function turn(axis,deg){hideHint();lastAct=performance.now();vx=vy=0;var tq=qn(qm(qa(axis[0],axis[1],axis[2],deg),FACES[nearest(Q)].target));goTo(FACES[nearest(tq)].target)}
+document.getElementById('bl').onclick=function(){turn([0,1,0],-90)};
+document.getElementById('br').onclick=function(){turn([0,1,0],90)};
+document.getElementById('bu').onclick=function(){turn([1,0,0],-90)};
+document.getElementById('bd').onclick=function(){turn([1,0,0],90)};
+var box=document.getElementById('box'),bimg=document.getElementById('bimg'),bcap=document.getElementById('bcap');
+function openBox(i){var p=photos[i];if(!p)return;bimg.src=BASE+(p.full||p.src);bcap.textContent=p.title||'';box.classList.add('on');hideHint();ev('cube/'+SET+'/open','Cube photo opened')}
+function closeBox(){box.classList.remove('on')}
+document.getElementById('bx').onclick=closeBox;box.onclick=function(e){if(e.target===box)closeBox()};
+document.addEventListener('keydown',function(e){if(e.key==='Escape')closeBox();if(e.key==='ArrowLeft')turn([0,1,0],-90);if(e.key==='ArrowRight')turn([0,1,0],90)});
+window.addEventListener('resize',post);
+fetch(BASE+'set.json',{cache:'no-cache'}).then(function(r){if(!r.ok)throw 0;return r.json()}).then(function(j){build(j.photos||[])}).catch(function(){build([1,2,3,4,5,6].map(function(n){return{src:n+'.jpg',title:''}}))});
+requestAnimationFrame(tick);
+})();</script>
+</body>
+</html>
